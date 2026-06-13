@@ -45,6 +45,11 @@
         <span>📂</span> Cập nhật số liệu định kỳ
       </button>
 
+      <!-- Hướng dẫn sử dụng -->
+      <button class="btn" id="btn-guide" title="Xem hướng dẫn sử dụng phần mềm" style="border-color: var(--color-primary); color: var(--color-primary);">
+        <span>❓</span> Hướng dẫn
+      </button>
+
       <!-- Khôi phục số liệu -->
       <button class="btn" id="btn-reset" title="Khôi phục số liệu gốc ban đầu" style="border-color: var(--color-danger); color: var(--color-danger);">
         <span>🔄</span> Khôi phục số liệu
@@ -85,7 +90,7 @@
         <!-- Thanh nút bấm chọn nhanh xã / tất cả (Sinh động bởi JS) -->
         <div class="quick-commune-filters" id="quick-commune-filters"></div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
+        <div class="header-flex-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
           <h2 class="active-commune-name" id="active-commune-name" style="font-size: 1.45rem;">Tổng hợp 7 Xã</h2>
           
           <!-- Bộ chọn nguồn thu (Tất cả / Thuế Tỉnh / Thuế Cơ Sở) -->
@@ -283,6 +288,21 @@
        PRINT TEMPLATE: GIAO DIỆN IN ẤN (Chỉ hiển thị khi in ra giấy/xuất PDF)
        ========================================================================== -->
   <div id="print-report-container" class="print-only"></div>
+
+  <!-- Modal Hướng dẫn sử dụng -->
+  <div class="simulation-panel" id="guide-modal" style="width: 500px; max-width: 90vw; border-radius: 12px; z-index: 10001; padding: 25px;">
+    <button class="simulation-close" id="guide-close">&times;</button>
+    <h3 style="margin-bottom: 20px; color: var(--color-primary); border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">❓ Hướng dẫn sử dụng phần mềm</h3>
+    <div style="line-height: 1.7; font-size: 0.95rem; color: var(--text-color);">
+      <p><strong>1. Cập nhật số liệu:</strong> Nhấn nút "Cập nhật số liệu định kỳ" để mở tính năng tải lên file Excel dữ liệu thu ngân sách.</p>
+      <p><strong>2. Xem báo cáo:</strong> Bấm vào tên xã ở danh sách bên trái để xem chi tiết tình hình thu của địa bàn đó.</p>
+      <p><strong>3. Bộ lọc dữ liệu:</strong> Sử dụng các nút bấm "Thuế Tỉnh" / "Thuế Cơ Sở" ở màn hình chính để phân loại các nguồn thu chuyên biệt.</p>
+      <p><strong>4. Xuất Báo Cáo PDF:</strong> Nhấn "Xuất PDF" để tạo lập văn bản báo cáo hành chính tự động chuẩn thể thức của Nghị định 30/2020/NĐ-CP.</p>
+      <div style="margin-top: 25px; text-align: center;">
+        <button class="btn btn-primary" id="btn-guide-ok" style="padding: 10px 30px; border-radius: 8px;">Đã hiểu</button>
+      </div>
+    </div>
+  </div>
 
 
   <!-- Scripts -->

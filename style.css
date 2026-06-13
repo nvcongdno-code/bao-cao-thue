@@ -870,6 +870,32 @@ tr:hover td {
     width: 100%;
     justify-content: space-between;
   }
+  
+  /* Ẩn các nút theo yêu cầu trên mobile */
+  #btn-periodic, #btn-guide, #btn-reset {
+    display: none !important;
+  }
+
+  /* Đưa bộ lọc Thuế Tỉnh / Thuế Cơ Sở lên trên cùng */
+  .header-flex-row {
+    flex-direction: column-reverse;
+    align-items: stretch !important;
+    gap: 15px !important;
+  }
+  .view-mode-container {
+    width: 100% !important;
+    justify-content: space-between;
+    padding: 6px !important;
+  }
+  .view-mode-container .mode-btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px !important;
+  }
+  #active-commune-name {
+    text-align: center;
+    width: 100%;
+  }
 }
 
 /* ==========================================================================
