@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo cáo Thu ngân sách hàng ngày - Cục Thuế Lâm Đồng</title>
+  <meta name="description" content="Hệ thống báo cáo và theo dõi số liệu thu ngân sách hàng ngày tại 7 xã trực thuộc Thuế cơ sở 13 - Cục Thuế tỉnh Lâm Đồng. Tối ưu cho họp lãnh đạo.">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Bảng số liệu chi tiết theo sắc thuế -->
+  
+  <!-- SheetJS (XLSX) CDN để đọc/xuất file Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  
+  <!-- html2pdf.js - Xuất báo cáo PDF chất lượng cao -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       WEB VIEW: GIAO DIỆN HIỂN THỊ TRÊN WEB (MOBILE / TABLET / LAPTOP)
+       ========================================================================== -->
+  <header>
+    <div class="logo-container">
+      <img src="logo.png" alt="Logo Thuế cơ sở 13" class="logo-image">
+      <div class="logo-text">
+        <p>Thuế tỉnh Lâm Đồng</p>
+        <h1>THUẾ CƠ SỞ 13</h1>
+      </div>
+    </div>
+    
+    <div class="controls-container">
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Ngày báo cáo:</span>
+          <input type="date" id="report-date-picker" value="2026-06-14" class="date-picker-input">
+        </div>
+        <span style="font-size: 0.72rem; color: var(--color-success); font-weight: 600;" id="last-update-time">Đã cập nhật: 23:45 13/06/2026</span>
+      </div>
+      
+      <!-- Số liệu định kỳ -->
+      <button class="btn btn-simulation" id="btn-periodic" title="Cập nhật số liệu định kỳ Tuần/Tháng/Quý">
+        <span>📂</span> Cập nhật số liệu định kỳ
+      </button>
+
+      <!-- Khôi phục số liệu -->
+      <button class="btn" id="btn-reset" title="Khôi phục số liệu gốc ban đầu" style="border-color: var(--color-danger); color: var(--color-danger);">
+        <span>🔄</span> Khôi phục số liệu
+      </button>
+      
+      <!-- Xuất PDF chuyên dụng (tải về file PDF) -->
+      <button class="btn btn-export-pdf" id="btn-export-pdf" title="Kết xuất báo cáo hành chính thành file PDF và tải về máy">
+        <span class="pdf-btn-icon">📄</span>
+        <span class="pdf-btn-text">Xuất PDF</span>
+        <span class="pdf-btn-badge">↓</span>
+      </button>
+      
+      <!-- In báo cáo trực tiếp -->
+      <button class="btn btn-primary btn-print" id="btn-print" title="Mở hộp thoại in trực tiếp">
+        <span>🖨️</span> In trực tiếp
+      </button>
+      
+      <!-- Chuyển theme Sáng/Tối -->
+      <button class="btn theme-toggle" id="theme-toggle" title="Thay đổi giao diện Sáng / Tối">
+        🌙 Chế độ Tối
+      </button>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <!-- Sidebar chọn đơn vị xã -->
+    <aside class="sidebar">
+      <h2 class="sidebar-title">Danh sách Địa bàn (7 Xã)</h2>
+      <nav class="communes-list" id="communes-list">
+        <!-- Javascript tự động điền danh sách xã vào đây -->
+      </nav>
+    </aside>
+
+    <!-- Nội dung hiển thị chính -->
+    <main class="main-content">
+      <!-- Tiêu đề vùng chọn xã đang active -->
+      <div class="content-header" style="flex-direction: column; align-items: flex-start; gap: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; width: 100%;">
+        <!-- Thanh nút bấm chọn nhanh xã / tất cả (Sinh động bởi JS) -->
+        <div class="quick-commune-filters" id="quick-commune-filters"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
+          <h2 class="active-commune-name" id="active-commune-name" style="font-size: 1.45rem;">Tổng hợp 7 Xã</h2>
+          
+          <!-- Bộ chọn nguồn thu (Tất cả / Thuế Tỉnh / Thuế Cơ Sở) -->
+          <div class="view-mode-container" style="display: flex; gap: 4px; background: var(--bg-secondary); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-color); width: fit-content;">
+            <button class="btn mode-btn active" data-mode="combined" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; transition: var(--transition);">📊 Tổng cộng Cả hai</button>
+            <button class="btn mode-btn" data-mode="province" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; transition: var(--transition);">🏛️ Thuế Tỉnh</button>
+            <button class="btn mode-btn" data-mode="base" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; transition: var(--transition);">🏢 Thuế Cơ Sở</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Khối KPIs tổng quan -->
+      <section class="kpi-grid">
+        <!-- 1. Dự toán chỉ tiêu năm -->
+        <div class="kpi-card" id="kpi-target">
+          <div class="kpi-card-header">
+            <span>Dự toán Năm</span>
+            <div class="kpi-card-icon">📋</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-target-value">0 (tr.đ)</div>
+          <div class="kpi-card-subtext">Chỉ tiêu Hội đồng nhân dân giao</div>
+        </div>
+
+        <!-- 2. Thực thu lũy kế -->
+        <div class="kpi-card" id="kpi-actual">
+          <div class="kpi-card-header">
+            <span>Lũy kế Thực thu</span>
+            <div class="kpi-card-icon">💰</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-actual-value">0 (tr.đ)</div>
+          <div class="kpi-card-subtext">Số tiền đã vào kho bạc nhà nước</div>
+        </div>
+
+        <!-- 3. Tiến độ thực hiện (%) -->
+        <div class="kpi-card" id="kpi-rate">
+          <div class="kpi-card-header">
+            <span>Tiến độ thực hiện</span>
+            <div class="kpi-card-icon">📈</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-rate-value">0%</div>
+          <div class="kpi-card-subtext" style="flex-direction: column; align-items: flex-start; gap: 4px; width: 100%;">
+            <div class="progress-bar-container" style="width: 100%; height: 6px; margin-right: 0;">
+              <div class="progress-bar-fill" id="kpi-rate-progress" style="width: 0%; background-color: var(--color-primary);"></div>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--text-muted)">Tỷ lệ phần trăm chỉ tiêu hoàn thành</span>
+          </div>
+        </div>
+
+        <!-- 4. Phát sinh trong kỳ -->
+        <div class="kpi-card" id="kpi-today">
+          <div class="kpi-card-header">
+            <span id="kpi-today-label">Thu trong kỳ cập nhật</span>
+            <div class="kpi-card-icon">⚡</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-today-value" style="color: var(--color-primary)">0 (tr.đ)</div>
+          <div class="kpi-card-subtext" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start;">
+            <span class="percentage-badge up" id="kpi-today-trend">0%</span>
+            <span id="kpi-today-period" style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Từ ngày lần trước đến ngày cập nhật</span>
+          </div>
+        </div>
+
+        <!-- 5. Cùng kỳ năm trước -->
+        <div class="kpi-card" id="kpi-last-year">
+          <div class="kpi-card-header">
+            <span>Cùng kỳ năm trước</span>
+            <div class="kpi-card-icon">⏳</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-last-year-value">0 (tr.đ)</div>
+          <div class="kpi-card-subtext">Số thu lũy kế cùng kỳ năm trước</div>
+        </div>
+
+        <!-- 6. So sánh cùng kỳ -->
+        <div class="kpi-card" id="kpi-comparison">
+          <div class="kpi-card-header">
+            <span>So sánh cùng kỳ</span>
+            <div class="kpi-card-icon">📊</div>
+          </div>
+          <div class="kpi-card-value" id="kpi-comparison-value" style="font-weight: 800;">0%</div>
+          <div class="kpi-card-subtext">
+            <span class="percentage-badge" id="kpi-growth">0%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bảng số liệu chi tiết theo sắc thuế tại các địa bàn xã -->
+      <section class="table-card" id="tax-category-breakdown-card" style="margin-bottom: 1.5rem;">
+        <div class="table-header-row">
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-primary); text-transform: uppercase;" id="tax-breakdown-title">Bảng số liệu chi tiết theo sắc thuế tại các địa bàn xã</h3>
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal;">Đơn vị: (tr.đ)</span>
+        </div>
+        
+        <div class="table-wrapper">
+          <table class="table-compact">
+            <thead>
+              <tr>
+                <th rowspan="2" class="text-left" style="vertical-align: middle;">Tên Địa bàn</th>
+                <th colspan="2" class="text-center">CTN ngoài quốc doanh</th>
+                <th colspan="2" class="text-center">Thu nhập cá nhân</th>
+                <th colspan="2" class="text-center">Lệ phí trước bạ</th>
+                <th colspan="2" class="text-center">Phí, lệ phí & khác</th>
+                <th colspan="2" class="text-center">Sử dụng đất</th>
+                <th colspan="2" class="text-center">Tổng cộng</th>
+              </tr>
+              <tr>
+                <th class="text-right">Dự toán</th>
+                <th class="text-right">Thực thu</th>
+                <th class="text-right">Dự toán</th>
+                <th class="text-right">Thực thu</th>
+                <th class="text-right">Dự toán</th>
+                <th class="text-right">Thực thu</th>
+                <th class="text-right">Dự toán</th>
+                <th class="text-right">Thực thu</th>
+                <th class="text-right">Dự toán</th>
+                <th class="text-right">Thực thu</th>
+                <th class="text-right" style="color: var(--color-primary);">Dự toán</th>
+                <th class="text-right" style="color: var(--color-success);">Thực thu</th>
+              </tr>
+            </thead>
+            <tbody id="tax-breakdown-body">
+              <!-- JS tự động điền -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Bảng số liệu tổng hợp/so sánh chi tiết của 7 xã -->
+      <section class="table-card">
+        <div class="table-header-row">
+          <h3 style="font-size: 1.1rem; font-weight: 700; text-transform: uppercase;" id="table-title">Bảng Tổng hợp Thu Ngân sách 7 Xã (theo thứ tự giảm dần)</h3>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button class="btn" id="btn-clear-table-filter" style="display: none; padding: 6px 12px; font-size: 0.8rem; border-color: var(--color-primary); color: var(--color-primary);"> Hủy lọc (Xem tất cả)</button>
+            <div class="search-input-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" class="search-input" id="search-input" placeholder="Tìm nhanh tên xã...">
+            </div>
+          </div>
+        </div>
+        
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th data-sort="name" class="sort-asc text-left">Tên Xã</th>
+                <th data-sort="target" class="text-right">Dự toán năm</th>
+                <th data-sort="ytd" class="text-right">Lũy kế thu</th>
+                <th data-sort="today" class="text-right">Thu trong kỳ</th>
+                <th data-sort="ytdRate" class="text-center">Tiến độ đạt</th>
+                <th data-sort="growth" class="text-center">So với Cùng kỳ</th>
+                <th data-sort="remaining" class="text-right">Còn phải thu</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <!-- Điền dữ liệu động bằng javascript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+
+  <!-- Panel cập nhật số liệu định kỳ (Centered Modal) -->
+  <div class="periodic-modal" id="periodic-panel">
+    <div class="simulation-header">
+      <h3 style="font-weight: 700; font-size: 1.15rem;">Cập nhật số liệu định kỳ</h3>
+      <button class="simulation-close" id="periodic-close">&times;</button>
+    </div>
+    
+    <div style="padding: 10px 0;">
+      <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 15px;">
+        Hệ thống chỉ chấp nhận cập nhật số liệu bằng cách tải tệp mẫu Excel, cập nhật thông tin thực thu rồi tải lên lại. Việc nhập liệu trực tiếp trên giao diện bị hạn chế để đảm bảo tính chuẩn xác.
+      </p>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Excel Section -->
+        <div style="border: 1px solid var(--border-color); padding: 16px; border-radius: var(--radius-md); background: var(--bg-primary);">
+          <h4 style="font-size: 0.88rem; margin-bottom: 8px; color: var(--color-success); font-weight: 700;">🟢 CẬP NHẬT BẰNG FILE EXCEL MẪU</h4>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">
+            Nhấp nút bên dưới để tải tệp mẫu Excel định kỳ (.xlsx) chứa cấu hình dự toán và các nguồn thu chi tiết của 7 xã, điền số liệu lũy kế YTD mới của bạn, sau đó tải lên lại.
+          </p>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn" id="btn-export-excel" style="flex: 1; padding: 10px; font-weight: 700; border-color: var(--color-success); color: var(--color-success)">📥 Tải Mẫu Excel</button>
+            <input type="file" id="file-import-excel" accept=".xlsx, .xls" style="display: none;">
+            <button class="btn btn-primary" id="btn-trigger-excel-import" style="flex: 1; padding: 10px; font-weight: 700; background: var(--color-success); border-color: var(--color-success)">📤 Tải lên Excel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==========================================================================
+       PRINT TEMPLATE: GIAO DIỆN IN ẤN (Chỉ hiển thị khi in ra giấy/xuất PDF)
+       ========================================================================== -->
+  <div id="print-report-container" class="print-only"></div>
+
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
