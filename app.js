@@ -452,10 +452,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function onCommuneSelected() {
     const active = getActiveEntity();
     
-    // Đổi định dạng hiển thị thành: Tên xã (cập nhật đến ngày DD/MM/YYYY)
+    // Đổi định dạng hiển thị chỉ còn Tên xã
     const rawDate = reportDatePickerEl.value; // YYYY-MM-DD
-    const formattedDate = rawDate.split('-').reverse().join('/'); // DD/MM/YYYY
-    const fullTitle = `${active.name} (cập nhật đến ngày ${formattedDate})`;
+    const formattedDate = rawDate.split('-').reverse().join('/'); // DD/MM/YYYY (vẫn giữ lại biến này phòng khi cần dùng ở đâu đó)
+    const fullTitle = active.name;
     
     activeCommuneTitleEl.textContent = fullTitle;
 
