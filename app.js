@@ -1357,7 +1357,7 @@ document.addEventListener("DOMContentLoaded", () => {
             PHỤ LỤC: BẢNG TỔNG HỢP THU NGÂN SÁCH NHÀ NƯỚC 7 ĐỊA BÀN XÃ
           </h4>
           <p style="font-size: 9pt; text-align: center; font-style: italic; color: #000; margin-bottom: 6px;">
-            (Chế độ xem: ${currentViewMode === 'combined' ? 'Tổng cộng cả hai nguồn' : currentViewMode === 'province' ? 'Thuế Tỉnh' : 'Thuế Cơ Sở'} - Tính đến ngày ${formattedDate})
+            (Chế độ xem: ${currentViewMode === 'combined' ? 'Tổng 2 CQT' : currentViewMode === 'province' ? 'Thuế Tỉnh' : 'Thuế Cơ Sở'} - Tính đến ngày ${formattedDate})
           </p>
           <p style="font-size: 9pt; font-weight: bold; font-style: italic; margin-bottom: 5px; text-align: right; color: #000;">
             Đơn vị tính: Triệu đồng
