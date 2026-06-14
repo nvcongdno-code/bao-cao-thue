@@ -894,6 +894,7 @@ tr:hover td {
     flex-direction: column;
     gap: 10px;
     align-items: flex-start;
+    position: relative;
   }
   
   .logo-and-date-frame {
@@ -904,9 +905,12 @@ tr:hover td {
   }
   
   .date-container {
-    position: static !important;
+    position: absolute !important;
+    top: 2.4rem !important; /* Thấp hơn dòng Thuế tỉnh Lâm Đồng (khoảng 1 dòng) */
+    right: 1rem !important;
     transform: none !important;
-    left: auto !important;
+    margin-left: 0 !important;
+    align-items: flex-end !important;
   }
   
   .controls-container {
