@@ -807,10 +807,10 @@ document.addEventListener("DOMContentLoaded", () => {
         trTotal.innerHTML = `
           <td style="text-align: center;">-</td>
           <td>TỔNG CỘNG</td>
+          <td style="text-align: center;">${aggRate.toFixed(1)}%</td>
           <td style="text-align: right;">${formatMoney(aggMetrics.target)}</td>
           <td style="text-align: right;">${formatMoney(aggMetrics.ytd)}</td>
           <td style="text-align: right;">${formatMoney(aggMetrics.today)}</td>
-          <td style="text-align: center;">${aggRate.toFixed(1)}%</td>
           <td style="text-align: center;">
             ${aggGrowth >= 0 ? '+' : ''}${aggGrowth.toFixed(1)}%
           </td>
