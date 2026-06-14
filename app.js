@@ -2045,4 +2045,41 @@ document.addEventListener("DOMContentLoaded", () => {
   onCommuneSelected();
   renderSidebar();
   renderQuickFilters();
+
+  // Điều chỉnh giao diện trên điện thoại
+  function adjustMobileLayout() {
+    const appContainer = document.querySelector('.app-container');
+    const sidebar = document.querySelector('.sidebar');
+    const quickFilters = document.getElementById('quick-commune-filters');
+    const modeSelectorContainer = document.querySelector('.view-mode-container');
+    const contentHeader = document.querySelector('.content-header');
+    const headerFlexRow = document.querySelector('.header-flex-row');
+
+    if (window.innerWidth <= 768) {
+      if (quickFilters && quickFilters.parentNode !== appContainer) {
+        appContainer.insertBefore(quickFilters, sidebar);
+        quickFilters.style.padding = "10px 1rem 0 1rem";
+      }
+      if (modeSelectorContainer && modeSelectorContainer.parentNode !== appContainer) {
+        appContainer.insertBefore(modeSelectorContainer, sidebar);
+        modeSelectorContainer.style.margin = "10px 1rem 15px 1rem";
+        modeSelectorContainer.style.width = "calc(100% - 2rem)";
+        modeSelectorContainer.style.justifyContent = "space-between";
+      }
+    } else {
+      if (quickFilters && contentHeader && quickFilters.parentNode !== contentHeader) {
+        contentHeader.insertBefore(quickFilters, contentHeader.firstChild);
+        quickFilters.style.padding = "";
+      }
+      if (modeSelectorContainer && headerFlexRow && modeSelectorContainer.parentNode !== headerFlexRow) {
+        headerFlexRow.appendChild(modeSelectorContainer);
+        modeSelectorContainer.style.margin = "";
+        modeSelectorContainer.style.width = "fit-content";
+        modeSelectorContainer.style.justifyContent = "";
+      }
+    }
+  }
+
+  adjustMobileLayout();
+  window.addEventListener('resize', adjustMobileLayout);
 });
