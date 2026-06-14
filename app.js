@@ -1,4 +1,4 @@
-﻿// -------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 // Logic điều khiển giao diện thu ngân sách - Thuế cơ sở 13
 // Sử dụng Chart.js để vẽ biểu đồ và quản lý tương tác dữ liệu
 // -------------------------------------------------------------------------
@@ -714,15 +714,15 @@ document.addEventListener("DOMContentLoaded", () => {
       
       tr.innerHTML = `
         <td class="text-left" style="font-weight: 700; cursor: pointer;">${c.name}</td>
-        <td class="text-right">${formatMoney(c.target)}</td>
-        <td class="text-right">${formatMoney(c.ytd)}</td>
-        <td class="text-right" style="font-weight: bold; color: var(--color-primary);">${formatMoney(c.today)}</td>
         <td class="text-center">
           <div class="progress-bar-container">
             <div class="progress-bar-fill" style="width: ${Math.min(c.ytdRate, 100)}%; background-color: ${c.ytdRate >= 85 ? 'var(--color-success)' : c.ytdRate >= 50 ? 'var(--color-warning)' : 'var(--color-danger)'};"></div>
           </div>
           <span style="font-weight: 700;">${c.ytdRate.toFixed(1)}%</span>
         </td>
+        <td class="text-right">${formatMoney(c.target)}</td>
+        <td class="text-right">${formatMoney(c.ytd)}</td>
+        <td class="text-right" style="font-weight: bold; color: var(--color-primary);">${formatMoney(c.today)}</td>
         <td class="text-center">
           <span class="percentage-badge ${c.growth >= 0 ? 'up' : 'down'}">
             ${c.growth >= 0 ? '▲ +' : '▼ '}${c.growth.toFixed(1)}%
@@ -784,10 +784,10 @@ document.addEventListener("DOMContentLoaded", () => {
         tr.innerHTML = `
           <td style="text-align: center;">${idx + 1}</td>
           <td style="font-weight: bold;">${c.name}</td>
+          <td style="text-align: center; font-weight: bold;">${c.ytdRate.toFixed(1)}%</td>
           <td style="text-align: right;">${formatMoney(c.target)}</td>
           <td style="text-align: right;">${formatMoney(c.ytd)}</td>
           <td style="text-align: right; font-weight: bold;">${formatMoney(c.today)}</td>
-          <td style="text-align: center; font-weight: bold;">${c.ytdRate.toFixed(1)}%</td>
           <td style="text-align: center; font-weight: bold;">
             ${c.growth >= 0 ? '+' : ''}${c.growth.toFixed(1)}%
           </td>
