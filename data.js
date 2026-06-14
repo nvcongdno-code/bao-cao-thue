@@ -20,7 +20,7 @@ const BUDGET_DATA = {
   communes: [
     {
       id: "dak_wil",
-      name: "\u0058\u00e3\u0020\u0110\u1ea5\u006b\u0020\u0057\u0069\u006c",
+      name: "Xã Đắk Wil",
       provinceTax: {
         target: 38129307556,
         today: 33000000,
