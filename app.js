@@ -489,7 +489,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 5. Vẽ Bảng số liệu chi tiết theo sắc thuế tại các địa bàn xã
   // -------------------------------------------------------------------------
   function renderTaxBreakdownTable() {
-    const query = searchInputEl.value.toLowerCase().trim();
+    const query = searchInputEl ? searchInputEl.value.toLowerCase().trim() : "";
     const breakdownBodyEl = document.getElementById("tax-breakdown-body");
     if (!breakdownBodyEl) return;
     
@@ -636,13 +636,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  searchInputEl.addEventListener("input", () => {
-    renderTable();
-    renderTaxBreakdownTable();
-  });
+  if (searchInputEl) {
+    searchInputEl.addEventListener("input", () => {
+      renderTable();
+      renderTaxBreakdownTable();
+    });
+  }
 
   function renderTable() {
-    const query = searchInputEl.value.toLowerCase().trim();
+    const query = searchInputEl ? searchInputEl.value.toLowerCase().trim() : "";
     
     // Chuẩn bị dữ liệu hiển thị (dùng hàm trung gian chuyển đổi nguồn thu)
     let list = currentData.communes.map(c => {
