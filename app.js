@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------
 // Logic điều khiển giao diện thu ngân sách - Thuế cơ sở 13
 // Sử dụng Chart.js để vẽ biểu đồ và quản lý tương tác dữ liệu
 // -------------------------------------------------------------------------
@@ -583,7 +583,7 @@ document.addEventListener("DOMContentLoaded", () => {
       trTotal.style.borderTop = "2px solid var(--border-color)";
       
       trTotal.innerHTML = `
-        <td class="text-left" style="color: var(--color-primary)">TỔNG CỘNG HỢP</td>
+        <td class="text-left" style="color: var(--color-primary)">TỔNG CỘNG</td>
         <td class="text-right" style="color: var(--color-primary);">${formatMoney(metrics.target)}</td>
         <td class="text-right" style="color: var(--color-success);">${formatMoney(metrics.ytd)}</td>
         <td class="text-right">${formatMoney(business.target)}</td>
@@ -754,7 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
       trTotal.style.borderTop = "2px solid var(--border-color)";
       
       trTotal.innerHTML = `
-        <td class="text-left" style="color: var(--color-primary)">TỔNG CỘNG HỢP</td>
+        <td class="text-left" style="color: var(--color-primary)">TỔNG CỘNG</td>
         <td class="text-right">${formatMoney(aggMetrics.target)}</td>
         <td class="text-right">${formatMoney(aggMetrics.ytd)}</td>
         <td class="text-right" style="color: var(--color-primary)">${formatMoney(aggMetrics.today)}</td>
@@ -806,7 +806,7 @@ document.addEventListener("DOMContentLoaded", () => {
         trTotal.style.fontWeight = "bold";
         trTotal.innerHTML = `
           <td style="text-align: center;">-</td>
-          <td>TỔNG CỘNG HỢP</td>
+          <td>TỔNG CỘNG</td>
           <td style="text-align: right;">${formatMoney(aggMetrics.target)}</td>
           <td style="text-align: right;">${formatMoney(aggMetrics.ytd)}</td>
           <td style="text-align: right;">${formatMoney(aggMetrics.today)}</td>
@@ -1335,7 +1335,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${baseGrowth >= 0 ? '+' : ''}${baseGrowth.toFixed(1)}%</td>
               </tr>
               <tr style="font-weight: bold; background: #f2f2f2;">
-                <td style="border: 1px solid #000 !important; padding: 6px; text-transform: uppercase; color: #000;">Tổng cộng hợp địa bàn</td>
+                <td style="border: 1px solid #000 !important; padding: 6px; text-transform: uppercase; color: #000;">TỔNG CỘNG địa bàn</td>
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: right; color: #000;">${formatMoneyNoSuffix(totalTarget)}</td>
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: right; color: #000;">${formatMoneyNoSuffix(totalYtd)}</td>
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${totalRate.toFixed(1)}%</td>
@@ -1412,7 +1412,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 rows += `
                   <tr style="background: #dce6f1; font-weight: bold;">
                     <td style="border: 1px solid #000; padding: 5px 4px; text-align: center; color: #000;">-</td>
-                    <td style="border: 1px solid #000; padding: 5px 6px; text-transform: uppercase; color: #000;">TỔNG CỘNG HỢP</td>
+                    <td style="border: 1px solid #000; padding: 5px 6px; text-transform: uppercase; color: #000;">TỔNG CỘNG</td>
                     <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(aggM.target)}</td>
                     <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(aggM.ytd)}</td>
                     <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(aggM.today)}</td>
