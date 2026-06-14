@@ -886,7 +886,7 @@ tr:hover td {
   }
   
   .controls-container {
-    flex-wrap: wrap;
+    /* Đã chuyển xuống dưới để gộp chung */
   }
   
   header {
@@ -916,7 +916,20 @@ tr:hover td {
   .controls-container {
     width: 100%;
     justify-content: space-between;
-    margin-top: 2rem !important; /* Đẩy dàn nút xuống 2 dòng để tạo khoảng trống đẹp */
+    margin-top: 2rem !important;
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
+  }
+  
+  .controls-container .btn {
+    padding: 0.4rem 0.3rem !important;
+    font-size: 0.75rem !important;
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .controls-container .btn span {
+    font-size: 0.75rem !important;
   }
   
   /* Ẩn các nút theo yêu cầu trên mobile */
