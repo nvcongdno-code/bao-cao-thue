@@ -11,6 +11,14 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedState) {
     try {
       currentData = JSON.parse(savedState);
+      // Sửa lỗi chính tả từ localStorage nếu có
+      if (currentData && currentData.communes) {
+        currentData.communes.forEach(c => {
+          if (c.id === "dak_wil" && c.name && c.name.includes("Đấk")) {
+            c.name = "Xã Đắk Wil";
+          }
+        });
+      }
       // Nếu ngày báo cáo trong file data.js khác với ngày trong localStorage,
       // nghĩa là có cập nhật dữ liệu mới từ Excel, ta sẽ ghi đè lại localStorage.
       if (window.BUDGET_DATA && window.BUDGET_DATA.metadata && currentData.metadata && 
