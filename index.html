@@ -6,8 +6,13 @@
   <title>Báo cáo Thu ngân sách hàng ngày - Cục Thuế Lâm Đồng</title>
   <meta name="description" content="Hệ thống báo cáo và theo dõi số liệu thu ngân sách hàng ngày tại 7 xã trực thuộc Thuế cơ sở 13 - Cục Thuế tỉnh Lâm Đồng. Tối ưu cho họp lãnh đạo.">
   
+  <!-- Anti-caching headers for mobile -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=1.2">
+  <link rel="stylesheet" href="style_v1_6.css">
   
   <!-- Bảng số liệu chi tiết theo sắc thuế -->
   
@@ -184,7 +189,7 @@
       <section class="table-card" id="tax-category-breakdown-card" style="margin-bottom: 1.5rem;">
         <div class="table-header-row">
           <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-primary); text-transform: uppercase;" id="tax-breakdown-title">Bảng số liệu chi tiết theo sắc thuế tại các địa bàn xã</h3>
-          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal;">Đơn vị: (tr.đ)</span>
+          <span style="font-size: 0.85rem; color: #dc2626; font-weight: bold;">Đơn vị: (tr.đ)</span>
         </div>
         
         <div class="table-wrapper">
@@ -227,7 +232,7 @@
           <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-primary); text-transform: uppercase;" id="table-title">Bảng Tổng hợp Thu Ngân sách 7 Xã (giảm dần theo tiến độ đạt)</h3>
           <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-left: auto;">
             <button class="btn" id="btn-clear-table-filter" style="display: none; padding: 6px 12px; font-size: 0.8rem; border-color: var(--color-primary); color: var(--color-primary);"> Hủy lọc (Xem tất cả)</button>
-            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: bold; font-style: italic;">Đơn vị: (tr.đ)</span>
+            <span style="font-size: 0.85rem; color: #dc2626; font-weight: bold; font-style: italic;">Đơn vị: (tr.đ)</span>
           </div>
         </div>
         
@@ -308,8 +313,8 @@
 
 
   <!-- Scripts -->
-  <script src="data.js?v=1.2"></script>
-  <script src="app.js?v=1.2"></script>
+  <script src="data.js?v=1.5"></script>
+  <script src="app_v1_6.js"></script>
 
 </body>
 </html>

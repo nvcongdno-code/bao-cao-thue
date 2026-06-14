@@ -279,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // 3. Tỷ lệ đạt (%)
     const rate = active.target > 0 ? (active.ytd / active.target) * 100 : 0;
-    kpiRateValEl.textContent = rate.toFixed(1) + "%";
+    kpiRateValEl.textContent = formatPercent(rate);
     kpiRateProgressEl.style.width = Math.min(rate, 100) + "%";
     
     // Đổi màu thanh tiến độ dựa trên kết quả đạt được
@@ -321,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (active.today > 0) {
       kpiTodayTrendEl.className = "percentage-badge up";
-      kpiTodayTrendEl.textContent = `Đóng góp +${targetPercent.toFixed(2)}% chỉ tiêu`;
+      kpiTodayTrendEl.textContent = `Đóng góp +${formatPercent(targetPercent, 2)} chỉ tiêu`;
     } else {
       kpiTodayTrendEl.className = "percentage-badge down";
       kpiTodayTrendEl.textContent = "Không phát sinh tăng";
@@ -345,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 6. So sánh cùng kỳ
     const growth = active.lastYearYtd > 0 ? ((active.ytd - active.lastYearYtd) / active.lastYearYtd) * 100 : 0;
     if (kpiComparisonValEl) {
-      kpiComparisonValEl.textContent = (growth >= 0 ? "+" : "") + growth.toFixed(1) + "%";
+      kpiComparisonValEl.textContent = (growth >= 0 ? "+" : "") + formatPercent(growth);
       
       const comparisonCard = kpiComparisonValEl.closest(".kpi-card");
       if (comparisonCard) {
@@ -362,10 +362,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (growth >= 0) {
       kpiGrowthEl.className = "percentage-badge up";
-      kpiGrowthEl.innerHTML = `▲ +${growth.toFixed(1)}% so với cùng kỳ`;
+      kpiGrowthEl.innerHTML = `▲ +${formatPercent(growth)} so với cùng kỳ`;
     } else {
       kpiGrowthEl.className = "percentage-badge down";
-      kpiGrowthEl.innerHTML = `▼ ${growth.toFixed(1)}% so với cùng kỳ`;
+      kpiGrowthEl.innerHTML = `▼ ${formatPercent(growth)} so với cùng kỳ`;
     }
   }
 
@@ -387,7 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
     totalBtn.className = `commune-item ${selectedCommuneId === "tong_hop" ? "active" : ""}`;
     totalBtn.innerHTML = `
       <span>Tổng hợp 7 Xã</span>
-      <span class="badge ${getRateBadgeClass(aggRate)}">${aggRate.toFixed(1)}%</span>
+      <span class="badge ${getRateBadgeClass(aggRate)}">${formatPercent(aggRate)}</span>
     `;
     totalBtn.addEventListener("click", () => {
       selectedCommuneId = "tong_hop";
@@ -404,7 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.className = `commune-item ${selectedCommuneId === c.id ? "active" : ""}`;
       btn.innerHTML = `
         <span>${index + 1}. ${c.name}</span>
-        <span class="badge ${getRateBadgeClass(rate)}">${rate.toFixed(1)}%</span>
+        <span class="badge ${getRateBadgeClass(rate)}">${formatPercent(rate)}</span>
       `;
       btn.addEventListener("click", () => {
         selectedCommuneId = c.id;
@@ -581,21 +581,23 @@ document.addEventListener("DOMContentLoaded", () => {
       trTotal.style.fontWeight = "bold";
       trTotal.style.background = "var(--bg-primary)";
       trTotal.style.borderTop = "2px solid var(--border-color)";
+      trTotal.style.color = "#dc2626";
+      trTotal.style.fontSize = "1.15em";
       
       trTotal.innerHTML = `
-        <td class="text-left" style="color: var(--color-primary)">TỔNG CỘNG</td>
-        <td class="text-right" style="color: var(--color-primary);">${formatMoney(metrics.target)}</td>
-        <td class="text-right" style="color: var(--color-success);">${formatMoney(metrics.ytd)}</td>
-        <td class="text-right">${formatMoney(business.target)}</td>
-        <td class="text-right">${formatMoney(business.ytd)}</td>
-        <td class="text-right">${formatMoney(pit.target)}</td>
-        <td class="text-right">${formatMoney(pit.ytd)}</td>
-        <td class="text-right">${formatMoney(registration.target)}</td>
-        <td class="text-right">${formatMoney(registration.ytd)}</td>
-        <td class="text-right">${formatMoney(others.target)}</td>
-        <td class="text-right">${formatMoney(others.ytd)}</td>
-        <td class="text-right">${formatMoney(land.target)}</td>
-        <td class="text-right">${formatMoney(land.ytd)}</td>
+        <td class="text-left" style="color: #dc2626 !important;">TỔNG CỘNG</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(metrics.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(metrics.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(business.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(business.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(pit.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(pit.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(registration.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(registration.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(others.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(others.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(land.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(land.ytd)}</td>
       `;
       breakdownBodyEl.appendChild(trTotal);
     }
@@ -718,14 +720,14 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="progress-bar-container">
             <div class="progress-bar-fill" style="width: ${Math.min(c.ytdRate, 100)}%; background-color: ${c.ytdRate >= 85 ? 'var(--color-success)' : c.ytdRate >= 50 ? 'var(--color-warning)' : 'var(--color-danger)'};"></div>
           </div>
-          <span style="font-weight: 700;">${c.ytdRate.toFixed(1)}%</span>
+          <span style="font-weight: 700;">${formatPercent(c.ytdRate)}</span>
         </td>
         <td class="text-right">${formatMoney(c.target)}</td>
         <td class="text-right">${formatMoney(c.ytd)}</td>
         <td class="text-right" style="font-weight: bold; color: var(--color-primary);">${formatMoney(c.today)}</td>
         <td class="text-center">
           <span class="percentage-badge ${c.growth >= 0 ? 'up' : 'down'}">
-            ${c.growth >= 0 ? '▲ +' : '▼ '}${c.growth.toFixed(1)}%
+            ${c.growth >= 0 ? '▲ +' : '▼ '}${formatPercent(c.growth)}
           </span>
         </td>
         <td class="text-right" style="color: var(--text-muted);">${formatMoney(c.remaining)}</td>
@@ -752,24 +754,26 @@ document.addEventListener("DOMContentLoaded", () => {
       trTotal.style.fontWeight = "bold";
       trTotal.style.background = "var(--bg-primary)";
       trTotal.style.borderTop = "2px solid var(--border-color)";
+      trTotal.style.color = "#dc2626";
+      trTotal.style.fontSize = "1.15em";
       
       trTotal.innerHTML = `
-        <td class="text-left" style="color: var(--color-primary)">TỔNG CỘNG</td>
-        <td class="text-center">
+        <td class="text-left" style="color: #dc2626 !important;">TỔNG CỘNG</td>
+        <td class="text-center" style="color: #dc2626 !important;">
           <div class="progress-bar-container">
-            <div class="progress-bar-fill" style="width: ${Math.min(aggRate, 100)}%; background-color: ${aggRate >= 85 ? 'var(--color-success)' : aggRate >= 50 ? 'var(--color-warning)' : 'var(--color-danger)'};"></div>
+            <div class="progress-bar-fill" style="width: ${Math.min(aggRate, 100)}%; background-color: #dc2626;"></div>
           </div>
-          <span>${aggRate.toFixed(1)}%</span>
+          <span style="font-weight: 700; color: #dc2626 !important;">${formatPercent(aggRate)}</span>
         </td>
-        <td class="text-right">${formatMoney(aggMetrics.target)}</td>
-        <td class="text-right">${formatMoney(aggMetrics.ytd)}</td>
-        <td class="text-right" style="color: var(--color-primary)">${formatMoney(aggMetrics.today)}</td>
-        <td class="text-center">
-          <span class="percentage-badge ${aggGrowth >= 0 ? 'up' : 'down'}">
-            ${aggGrowth >= 0 ? '▲ +' : '▼ '}${aggGrowth.toFixed(1)}%
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(aggMetrics.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(aggMetrics.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(aggMetrics.today)}</td>
+        <td class="text-center" style="color: #dc2626 !important;">
+          <span class="percentage-badge" style="background: rgba(220, 38, 38, 0.15); color: #dc2626 !important; font-weight: bold;">
+            ${aggGrowth >= 0 ? '▲ +' : '▼ '}${formatPercent(aggGrowth)}
           </span>
         </td>
-        <td class="text-right">${formatMoney(aggRemaining)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(aggRemaining)}</td>
       `;
       tableBodyEl.appendChild(trTotal);
     }
@@ -784,12 +788,12 @@ document.addEventListener("DOMContentLoaded", () => {
         tr.innerHTML = `
           <td style="text-align: center;">${idx + 1}</td>
           <td style="font-weight: bold;">${c.name}</td>
-          <td style="text-align: center; font-weight: bold;">${c.ytdRate.toFixed(1)}%</td>
+          <td style="text-align: center; font-weight: bold;">${formatPercent(c.ytdRate)}</td>
           <td style="text-align: right;">${formatMoney(c.target)}</td>
           <td style="text-align: right;">${formatMoney(c.ytd)}</td>
           <td style="text-align: right; font-weight: bold;">${formatMoney(c.today)}</td>
           <td style="text-align: center; font-weight: bold;">
-            ${c.growth >= 0 ? '+' : ''}${c.growth.toFixed(1)}%
+            ${c.growth >= 0 ? '+' : ''}${formatPercent(c.growth)}
           </td>
           <td style="text-align: right;">${formatMoney(c.remaining)}</td>
         `;
@@ -804,17 +808,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const aggRemaining = Math.max(0, aggMetrics.target - aggMetrics.ytd);
         const trTotal = document.createElement("tr");
         trTotal.style.fontWeight = "bold";
+        trTotal.style.color = "#dc2626";
         trTotal.innerHTML = `
-          <td style="text-align: center;">-</td>
-          <td>TỔNG CỘNG</td>
-          <td style="text-align: center;">${aggRate.toFixed(1)}%</td>
-          <td style="text-align: right;">${formatMoney(aggMetrics.target)}</td>
-          <td style="text-align: right;">${formatMoney(aggMetrics.ytd)}</td>
-          <td style="text-align: right;">${formatMoney(aggMetrics.today)}</td>
-          <td style="text-align: center;">
-            ${aggGrowth >= 0 ? '+' : ''}${aggGrowth.toFixed(1)}%
+          <td style="text-align: center; color: #dc2626 !important;">-</td>
+          <td style="color: #dc2626 !important;">TỔNG CỘNG</td>
+          <td style="text-align: center; color: #dc2626 !important;">${formatPercent(aggRate)}</td>
+          <td style="text-align: right; color: #dc2626 !important;">${formatMoney(aggMetrics.target)}</td>
+          <td style="text-align: right; color: #dc2626 !important;">${formatMoney(aggMetrics.ytd)}</td>
+          <td style="text-align: right; color: #dc2626 !important;">${formatMoney(aggMetrics.today)}</td>
+          <td style="text-align: center; color: #dc2626 !important;">
+            ${aggGrowth >= 0 ? '+' : ''}${formatPercent(aggGrowth)}
           </td>
-          <td style="text-align: right;">${formatMoney(aggRemaining)}</td>
+          <td style="text-align: right; color: #dc2626 !important;">${formatMoney(aggRemaining)}</td>
         `;
         printTableBody.appendChild(trTotal);
       }
@@ -1069,6 +1074,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return new Intl.NumberFormat('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(millionVal);
   }
 
+  function formatPercent(value, decimals = 1) {
+    if (value === undefined || value === null || isNaN(value)) return "0%";
+    return formatPercentNum(value, decimals) + "%";
+  }
+
+  function formatPercentNum(value, decimals = 1) {
+    if (value === undefined || value === null || isNaN(value)) return "0";
+    return value.toFixed(decimals).replace(".", ",");
+  }
+
   // Hàm tạo báo cáo in ấn chính thức hành chính nhà nước (dạng chữ kèm bảng)
   function generatePrintReport() {
     const reportContainer = document.getElementById("print-report-container");
@@ -1145,7 +1160,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const cGrowth = cMetrics.lastYearYtd > 0 ? ((cMetrics.ytd - cMetrics.lastYearYtd) / cMetrics.lastYearYtd) * 100 : 0;
         communeAnalysisHTML += `
           <li style="margin-bottom: 5px;">
-            <strong>${idx + 1}. ${c.name}</strong>: Chỉ tiêu dự toán được giao cả năm là ${formatMoneyNoSuffix(cMetrics.target)} triệu đồng; lũy kế thực thu đạt ${formatMoneyNoSuffix(cMetrics.ytd)} triệu đồng, đạt tỷ lệ tiến độ <strong>${cRate.toFixed(1)}%</strong>. So với thực thu cùng kỳ năm trước, tốc độ tăng trưởng đạt <strong>${cGrowth >= 0 ? '+' : ''}${cGrowth.toFixed(1)}%</strong>.
+            <strong>${idx + 1}. ${c.name}</strong>: Chỉ tiêu dự toán được giao cả năm là ${formatMoneyNoSuffix(cMetrics.target)} triệu đồng; lũy kế thực thu đạt ${formatMoneyNoSuffix(cMetrics.ytd)} triệu đồng, đạt tỷ lệ tiến độ <strong>${formatPercent(cRate)}</strong>. So với thực thu cùng kỳ năm trước, tốc độ tăng trưởng đạt <strong>${cGrowth >= 0 ? '+' : ''}${formatPercent(cGrowth)}</strong>.
           </li>
         `;
       });
@@ -1158,7 +1173,7 @@ document.addEventListener("DOMContentLoaded", () => {
       communeAnalysisHTML += `
         </ul>
         <p style="text-indent: 1.27cm; text-align: justify; margin-bottom: 15px; color: #000; line-height: 1.5;">
-          Địa bàn có tiến độ thực hiện đạt tỷ lệ cao nhất toàn khu vực là <strong>${sortedCommunes[0].name}</strong> (hoàn thành đạt tỷ lệ ${sortedCommunes[0].rate.toFixed(1)}% dự toán năm). Đơn vị có tiến độ thu chậm nhất là <strong>${sortedCommunes[sortedCommunes.length - 1].name}</strong> (mới chỉ đạt ${sortedCommunes[sortedCommunes.length - 1].rate.toFixed(1)}% dự toán năm), cần tập trung đôn đốc chỉ đạo sát sao trong thời gian tới.
+          Địa bàn có tiến độ thực hiện đạt tỷ lệ cao nhất toàn khu vực là <strong>${sortedCommunes[0].name}</strong> (hoàn thành đạt tỷ lệ ${formatPercent(sortedCommunes[0].rate)} dự toán năm). Đơn vị có tiến độ thu chậm nhất là <strong>${sortedCommunes[sortedCommunes.length - 1].name}</strong> (mới chỉ đạt ${formatPercent(sortedCommunes[sortedCommunes.length - 1].rate)} dự toán năm), cần tập trung đôn đốc chỉ đạo sát sao trong thời gian tới.
         </p>
       `;
     } else {
@@ -1167,7 +1182,7 @@ document.addEventListener("DOMContentLoaded", () => {
           II. Phân tích chi tiết tình hình thu ngân sách trên địa bàn ${active.name}
         </h4>
         <p style="text-indent: 1.27cm; text-align: justify; margin-bottom: 15px; color: #000; line-height: 1.5;">
-          Địa bàn <strong>${active.name}</strong> được giao chỉ tiêu dự toán thu ngân sách cả năm là ${formatMoneyNoSuffix(active.target)} triệu đồng. Đến nay, đơn vị đã thực hiện thu nộp ngân sách lũy kế đạt ${formatMoneyNoSuffix(active.ytd)} triệu đồng, hoàn thành đạt tỷ lệ tiến độ <strong>${totalRate.toFixed(1)}%</strong> dự toán năm. So với cùng kỳ năm ngoái, mức độ thu đạt tỷ lệ tăng trưởng <strong>${totalGrowth >= 0 ? '+' : ''}${totalGrowth.toFixed(1)}%</strong>.
+          Địa bàn <strong>${active.name}</strong> được giao chỉ tiêu dự toán thu ngân sách cả năm là ${formatMoneyNoSuffix(active.target)} triệu đồng. Đến nay, đơn vị đã thực hiện thu nộp ngân sách lũy kế đạt ${formatMoneyNoSuffix(active.ytd)} triệu đồng, hoàn thành đạt tỷ lệ tiến độ <strong>${formatPercent(totalRate)}</strong> dự toán năm. So với cùng kỳ năm ngoái, mức độ thu đạt tỷ lệ tăng trưởng <strong>${totalGrowth >= 0 ? '+' : ''}${formatPercent(totalGrowth)}</strong>.
         </p>
       `;
     }
@@ -1238,7 +1253,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       taxCategoriesAnalysisHTML += `
         <li style="margin-bottom: 5px;">
-          <strong>${idx + 1}. ${cat.name}</strong>: Dự toán cả năm là ${formatMoneyNoSuffix(catTarget)} triệu đồng; lũy kế thực thu đến nay đạt ${formatMoneyNoSuffix(catYtd)} triệu đồng, hoàn thành <strong>${catRate.toFixed(1)}%</strong> chỉ tiêu. So với cùng kỳ năm ngoái, sắc thuế này đạt tốc độ tăng trưởng là <strong>${catGrowth >= 0 ? '+' : ''}${catGrowth.toFixed(1)}%</strong>.
+          <strong>${idx + 1}. ${cat.name}</strong>: Dự toán cả năm là ${formatMoneyNoSuffix(catTarget)} triệu đồng; lũy kế thực thu đến nay đạt ${formatMoneyNoSuffix(catYtd)} triệu đồng, hoàn thành <strong>${formatPercent(catRate)}</strong> chỉ tiêu. So với cùng kỳ năm ngoái, sắc thuế này đạt tốc độ tăng trưởng là <strong>${catGrowth >= 0 ? '+' : ''}${formatPercent(catGrowth)}</strong>.
         </li>
       `;
     });
@@ -1301,7 +1316,7 @@ document.addEventListener("DOMContentLoaded", () => {
           I. Đánh giá chung tình hình thực hiện dự toán
         </h4>
         <p style="text-indent: 1.27cm; text-align: justify; margin-bottom: 15px; line-height: 1.5; color: #000;">
-          Tổng số thu ngân sách nhà nước lũy kế thực hiện trên địa bàn đạt <strong>${formatMoneyNoSuffix(totalYtd)}</strong> triệu đồng, hoàn thành đạt tỷ lệ <strong>${totalRate.toFixed(1)}%</strong> so với chỉ tiêu dự toán được giao (${formatMoneyNoSuffix(totalTarget)} triệu đồng). So với số liệu thực thu cùng kỳ năm ngoái (lũy kế đạt ${formatMoneyNoSuffix(totalLastYearYtd)} triệu đồng), tiến độ thu ngân sách ghi nhận mức tăng trưởng đạt <strong>${totalGrowth >= 0 ? '+' : ''}${totalGrowth.toFixed(1)}%</strong>. Số phát sinh trong kỳ cập nhật báo cáo đạt ${formatMoneyNoSuffix(active.today)} triệu đồng.
+          Tổng số thu ngân sách nhà nước lũy kế thực hiện trên địa bàn đạt <strong>${formatMoneyNoSuffix(totalYtd)}</strong> triệu đồng, hoàn thành đạt tỷ lệ <strong>${formatPercent(totalRate)}</strong> so với chỉ tiêu dự toán được giao (${formatMoneyNoSuffix(totalTarget)} triệu đồng). So với số liệu thực thu cùng kỳ năm ngoái (lũy kế đạt ${formatMoneyNoSuffix(totalLastYearYtd)} triệu đồng), tiến độ thu ngân sách ghi nhận mức tăng trưởng đạt <strong>${totalGrowth >= 0 ? '+' : ''}${formatPercent(totalGrowth)}</strong>. Số phát sinh trong kỳ cập nhật báo cáo đạt ${formatMoneyNoSuffix(active.today)} triệu đồng.
         </p>
 
         <!-- Bảng kẻ chỉ liền phân chia thuế tỉnh và thuế cơ sở (không dùng màu sắc) -->
@@ -1324,22 +1339,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td style="border: 1px solid #000 !important; padding: 6px; font-weight: bold; color: #000;">1. Thuế Tỉnh (Phòng quản lý doanh nghiệp)</td>
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: right; color: #000;">${formatMoneyNoSuffix(provTarget)}</td>
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: right; color: #000;">${formatMoneyNoSuffix(provYtd)}</td>
-                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; font-weight: bold; color: #000;">${provRate.toFixed(1)}%</td>
-                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${provGrowth >= 0 ? '+' : ''}${provGrowth.toFixed(1)}%</td>
+                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; font-weight: bold; color: #000;">${formatPercent(provRate)}</td>
+                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${provGrowth >= 0 ? '+' : ''}${formatPercent(provGrowth)}</td>
               </tr>
               <tr>
                 <td style="border: 1px solid #000 !important; padding: 6px; font-weight: bold; color: #000;">2. Thuế Cơ Sở (Chi cục trực tiếp quản lý)</td>
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: right; color: #000;">${formatMoneyNoSuffix(baseTarget)}</td>
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: right; color: #000;">${formatMoneyNoSuffix(baseYtd)}</td>
-                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; font-weight: bold; color: #000;">${baseRate.toFixed(1)}%</td>
-                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${baseGrowth >= 0 ? '+' : ''}${baseGrowth.toFixed(1)}%</td>
+                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; font-weight: bold; color: #000;">${formatPercent(baseRate)}</td>
+                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${baseGrowth >= 0 ? '+' : ''}${formatPercent(baseGrowth)}</td>
               </tr>
               <tr style="font-weight: bold; background: #f2f2f2;">
                 <td style="border: 1px solid #000 !important; padding: 6px; text-transform: uppercase; color: #000;">TỔNG CỘNG địa bàn</td>
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: right; color: #000;">${formatMoneyNoSuffix(totalTarget)}</td>
                 <td style="border: 1px solid #000 !important; padding: 6px; text-align: right; color: #000;">${formatMoneyNoSuffix(totalYtd)}</td>
-                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${totalRate.toFixed(1)}%</td>
-                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${totalGrowth >= 0 ? '+' : ''}${totalGrowth.toFixed(1)}%</td>
+                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${formatPercent(totalRate)}</td>
+                <td style="border: 1px solid #000 !important; padding: 6px; text-align: center; color: #000;">${totalGrowth >= 0 ? '+' : ''}${formatPercent(totalGrowth)}</td>
               </tr>
             </tbody>
           </table>
@@ -1395,8 +1410,8 @@ document.addEventListener("DOMContentLoaded", () => {
                       <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(c.target)}</td>
                       <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; font-weight: bold; color: #000;">${formatMoneyNoSuffix(c.ytd)}</td>
                       <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(c.today)}</td>
-                      <td style="border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; color: #000;">${c.rate.toFixed(1)}%</td>
-                      <td style="border: 1px solid #000; padding: 5px 4px; text-align: center; color: #000;">${c.growth >= 0 ? '+' : ''}${c.growth.toFixed(1)}%</td>
+                      <td style="border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; color: #000;">${formatPercent(c.rate)}</td>
+                      <td style="border: 1px solid #000; padding: 5px 4px; text-align: center; color: #000;">${c.growth >= 0 ? '+' : ''}${formatPercent(c.growth)}</td>
                       <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(c.remaining)}</td>
                     </tr>
                   `;
@@ -1416,8 +1431,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(aggM.target)}</td>
                     <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(aggM.ytd)}</td>
                     <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(aggM.today)}</td>
-                    <td style="border: 1px solid #000; padding: 5px 4px; text-align: center; color: #000;">${aggRate.toFixed(1)}%</td>
-                    <td style="border: 1px solid #000; padding: 5px 4px; text-align: center; color: #000;">${aggGrowth >= 0 ? '+' : ''}${aggGrowth.toFixed(1)}%</td>
+                    <td style="border: 1px solid #000; padding: 5px 4px; text-align: center; color: #000;">${formatPercent(aggRate)}</td>
+                    <td style="border: 1px solid #000; padding: 5px 4px; text-align: center; color: #000;">${aggGrowth >= 0 ? '+' : ''}${formatPercent(aggGrowth)}</td>
                     <td style="border: 1px solid #000; padding: 5px 4px; text-align: right; color: #000;">${formatMoneyNoSuffix(aggRemaining)}</td>
                   </tr>
                 `;
@@ -2049,45 +2064,40 @@ document.addEventListener("DOMContentLoaded", () => {
   // Điều chỉnh giao diện trên điện thoại
   function adjustMobileLayout() {
     const appContainer = document.querySelector('.app-container');
-    const sidebar = document.querySelector('.sidebar');
     const quickFilters = document.getElementById('quick-commune-filters');
     const modeSelectorContainer = document.querySelector('.view-mode-container');
     const contentHeader = document.querySelector('.content-header');
     const headerFlexRow = document.querySelector('.header-flex-row');
-
     const header = document.querySelector('header');
 
     if (window.innerWidth <= 768) {
-      // Đảm bảo header là sticky
-      header.style.position = "sticky";
-      header.style.top = "0";
-      header.style.zIndex = "1000";
-
       if (quickFilters && quickFilters.parentNode !== header) {
         header.appendChild(quickFilters);
-        quickFilters.style.padding = "10px 0 0 0";
-        quickFilters.style.width = "100%";
       }
       if (modeSelectorContainer && modeSelectorContainer.parentNode !== header) {
         header.appendChild(modeSelectorContainer);
-        modeSelectorContainer.style.margin = "10px 0 0 0";
-        modeSelectorContainer.style.width = "100%";
-        modeSelectorContainer.style.justifyContent = "space-between";
       }
+      
+      const updateHeaderHeight = () => {
+        if (header) {
+          const height = header.offsetHeight;
+          document.documentElement.style.setProperty('--mobile-header-height', height + 'px');
+        }
+      };
+      
+      updateHeaderHeight();
+      requestAnimationFrame(updateHeaderHeight);
+      setTimeout(updateHeaderHeight, 50);
+      setTimeout(updateHeaderHeight, 150);
+      setTimeout(updateHeaderHeight, 350);
     } else {
-      header.style.position = "";
-      header.style.top = "";
-      header.style.zIndex = "";
+      document.documentElement.style.removeProperty('--mobile-header-height');
 
       if (quickFilters && contentHeader && quickFilters.parentNode !== contentHeader) {
         contentHeader.insertBefore(quickFilters, contentHeader.firstChild);
-        quickFilters.style.padding = "";
       }
       if (modeSelectorContainer && headerFlexRow && modeSelectorContainer.parentNode !== headerFlexRow) {
         headerFlexRow.appendChild(modeSelectorContainer);
-        modeSelectorContainer.style.margin = "";
-        modeSelectorContainer.style.width = "fit-content";
-        modeSelectorContainer.style.justifyContent = "";
       }
     }
   }
