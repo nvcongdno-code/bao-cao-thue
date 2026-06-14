@@ -272,10 +272,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const active = getActiveEntity();
     
     // 1. Chỉ tiêu dự toán
-    kpiTargetValEl.textContent = formatMoney(active.target);
+    kpiTargetValEl.textContent = formatMoney(active.target) + " (tr.đ)";
     
     // 2. Thực thu đến ngày
-    kpiActualValEl.textContent = formatMoney(active.ytd);
+    kpiActualValEl.textContent = formatMoney(active.ytd) + " (tr.đ)";
     
     // 3. Tỷ lệ đạt (%)
     const rate = active.target > 0 ? (active.ytd / active.target) * 100 : 0;
@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 4. Số thu trong kỳ cập nhật
-    kpiTodayValEl.textContent = formatMoney(active.today);
+    kpiTodayValEl.textContent = formatMoney(active.today) + " (tr.đ)";
     
     const targetPercent = active.target > 0 ? (active.today / active.target) * 100 : 0;
     
@@ -340,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 5. Cùng kỳ năm trước
-    kpiLastYearValEl.textContent = formatMoney(active.lastYearYtd);
+    kpiLastYearValEl.textContent = formatMoney(active.lastYearYtd) + " (tr.đ)";
     
     // 6. So sánh cùng kỳ
     const growth = active.lastYearYtd > 0 ? ((active.ytd - active.lastYearYtd) / active.lastYearYtd) * 100 : 0;
@@ -1059,7 +1059,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Helper formatting functions
   function formatMoney(amount) {
     const millionVal = Math.round(amount / 1000000);
-    return new Intl.NumberFormat('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(millionVal) + " (tr.đ)";
+    return new Intl.NumberFormat('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(millionVal);
   }
 
   function formatMoneyNoSuffix(amount) {
