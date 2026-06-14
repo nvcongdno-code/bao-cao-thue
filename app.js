@@ -272,10 +272,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const active = getActiveEntity();
     
     // 1. Chỉ tiêu dự toán
-    kpiTargetValEl.textContent = formatMoney(active.target) + " (tr.đ)";
+    kpiTargetValEl.textContent = formatMoney(active.target);
     
     // 2. Thực thu đến ngày
-    kpiActualValEl.textContent = formatMoney(active.ytd) + " (tr.đ)";
+    kpiActualValEl.textContent = formatMoney(active.ytd);
     
     // 3. Tỷ lệ đạt (%)
     const rate = active.target > 0 ? (active.ytd / active.target) * 100 : 0;
@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 4. Số thu trong kỳ cập nhật
-    kpiTodayValEl.textContent = formatMoney(active.today) + " (tr.đ)";
+    kpiTodayValEl.textContent = formatMoney(active.today);
     
     const targetPercent = active.target > 0 ? (active.today / active.target) * 100 : 0;
     
@@ -340,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 5. Cùng kỳ năm trước
-    kpiLastYearValEl.textContent = formatMoney(active.lastYearYtd) + " (tr.đ)";
+    kpiLastYearValEl.textContent = formatMoney(active.lastYearYtd);
     
     // 6. So sánh cùng kỳ
     const growth = active.lastYearYtd > 0 ? ((active.ytd - active.lastYearYtd) / active.lastYearYtd) * 100 : 0;
