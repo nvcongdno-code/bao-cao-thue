@@ -152,7 +152,9 @@ header {
 .controls-container {
   display: flex;
   align-items: center;
-  gap: 15px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .btn {
@@ -922,14 +924,16 @@ tr:hover td {
   }
   
   .controls-container .btn {
-    padding: 0.4rem 0.3rem !important;
-    font-size: 0.75rem !important;
+    padding: 0.4rem 0.2rem !important;
+    font-size: 0.7rem !important;
     flex: 1;
     justify-content: center;
+    white-space: nowrap !important;
+    min-width: 0;
   }
   
   .controls-container .btn span {
-    font-size: 0.75rem !important;
+    font-size: 0.7rem !important;
   }
   
   /* Ẩn các nút theo yêu cầu trên mobile */
