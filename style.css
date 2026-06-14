@@ -870,10 +870,13 @@ tr:hover td {
 @media (max-width: 768px) {
   body {
     overflow-x: hidden;
+    overflow-y: auto !important;
   }
   
   .app-container {
     flex-direction: column;
+    height: auto !important;
+    overflow: visible !important;
   }
   
   .sidebar {
@@ -885,6 +888,8 @@ tr:hover td {
   
   .main-content {
     padding: 1rem;
+    overflow-y: visible !important;
+    height: auto !important;
   }
   
   .controls-container {

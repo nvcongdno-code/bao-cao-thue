@@ -2055,18 +2055,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const contentHeader = document.querySelector('.content-header');
     const headerFlexRow = document.querySelector('.header-flex-row');
 
+    const header = document.querySelector('header');
+
     if (window.innerWidth <= 768) {
-      if (quickFilters && quickFilters.parentNode !== appContainer) {
-        appContainer.insertBefore(quickFilters, sidebar);
-        quickFilters.style.padding = "10px 1rem 0 1rem";
+      // Đảm bảo header là sticky
+      header.style.position = "sticky";
+      header.style.top = "0";
+      header.style.zIndex = "1000";
+
+      if (quickFilters && quickFilters.parentNode !== header) {
+        header.appendChild(quickFilters);
+        quickFilters.style.padding = "10px 0 0 0";
+        quickFilters.style.width = "100%";
       }
-      if (modeSelectorContainer && modeSelectorContainer.parentNode !== appContainer) {
-        appContainer.insertBefore(modeSelectorContainer, sidebar);
-        modeSelectorContainer.style.margin = "10px 1rem 15px 1rem";
-        modeSelectorContainer.style.width = "calc(100% - 2rem)";
+      if (modeSelectorContainer && modeSelectorContainer.parentNode !== header) {
+        header.appendChild(modeSelectorContainer);
+        modeSelectorContainer.style.margin = "10px 0 0 0";
+        modeSelectorContainer.style.width = "100%";
         modeSelectorContainer.style.justifyContent = "space-between";
       }
     } else {
+      header.style.position = "";
+      header.style.top = "";
+      header.style.zIndex = "";
+
       if (quickFilters && contentHeader && quickFilters.parentNode !== contentHeader) {
         contentHeader.insertBefore(quickFilters, contentHeader.firstChild);
         quickFilters.style.padding = "";
