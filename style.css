@@ -906,7 +906,7 @@ tr:hover td {
   
   .date-container {
     position: absolute !important;
-    top: 2.2rem !important; /* Thấp hơn dòng Thuế tỉnh Lâm Đồng 1 chút */
+    top: 3.5rem !important; /* Xuống thêm 1 dòng nữa */
     right: 0.5rem !important; /* Đưa sát góc bên phải */
     transform: none !important;
     margin-left: 0 !important;
@@ -918,6 +918,7 @@ tr:hover td {
   .controls-container {
     width: 100%;
     justify-content: space-between;
+    margin-top: 2.5rem !important; /* Các dòng tiếp theo xuống thêm khoảng 2 dòng */
   }
   
   /* Ẩn các nút theo yêu cầu trên mobile */
