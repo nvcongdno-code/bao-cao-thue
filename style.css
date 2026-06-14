@@ -891,8 +891,9 @@ tr:hover td {
   
   header {
     padding: 1rem;
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: flex-start;
   }
   
@@ -907,11 +908,15 @@ tr:hover td {
     position: static !important;
     transform: none !important;
     left: auto !important;
+    margin-left: auto !important; /* Tự đẩy sang sát lề phải */
+    margin-top: 1.4rem !important; /* Thấp hơn dòng 1 bên trái khoảng 1 dòng */
+    align-items: flex-end !important; /* Căn phải nội dung chữ */
   }
   
   .controls-container {
     width: 100%;
     justify-content: space-between;
+    margin-top: 2rem !important; /* Đẩy dàn nút xuống 2 dòng để tạo khoảng trống đẹp */
   }
   
   /* Ẩn các nút theo yêu cầu trên mobile */
