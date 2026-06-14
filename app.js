@@ -1310,9 +1310,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <table style="width: 100%; border-collapse: collapse; font-size: 9.5pt; border: 1px solid #000 !important; color: #000;">
             <thead>
               <tr>
-                <th style="border: 1px solid #000 !important; padding: 6px; text-align: left; background: #f2f2f2 !important; font-weight: bold; text-transform: uppercase; color: #000;">Cơ quan quản lý nguồn thu</th>
-                <th style="border: 1px solid #000 !important; padding: 6px; text-align: right; background: #f2f2f2 !important; font-weight: bold; text-transform: uppercase; color: #000;">Dự toán năm</th>
-                <th style="border: 1px solid #000 !important; padding: 6px; text-align: right; background: #f2f2f2 !important; font-weight: bold; text-transform: uppercase; color: #000;">Lũy kế thực thu</th>
+                <th style="border: 1px solid #000 !important; padding: 6px; text-align: center; background: #f2f2f2 !important; font-weight: bold; text-transform: uppercase; color: #000;">Cơ quan quản lý nguồn thu</th>
+                <th style="border: 1px solid #000 !important; padding: 6px; text-align: center; background: #f2f2f2 !important; font-weight: bold; text-transform: uppercase; color: #000;">Dự toán năm</th>
+                <th style="border: 1px solid #000 !important; padding: 6px; text-align: center; background: #f2f2f2 !important; font-weight: bold; text-transform: uppercase; color: #000;">Lũy kế thực thu</th>
                 <th style="border: 1px solid #000 !important; padding: 6px; text-align: center; background: #f2f2f2 !important; font-weight: bold; text-transform: uppercase; color: #000;">Tiến độ đạt</th>
                 <th style="border: 1px solid #000 !important; padding: 6px; text-align: center; background: #f2f2f2 !important; font-weight: bold; text-transform: uppercase; color: #000;">So với cùng kỳ</th>
               </tr>
@@ -1364,13 +1364,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <thead>
               <tr style="background: #dce6f1;">
                 <th style="border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; color: #000;">STT</th>
-                <th style="border: 1px solid #000; padding: 5px 6px; text-align: left; font-weight: bold; color: #000;">Tên địa bàn xã</th>
-                <th style="border: 1px solid #000; padding: 5px 4px; text-align: right; font-weight: bold; color: #000;">Dự toán năm</th>
-                <th style="border: 1px solid #000; padding: 5px 4px; text-align: right; font-weight: bold; color: #000;">Lũy kế thực thu</th>
-                <th style="border: 1px solid #000; padding: 5px 4px; text-align: right; font-weight: bold; color: #000;">Thu trong kỳ</th>
+                <th style="border: 1px solid #000; padding: 5px 6px; text-align: center; font-weight: bold; color: #000;">Tên địa bàn xã</th>
+                <th style="border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; color: #000;">Dự toán năm</th>
+                <th style="border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; color: #000;">Lũy kế thực thu</th>
+                <th style="border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; color: #000;">Thu trong kỳ</th>
                 <th style="border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; color: #000;">Tiến độ (%)</th>
                 <th style="border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; color: #000;">So với CK (%)</th>
-                <th style="border: 1px solid #000; padding: 5px 4px; text-align: right; font-weight: bold; color: #000;">Còn phải thu</th>
+                <th style="border: 1px solid #000; padding: 5px 4px; text-align: center; font-weight: bold; color: #000;">Còn phải thu</th>
               </tr>
             </thead>
             <tbody>
