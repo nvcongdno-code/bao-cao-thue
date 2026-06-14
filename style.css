@@ -906,11 +906,13 @@ tr:hover td {
   
   .date-container {
     position: absolute !important;
-    top: 2.4rem !important; /* Thấp hơn dòng Thuế tỉnh Lâm Đồng (khoảng 1 dòng) */
-    right: 1rem !important;
+    top: 2.2rem !important; /* Thấp hơn dòng Thuế tỉnh Lâm Đồng 1 chút */
+    right: 0.5rem !important; /* Đưa sát góc bên phải */
     transform: none !important;
     margin-left: 0 !important;
+    padding: 0 !important; /* Bỏ padding để sát lề */
     align-items: flex-end !important;
+    z-index: 10;
   }
   
   .controls-container {
