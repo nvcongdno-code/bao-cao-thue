@@ -916,6 +916,7 @@ tr:hover td {
   }
   
   .controls-container {
+    display: flex !important;
     width: 100%;
     justify-content: space-between;
     margin-top: 2rem !important;
@@ -925,15 +926,17 @@ tr:hover td {
   
   .controls-container .btn {
     padding: 0.4rem 0.2rem !important;
-    font-size: 0.7rem !important;
-    flex: 1;
+    font-size: 0.65rem !important;
+    flex: 1 1 0 !important;
     justify-content: center;
     white-space: nowrap !important;
-    min-width: 0;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
   
   .controls-container .btn span {
-    font-size: 0.7rem !important;
+    font-size: 0.65rem !important;
   }
   
   /* Ẩn các nút theo yêu cầu trên mobile */
