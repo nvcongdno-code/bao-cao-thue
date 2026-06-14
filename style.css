@@ -651,6 +651,7 @@ header {
 
 table {
   width: 100%;
+  min-width: 1400px; /* Bắt buộc bảng rộng để hiện thanh cuộn ngang trên PC */
   border-collapse: collapse;
   text-align: left;
   font-size: 0.95rem;
@@ -1088,6 +1089,7 @@ tr:hover td {
 
   table {
     width: 100% !important;
+    min-width: auto !important; /* Xóa min-width khi in */
     border: 1px solid #000 !important;
     font-size: 9.5pt !important;
   }
