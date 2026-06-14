@@ -545,6 +545,8 @@ document.addEventListener("DOMContentLoaded", () => {
       
       tr.innerHTML = `
         <td class="text-left" style="font-weight: 700; cursor: pointer;">${c.name}</td>
+        <td class="text-right" style="font-weight: bold; color: var(--color-primary);">${formatMoney(metrics.target)}</td>
+        <td class="text-right" style="font-weight: bold; color: var(--color-success);">${formatMoney(metrics.ytd)}</td>
         <td class="text-right">${formatMoney(business.target)}</td>
         <td class="text-right">${formatMoney(business.ytd)}</td>
         <td class="text-right">${formatMoney(pit.target)}</td>
@@ -555,8 +557,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <td class="text-right">${formatMoney(others.ytd)}</td>
         <td class="text-right">${formatMoney(land.target)}</td>
         <td class="text-right">${formatMoney(land.ytd)}</td>
-        <td class="text-right" style="font-weight: bold; color: var(--color-primary);">${formatMoney(metrics.target)}</td>
-        <td class="text-right" style="font-weight: bold; color: var(--color-success);">${formatMoney(metrics.ytd)}</td>
       `;
       
       tr.querySelector("td").addEventListener("click", () => {
@@ -584,6 +584,8 @@ document.addEventListener("DOMContentLoaded", () => {
       
       trTotal.innerHTML = `
         <td class="text-left" style="color: var(--color-primary)">TỔNG CỘNG HỢP</td>
+        <td class="text-right" style="color: var(--color-primary);">${formatMoney(metrics.target)}</td>
+        <td class="text-right" style="color: var(--color-success);">${formatMoney(metrics.ytd)}</td>
         <td class="text-right">${formatMoney(business.target)}</td>
         <td class="text-right">${formatMoney(business.ytd)}</td>
         <td class="text-right">${formatMoney(pit.target)}</td>
@@ -594,8 +596,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <td class="text-right">${formatMoney(others.ytd)}</td>
         <td class="text-right">${formatMoney(land.target)}</td>
         <td class="text-right">${formatMoney(land.ytd)}</td>
-        <td class="text-right" style="color: var(--color-primary);">${formatMoney(metrics.target)}</td>
-        <td class="text-right" style="color: var(--color-success);">${formatMoney(metrics.ytd)}</td>
       `;
       breakdownBodyEl.appendChild(trTotal);
     }
@@ -1492,7 +1492,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const fileImportExcel = document.getElementById("file-import-excel");
   const btnTriggerExcelImport = document.getElementById("btn-trigger-excel-import");
 
-  // Đóng/Mở Panel
+  const btnGuide = document.getElementById("btn-guide");
+  const guideModal = document.getElementById("guide-modal");
+  const guideClose = document.getElementById("guide-close");
+  const btnGuideOk = document.getElementById("btn-guide-ok");
+
+  // Hướng dẫn sử dụng
+  if (btnGuide) {
+    btnGuide.addEventListener("click", () => {
+      if (guideModal) guideModal.classList.add("open");
+      if (overlay) overlay.classList.add("show");
+    });
+  }
+
+  function closeGuideModal() {
+    if (guideModal) guideModal.classList.remove("open");
+    if (overlay) overlay.classList.remove("show");
+  }
+
+  if (guideClose) guideClose.addEventListener("click", closeGuideModal);
+  if (btnGuideOk) btnGuideOk.addEventListener("click", closeGuideModal);
+
+  // Đóng panel hoặc modal khi click overlay
+  overlay.addEventListener("click", () => {
+    if (periodicPanel.classList.contains("open")) {
+      closePeriodicPanel();
+    }
+    if (typeof closeGuideModal === 'function' && guideModal && guideModal.classList.contains("open")) {
+      closeGuideModal();
+    }
+  });
+
+  // Đóng/Mở Panel Định kỳ
   btnPeriodic.addEventListener("click", () => {
     periodicPanel.classList.add("open");
     overlay.classList.add("show");
