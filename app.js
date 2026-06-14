@@ -755,15 +755,15 @@ document.addEventListener("DOMContentLoaded", () => {
       
       trTotal.innerHTML = `
         <td class="text-left" style="color: var(--color-primary)">TỔNG CỘNG</td>
-        <td class="text-right">${formatMoney(aggMetrics.target)}</td>
-        <td class="text-right">${formatMoney(aggMetrics.ytd)}</td>
-        <td class="text-right" style="color: var(--color-primary)">${formatMoney(aggMetrics.today)}</td>
         <td class="text-center">
           <div class="progress-bar-container">
             <div class="progress-bar-fill" style="width: ${Math.min(aggRate, 100)}%; background-color: ${aggRate >= 85 ? 'var(--color-success)' : aggRate >= 50 ? 'var(--color-warning)' : 'var(--color-danger)'};"></div>
           </div>
           <span>${aggRate.toFixed(1)}%</span>
         </td>
+        <td class="text-right">${formatMoney(aggMetrics.target)}</td>
+        <td class="text-right">${formatMoney(aggMetrics.ytd)}</td>
+        <td class="text-right" style="color: var(--color-primary)">${formatMoney(aggMetrics.today)}</td>
         <td class="text-center">
           <span class="percentage-badge ${aggGrowth >= 0 ? 'up' : 'down'}">
             ${aggGrowth >= 0 ? '▲ +' : '▼ '}${aggGrowth.toFixed(1)}%
