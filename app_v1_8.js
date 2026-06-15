@@ -122,13 +122,13 @@ function initApp() {
     
     if (matchedRecord) {
       currentData = JSON.parse(JSON.stringify(matchedRecord.data));
-      showToast(`Đã khôi phục số liệu ngày: ${formatDate(newDate)} từ lịch sử`);
+      showToast("Đã cập nhật số liệu");
     } else if (window.BUDGET_DATA && window.BUDGET_DATA.metadata && window.BUDGET_DATA.metadata.reportDate === newDate) {
       currentData = JSON.parse(JSON.stringify(window.BUDGET_DATA));
-      showToast(`Đã khôi phục số liệu ngày: ${formatDate(newDate)} từ tệp gốc`);
+      showToast("Đã cập nhật số liệu");
     } else {
       currentData.metadata.reportDate = newDate;
-      showToast(`Đã chuyển ngày báo cáo sang: ${formatDate(newDate)} (Chưa có số liệu cho ngày này)`);
+      showToast("Ngày đó chưa cập nhật dữ liệu");
     }
     
     const prdEl = document.getElementById("print-report-date");
