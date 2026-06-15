@@ -974,12 +974,12 @@ tr:hover td {
   .date-picker-input {
     padding: 0 !important;
     font-size: 0.8rem !important;
-    pointer-events: auto !important;
+    pointer-events: none !important;
     border: none !important;
     background: transparent !important;
-    color: var(--color-primary) !important;
+    color: var(--color-success) !important;
     font-weight: 700 !important;
-    cursor: pointer !important;
+    cursor: default !important;
     box-shadow: none !important;
     outline: none !important;
     appearance: none !important;
