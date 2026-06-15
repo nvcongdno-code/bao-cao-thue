@@ -127,8 +127,9 @@ function initApp() {
       currentData = JSON.parse(JSON.stringify(window.BUDGET_DATA));
       showToast("Đã cập nhật số liệu");
     } else {
-      currentData.metadata.reportDate = newDate;
       showToast("Ngày đó chưa cập nhật dữ liệu");
+      e.target.value = currentData.metadata.reportDate; // Revert the input value
+      return; // Stop further execution, blocking the update
     }
     
     const prdEl = document.getElementById("print-report-date");

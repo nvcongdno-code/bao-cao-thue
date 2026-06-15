@@ -977,7 +977,7 @@ tr:hover td {
     pointer-events: auto !important;
     border: none !important;
     background: transparent !important;
-    color: var(--color-success) !important;
+    color: var(--color-primary) !important;
     font-weight: 700 !important;
     cursor: pointer !important;
     box-shadow: none !important;
