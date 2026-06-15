@@ -3,7 +3,7 @@
 // Sử dụng Chart.js để vẽ biểu đồ và quản lý tương tác dữ liệu
 // -------------------------------------------------------------------------
 
-document.addEventListener("DOMContentLoaded", () => {
+function initApp() {
   // Trạng thái ứng dụng
   // Phát hiện thiết bị di động để bỏ qua localStorage, đảm bảo đồng bộ hoàn toàn với máy tính qua Server/Git
   const isMobileDevice = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -2126,4 +2126,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   adjustMobileLayout();
   window.addEventListener('resize', adjustMobileLayout);
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
