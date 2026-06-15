@@ -14,6 +14,24 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedState) {
     try {
       currentData = JSON.parse(savedState);
+      
+      // Tự động kiểm tra nếu dữ liệu lưu trữ bị lỗi (như tổng dự toán bằng 0) để tự khôi phục
+      let isValid = false;
+      if (currentData && currentData.communes && currentData.communes.length > 0) {
+        const totalTarget = currentData.communes.reduce((sum, c) => {
+          const provTarget = c.provinceTax ? (c.provinceTax.target || 0) : 0;
+          const baseTarget = c.baseTax ? (c.baseTax.target || 0) : 0;
+          return sum + provTarget + baseTarget;
+        }, 0);
+        if (totalTarget > 0) {
+          isValid = true;
+        }
+      }
+      
+      if (!isValid) {
+        throw new Error("Dữ liệu lưu trữ trong trình duyệt bị lỗi hoặc bằng 0");
+      }
+
       // Sửa lỗi chính tả từ localStorage nếu có
       if (currentData && currentData.communes) {
         currentData.communes.forEach(c => {
@@ -30,7 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
       }
     } catch (e) {
+      console.warn("Lỗi dữ liệu lưu trữ, khôi phục mặc định:", e.message);
       currentData = JSON.parse(JSON.stringify(window.BUDGET_DATA));
+      localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
     }
   } else {
     currentData = JSON.parse(JSON.stringify(window.BUDGET_DATA));
