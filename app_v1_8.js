@@ -5,12 +5,13 @@
 
 function initApp() {
   // Trạng thái ứng dụng
-  // Phát hiện thiết bị di động để bỏ qua localStorage, đảm bảo đồng bộ hoàn toàn với máy tính qua Server/Git
+  // Phát hiện nếu đây là trang quản trị (admin.html) hoặc trang xem chung (index.html)
+  const isAdminPage = document.getElementById("btn-save-baseline") !== null;
   const isMobileDevice = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-  // Nếu ngày báo cáo trong file data_v1_8.js khác với ngày trong localStorage,
+  // Nếu là trang quản trị và ngày báo cáo trong file data_v1_8.js khác với ngày trong localStorage,
   // nghĩa là có cập nhật dữ liệu mới chính thức từ Git, ta tự động xóa cache lưu trữ cũ để nạp mới.
-  if (!isMobileDevice && window.BUDGET_DATA && window.BUDGET_DATA.metadata) {
+  if (isAdminPage && window.BUDGET_DATA && window.BUDGET_DATA.metadata) {
     const savedStateRaw = localStorage.getItem("thue_co_so_13_current_state");
     let stateDate = null;
     if (savedStateRaw) {
@@ -29,7 +30,7 @@ function initApp() {
 
   // Nạp dữ liệu gốc (Baseline)
   let originalBaseline = window.BUDGET_DATA;
-  if (!isMobileDevice) {
+  if (isAdminPage) {
     const savedBaseline = localStorage.getItem("thue_co_so_13_baseline");
     if (savedBaseline) {
       try {
@@ -41,8 +42,9 @@ function initApp() {
   }
 
   // Trạng thái hoạt động hiện tại (Current state)
+  // Trên trang xem chung (index.html), ta luôn nạp dữ liệu gốc mới nhất từ Server để tránh lãnh đạo xem số cũ bị cache
   let currentData;
-  const savedState = !isMobileDevice ? localStorage.getItem("thue_co_so_13_current_state") : null;
+  const savedState = isAdminPage ? localStorage.getItem("thue_co_so_13_current_state") : null;
   if (savedState) {
     try {
       currentData = JSON.parse(savedState);
