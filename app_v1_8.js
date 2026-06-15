@@ -8,7 +8,39 @@ function initApp() {
   // Phát hiện thiết bị di động để bỏ qua localStorage, đảm bảo đồng bộ hoàn toàn với máy tính qua Server/Git
   const isMobileDevice = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-  // Trạng thái ứng dụng (Ưu tiên khôi phục từ localStorage để lưu trữ bền vững trên máy tính)
+  // Nếu ngày báo cáo trong file data_v1_8.js khác với ngày trong localStorage,
+  // nghĩa là có cập nhật dữ liệu mới chính thức từ Git, ta tự động xóa cache lưu trữ cũ để nạp mới.
+  if (!isMobileDevice && window.BUDGET_DATA && window.BUDGET_DATA.metadata) {
+    const savedStateRaw = localStorage.getItem("thue_co_so_13_current_state");
+    let stateDate = null;
+    if (savedStateRaw) {
+      try {
+        const parsedS = JSON.parse(savedStateRaw);
+        stateDate = parsedS.metadata ? parsedS.metadata.reportDate : null;
+      } catch(e) {}
+    }
+    
+    if (stateDate && window.BUDGET_DATA.metadata.reportDate !== stateDate) {
+      localStorage.removeItem("thue_co_so_13_baseline");
+      localStorage.removeItem("thue_co_so_13_current_state");
+      localStorage.removeItem("thue_co_so_13_history");
+    }
+  }
+
+  // Nạp dữ liệu gốc (Baseline)
+  let originalBaseline = window.BUDGET_DATA;
+  if (!isMobileDevice) {
+    const savedBaseline = localStorage.getItem("thue_co_so_13_baseline");
+    if (savedBaseline) {
+      try {
+        originalBaseline = JSON.parse(savedBaseline);
+      } catch (e) {
+        console.warn("Lỗi đọc dữ liệu gốc baseline lưu trữ:", e.message);
+      }
+    }
+  }
+
+  // Trạng thái hoạt động hiện tại (Current state)
   let currentData;
   const savedState = !isMobileDevice ? localStorage.getItem("thue_co_so_13_current_state") : null;
   if (savedState) {
@@ -40,20 +72,13 @@ function initApp() {
           }
         });
       }
-      // Nếu ngày báo cáo trong file data.js khác với ngày trong localStorage,
-      // nghĩa là có cập nhật dữ liệu mới từ Excel, ta sẽ ghi đè lại localStorage.
-      if (window.BUDGET_DATA && window.BUDGET_DATA.metadata && currentData.metadata && 
-          window.BUDGET_DATA.metadata.reportDate !== currentData.metadata.reportDate) {
-        currentData = JSON.parse(JSON.stringify(window.BUDGET_DATA));
-        localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
-      }
     } catch (e) {
       console.warn("Lỗi dữ liệu lưu trữ, khôi phục mặc định:", e.message);
-      currentData = JSON.parse(JSON.stringify(window.BUDGET_DATA));
+      currentData = JSON.parse(JSON.stringify(originalBaseline));
       localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
     }
   } else {
-    currentData = JSON.parse(JSON.stringify(window.BUDGET_DATA));
+    currentData = JSON.parse(JSON.stringify(originalBaseline));
   }
   let selectedCommuneId = "tong_hop"; // "tong_hop" đại diện cho Tổng hợp toàn địa bàn
   let sortField = "ytdRate";
@@ -123,8 +148,8 @@ function initApp() {
     if (matchedRecord) {
       currentData = JSON.parse(JSON.stringify(matchedRecord.data));
       showToast("Đã cập nhật số liệu");
-    } else if (window.BUDGET_DATA && window.BUDGET_DATA.metadata && window.BUDGET_DATA.metadata.reportDate === newDate) {
-      currentData = JSON.parse(JSON.stringify(window.BUDGET_DATA));
+    } else if (originalBaseline && originalBaseline.metadata && originalBaseline.metadata.reportDate === newDate) {
+      currentData = JSON.parse(JSON.stringify(originalBaseline));
       showToast("Đã cập nhật số liệu");
     } else {
       showToast("Ngày đó chưa cập nhật dữ liệu");
@@ -879,13 +904,60 @@ function initApp() {
     });
   }
 
+  // Nút Lưu lại làm dữ liệu gốc
+  const saveBaselineBtn = document.getElementById("btn-save-baseline");
+  if (saveBaselineBtn) {
+    saveBaselineBtn.addEventListener("click", () => {
+      try {
+        // 1. Lưu trạng thái hiện tại làm baseline trong localStorage
+        localStorage.setItem("thue_co_so_13_baseline", JSON.stringify(currentData));
+        localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
+        
+        // Cập nhật lại biến originalBaseline trong bộ nhớ
+        originalBaseline = JSON.parse(JSON.stringify(currentData));
+        
+        // 2. Tạo nội dung tệp data_v1_8.js để tải về máy (giúp đồng bộ lên GitHub)
+        const fileContent = `// Budget data for 7 communes\n// Generated and saved by admin on ${new Date().toLocaleDateString('vi-VN')}\n\nconst BUDGET_DATA = ${JSON.stringify(currentData, null, 2)};\n`;
+        const blob = new Blob([fileContent], { type: "application/javascript;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "data_v1_8.js";
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        showToast("Đã lưu làm dữ liệu gốc thành công!");
+        alert("Đã lưu dữ liệu hiện tại làm dữ liệu gốc mới trên trình duyệt này thành công!\n\nĐồng thời, tệp dữ liệu 'data_v1_8.js' đã được tải về máy của bạn. Bạn có thể sử dụng tệp này để ghi đè vào thư mục dự án và đẩy lên GitHub để đồng bộ dữ liệu gốc cho tất cả các điện thoại khác.");
+      } catch (err) {
+        alert("Lỗi khi lưu dữ liệu gốc: " + err.message);
+      }
+    });
+  }
+
   // Nút Khôi phục số liệu gốc
   if (resetBtn) {
     resetBtn.addEventListener("click", () => {
-      if (confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử và khôi phục số liệu gốc ban đầu không?")) {
-        localStorage.removeItem("thue_co_so_13_current_state");
-        localStorage.removeItem("thue_co_so_13_history");
-        location.reload();
+      const hasLocalBaseline = localStorage.getItem("thue_co_so_13_baseline");
+      if (hasLocalBaseline) {
+        const option = confirm("Hệ thống phát hiện có dữ liệu tự lưu trữ bằng nút 'LƯU LẠI'.\n\n- Nhấp OK: Khôi phục về dữ liệu đã lưu gần nhất (bằng nút LƯU LẠI).\n- Nhấp CANCEL (HỦY): Khôi phục hoàn toàn về tệp gốc ban đầu (data_v1_8.js).");
+        if (option) {
+          localStorage.removeItem("thue_co_so_13_current_state");
+          localStorage.removeItem("thue_co_so_13_history");
+          location.reload();
+        } else {
+          if (confirm("Xác nhận xóa bỏ toàn bộ dữ liệu tự lưu (LƯU LẠI) và khôi phục hoàn toàn về tệp gốc data_v1_8.js ban đầu?")) {
+            localStorage.removeItem("thue_co_so_13_baseline");
+            localStorage.removeItem("thue_co_so_13_current_state");
+            localStorage.removeItem("thue_co_so_13_history");
+            location.reload();
+          }
+        }
+      } else {
+        if (confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử và khôi phục số liệu gốc ban đầu không?")) {
+          localStorage.removeItem("thue_co_so_13_current_state");
+          localStorage.removeItem("thue_co_so_13_history");
+          location.reload();
+        }
       }
     });
   }
@@ -1676,7 +1748,7 @@ function initApp() {
   // Recalculate totals and today/last year metrics
   function updateCommuneDerivedFields(commune, r = 10, oldCommune = null) {
     // Look up baseline commune
-    const origCommune = window.BUDGET_DATA.communes.find(oc => oc.id === commune.id) || commune;
+    const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
 
     // Update provinceTax totals (target is locked to baseline)
     commune.provinceTax.target = origCommune.provinceTax.target;
@@ -1907,7 +1979,7 @@ function initApp() {
               const r = matchedRowIndex;
 
               // Lấy số liệu dự toán (target) từ dữ liệu gốc ban đầu, không lấy từ file Excel
-              const origCommune = window.BUDGET_DATA.communes.find(oc => oc.id === commune.id) || commune;
+              const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
 
               let land_prov_target, bus_prov_target, pit_prov_target, reg_prov_target, oth_prov_target;
               let land_base_target, bus_base_target, pit_base_target, reg_base_target, oth_base_target;
@@ -2060,7 +2132,7 @@ function initApp() {
 
             if (commune) {
               const oldCommune = oldData.communes.find(oc => oc.id === commune.id);
-              const origCommune = window.BUDGET_DATA.communes.find(oc => oc.id === commune.id) || commune;
+              const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
               if (row.length > 11) {
                 if (importType === "target") {
                   // --- CẬP NHẬT DỰ TOÁN, GIỮ NGUYÊN THỰC HIỆN CŨ ---
