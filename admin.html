@@ -3,21 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Báo cáo Thu NSNN hàng ngày của TCS13 trực thuộc Thuế tỉnh Lâm Đồng</title>
+  <title>Cập nhật số liệu - Thuế cơ sở 13 Lâm Đồng</title>
   <meta name="description" content="Hệ thống báo cáo và theo dõi số liệu thu ngân sách hàng ngày tại 7 xã trực thuộc Thuế cơ sở 13 - Cục Thuế tỉnh Lâm Đồng. Tối ưu cho họp lãnh đạo.">
   <meta property="og:title" content="Báo cáo Thu NSNN hàng ngày của TCS13 trực thuộc Thuế tỉnh Lâm Đồng">
   <meta property="og:description" content="Hệ thống báo cáo và theo dõi số liệu thu ngân sách hàng ngày tại 7 xã trực thuộc Thuế cơ sở 13 - Cục Thuế tỉnh Lâm Đồng. Tối ưu cho họp lãnh đạo.">
   <meta property="og:type" content="website">
   
-  <!-- Anti-caching headers for mobile -->
+  <!-- Anti-caching headers -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="style_v1_8.css">
-  
-  <!-- Bảng số liệu chi tiết theo sắc thuế -->
   
   <!-- SheetJS (XLSX) CDN để đọc/xuất file Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -37,7 +35,7 @@
       <div class="logo-text">
         <p>Thuế tỉnh Lâm Đồng</p>
         <h1 style="margin-left: -0.05cm;">THUẾ CƠ SỞ 13</h1>
-        <div style="margin-left: 0.3cm; font-size: 0.7rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; margin-top: 2px;">VER 1.0</div>
+        <div style="margin-left: 0.3cm; font-size: 0.7rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; margin-top: 2px;">VER 1.0 (Quản trị)</div>
       </div>
     </div>
     
@@ -45,16 +43,27 @@
     <div class="date-container" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 10px; margin-left: 40px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <span style="font-size: 0.8rem; color: var(--color-success); font-weight: 700; text-transform: uppercase; white-space: nowrap;">Ngày báo cáo:</span>
-        <input type="date" id="report-date-picker" value="2026-06-14" class="date-picker-input readonly-picker" readonly>
+        <input type="date" id="report-date-picker" value="2026-06-14" class="date-picker-input">
       </div>
       <span style="font-size: 0.72rem; color: var(--color-success); font-weight: 600; white-space: nowrap;" id="last-update-time">Đã cập nhật: 23:45 13/06/2026</span>
     </div>
     
     <!-- Vùng 3: Các nút chức năng -->
     <div class="controls-container">
+      
+      <!-- Số liệu định kỳ -->
+      <button class="btn btn-simulation" id="btn-periodic" title="Cập nhật số liệu định kỳ Tuần/Tháng/Quý">
+        <span>📂</span> Cập nhật số liệu định kỳ
+      </button>
+
       <!-- Hướng dẫn sử dụng -->
       <button class="btn" id="btn-guide" title="Xem hướng dẫn sử dụng phần mềm" style="border-color: var(--color-primary); color: var(--color-primary);">
         <span>❓</span> Hướng dẫn
+      </button>
+
+      <!-- Khôi phục số liệu -->
+      <button class="btn" id="btn-reset" title="Khôi phục số liệu gốc ban đầu" style="border-color: var(--color-danger); color: var(--color-danger);">
+        <span>🔄</span> Khôi phục số liệu
       </button>
       
       <!-- Xuất PDF chuyên dụng (tải về file PDF) -->
@@ -253,6 +262,48 @@
   <div class="overlay" id="overlay"></div>
 
 
+  <!-- Panel cập nhật số liệu định kỳ (Centered Modal) -->
+  <div class="periodic-modal" id="periodic-panel">
+    <div class="simulation-header">
+      <h3 style="font-weight: 700; font-size: 1.15rem;">Cập nhật số liệu định kỳ</h3>
+      <button class="simulation-close" id="periodic-close">&times;</button>
+    </div>
+    
+    <div style="padding: 10px 0;">
+      <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 15px;">
+        Hệ thống chỉ chấp nhận cập nhật số liệu bằng cách tải tệp mẫu Excel, cập nhật thông tin thực thu rồi tải lên lại. Việc nhập liệu trực tiếp trên giao diện bị hạn chế để đảm bảo tính chuẩn xác.
+      </p>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <!-- Excel Section -->
+        <div style="border: 1px solid var(--border-color); padding: 16px; border-radius: var(--radius-md); background: var(--bg-primary);">
+          <h4 style="font-size: 0.88rem; margin-bottom: 8px; color: var(--color-success); font-weight: 700;">🟢 CẬP NHẬT BẰNG FILE EXCEL MẪU</h4>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">
+            Chọn loại số liệu bạn muốn cập nhật từ tệp Excel, sau đó tải tệp lên.
+          </p>
+          
+          <div style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem; color: var(--text-secondary);">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="radio" name="excel-import-type" value="actual" checked style="accent-color: var(--color-success); cursor: pointer;">
+              <span>Cập nhật số liệu <strong>Thực hiện</strong> (Khóa dự toán cũ)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="radio" name="excel-import-type" value="target" style="accent-color: var(--color-success); cursor: pointer;">
+              <span>Cập nhật số liệu <strong>Dự toán</strong> (Khóa số thực hiện cũ)</span>
+            </label>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button class="btn" id="btn-export-excel" style="flex: 1; padding: 10px; font-weight: 700; border-color: var(--color-success); color: var(--color-success)">📥 Tải Mẫu Excel</button>
+            <input type="file" id="file-import-excel" accept=".xlsx, .xls" style="display: none;">
+            <button class="btn btn-primary" id="btn-trigger-excel-import" style="flex: 1; padding: 10px; font-weight: 700; background: var(--color-success); border-color: var(--color-success)">📤 Tải lên Excel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ==========================================================================
        PRINT TEMPLATE: GIAO DIỆN IN ẤN (Chỉ hiển thị khi in ra giấy/xuất PDF)
        ========================================================================== -->
@@ -263,9 +314,10 @@
     <button class="simulation-close" id="guide-close">&times;</button>
     <h3 style="margin-bottom: 20px; color: var(--color-primary); border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">❓ Hướng dẫn sử dụng phần mềm</h3>
     <div style="line-height: 1.7; font-size: 0.95rem; color: var(--text-color);">
-      <p><strong>1. Xem báo cáo:</strong> Bấm vào tên xã ở danh sách bên trái hoặc thanh lọc nhanh để xem chi tiết tình hình thu của địa bàn đó.</p>
-      <p><strong>2. Bộ lọc dữ liệu:</strong> Sử dụng các nút bấm "Thuế Tỉnh" / "Thuế Cơ Sở" ở màn hình chính để phân loại các nguồn thu chuyên biệt.</p>
-      <p><strong>3. Xuất Báo Cáo PDF:</strong> Nhấn "Xuất PDF" để tạo lập văn bản báo cáo hành chính tự động chuẩn thể thức của Nghị định 30/2020/NĐ-CP.</p>
+      <p><strong>1. Cập nhật số liệu:</strong> Nhấn nút "Cập nhật số liệu định kỳ" để mở tính năng tải lên file Excel dữ liệu thu ngân sách.</p>
+      <p><strong>2. Xem báo cáo:</strong> Bấm vào tên xã ở danh sách bên trái để xem chi tiết tình hình thu của địa bàn đó.</p>
+      <p><strong>3. Bộ lọc dữ liệu:</strong> Sử dụng các nút bấm "Thuế Tỉnh" / "Thuế Cơ Sở" ở màn hình chính để phân loại các nguồn thu chuyên biệt.</p>
+      <p><strong>4. Xuất Báo Cáo PDF:</strong> Nhấn "Xuất PDF" để tạo lập văn bản báo cáo hành chính tự động chuẩn thể thức của Nghị định 30/2020/NĐ-CP.</p>
       <div style="margin-top: 25px; text-align: center;">
         <button class="btn btn-primary" id="btn-guide-ok" style="padding: 10px 30px; border-radius: 8px;">Đã hiểu</button>
       </div>

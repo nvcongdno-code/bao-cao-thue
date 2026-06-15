@@ -350,6 +350,26 @@ header {
   box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
+.readonly-picker {
+  padding: 0 !important;
+  font-size: 0.85rem !important;
+  pointer-events: none !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--color-success) !important;
+  font-weight: 700 !important;
+  cursor: default !important;
+  box-shadow: none !important;
+  outline: none !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+.readonly-picker::-webkit-calendar-picker-indicator {
+  display: none !important;
+  -webkit-appearance: none !important;
+}
+
 /* Layout container */
 .app-container {
   display: flex;

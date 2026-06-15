@@ -1562,26 +1562,40 @@ function initApp() {
   if (btnGuideOk) btnGuideOk.addEventListener("click", closeGuideModal);
 
   // Đóng panel hoặc modal khi click overlay
-  overlay.addEventListener("click", () => {
-    if (periodicPanel.classList.contains("open")) {
-      closePeriodicPanel();
-    }
-    if (typeof closeGuideModal === 'function' && guideModal && guideModal.classList.contains("open")) {
-      closeGuideModal();
-    }
-  });
+  if (overlay) {
+    overlay.addEventListener("click", () => {
+      if (periodicPanel && periodicPanel.classList.contains("open")) {
+        closePeriodicPanel();
+      }
+      if (typeof closeGuideModal === 'function' && guideModal && guideModal.classList.contains("open")) {
+        closeGuideModal();
+      }
+    });
+  }
 
   // Đóng/Mở Panel Định kỳ
-  btnPeriodic.addEventListener("click", () => {
-    periodicPanel.classList.add("open");
-    overlay.classList.add("show");
-  });
+  if (btnPeriodic) {
+    btnPeriodic.addEventListener("click", () => {
+      if (periodicPanel) {
+        periodicPanel.classList.add("open");
+      }
+      if (overlay) {
+        overlay.classList.add("show");
+      }
+    });
+  }
 
-  periodicClose.addEventListener("click", closePeriodicPanel);
+  if (periodicClose) {
+    periodicClose.addEventListener("click", closePeriodicPanel);
+  }
 
   function closePeriodicPanel() {
-    periodicPanel.classList.remove("open");
-    overlay.classList.remove("show");
+    if (periodicPanel) {
+      periodicPanel.classList.remove("open");
+    }
+    if (overlay) {
+      overlay.classList.remove("show");
+    }
   }
 
   // Lưu bản ghi lịch sử (Snapshot)
@@ -1707,80 +1721,87 @@ function initApp() {
   }
 
   // Xuất file mẫu Excel định kỳ (Hỗ trợ 21 cột chi tiết)
-  btnExportExcel.addEventListener("click", () => {
-    try {
-      const headers = [
-        "Tên Xã",
-        "Thuế Tỉnh - Dự toán - Sử dụng đất (Triệu đ)",
-        "Thuế Tỉnh - Lũy kế - Sử dụng đất (Triệu đ)",
-        "Thuế Tỉnh - Dự toán - Thuế CTN ngoài quốc doanh (Triệu đ)",
-        "Thuế Tỉnh - Lũy kế - Thuế CTN ngoài quốc doanh (Triệu đ)",
-        "Thuế Tỉnh - Dự toán - Thuế TNCN (Triệu đ)",
-        "Thuế Tỉnh - Lũy kế - Thuế TNCN (Triệu đ)",
-        "Thuế Tỉnh - Dự toán - Lệ phí trước bạ (Triệu đ)",
-        "Thuế Tỉnh - Lũy kế - Lệ phí trước bạ (Triệu đ)",
-        "Thuế Tỉnh - Dự toán - Phí, lệ phí & Thu khác (Triệu đ)",
-        "Thuế Tỉnh - Lũy kế - Phí, lệ phí & Thu khác (Triệu đ)",
-        "Thuế Cơ Sở - Dự toán - Sử dụng đất (Triệu đ)",
-        "Thuế Cơ Sở - Lũy kế - Sử dụng đất (Triệu đ)",
-        "Thuế Cơ Sở - Dự toán - Thuế CTN ngoài quốc doanh (Triệu đ)",
-        "Thuế Cơ Sở - Lũy kế - Thuế CTN ngoài quốc doanh (Triệu đ)",
-        "Thuế Cơ Sở - Dự toán - Thuế TNCN (Triệu đ)",
-        "Thuế Cơ Sở - Lũy kế - Thuế TNCN (Triệu đ)",
-        "Thuế Cơ Sở - Dự toán - Lệ phí trước bạ (Triệu đ)",
-        "Thuế Cơ Sở - Lũy kế - Lệ phí trước bạ (Triệu đ)",
-        "Thuế Cơ Sở - Dự toán - Phí, lệ phí & Thu khác (Triệu đ)",
-        "Thuế Cơ Sở - Lũy kế - Phí, lệ phí & Thu khác (Triệu đ)"
-      ];
-      
-      const rows = [headers];
-      
-      currentData.communes.forEach(c => {
-        rows.push([
-          c.name,
-          (c.provinceTax.details.land.target || 0) / 1000000,
-          (c.provinceTax.details.land.ytd || 0) / 1000000,
-          (c.provinceTax.details.business.target || 0) / 1000000,
-          (c.provinceTax.details.business.ytd || 0) / 1000000,
-          (c.provinceTax.details.pit.target || 0) / 1000000,
-          (c.provinceTax.details.pit.ytd || 0) / 1000000,
-          (c.provinceTax.details.registration.target || 0) / 1000000,
-          (c.provinceTax.details.registration.ytd || 0) / 1000000,
-          (c.provinceTax.details.others.target || 0) / 1000000,
-          (c.provinceTax.details.others.ytd || 0) / 1000000,
-          (c.baseTax.details.land.target || 0) / 1000000,
-          (c.baseTax.details.land.ytd || 0) / 1000000,
-          (c.baseTax.details.business.target || 0) / 1000000,
-          (c.baseTax.details.business.ytd || 0) / 1000000,
-          (c.baseTax.details.pit.target || 0) / 1000000,
-          (c.baseTax.details.pit.ytd || 0) / 1000000,
-          (c.baseTax.details.registration.target || 0) / 1000000,
-          (c.baseTax.details.registration.ytd || 0) / 1000000,
-          (c.baseTax.details.others.target || 0) / 1000000,
-          (c.baseTax.details.others.ytd || 0) / 1000000
-        ]);
-      });
-      
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Số liệu Thu thuế");
-      
-      ws['!cols'] = headers.map(h => ({ wch: h.length + 3 }));
-      
-      const date = reportDatePickerEl.value;
-      XLSX.writeFile(wb, `thue_co_so_13_so_lieu_${date}.xlsx`);
-      showToast("Đã tải file mẫu Excel thành công!");
-    } catch (err) {
-      alert("Lỗi khi tạo file Excel: " + err.message);
-    }
-  });
+  if (btnExportExcel) {
+    btnExportExcel.addEventListener("click", () => {
+      try {
+        const headers = [
+          "Tên Xã",
+          "Thuế Tỉnh - Dự toán - Sử dụng đất (Triệu đ)",
+          "Thuế Tỉnh - Lũy kế - Sử dụng đất (Triệu đ)",
+          "Thuế Tỉnh - Dự toán - Thuế CTN ngoài quốc doanh (Triệu đ)",
+          "Thuế Tỉnh - Lũy kế - Thuế CTN ngoài quốc doanh (Triệu đ)",
+          "Thuế Tỉnh - Dự toán - Thuế TNCN (Triệu đ)",
+          "Thuế Tỉnh - Lũy kế - Thuế TNCN (Triệu đ)",
+          "Thuế Tỉnh - Dự toán - Lệ phí trước bạ (Triệu đ)",
+          "Thuế Tỉnh - Lũy kế - Lệ phí trước bạ (Triệu đ)",
+          "Thuế Tỉnh - Dự toán - Phí, lệ phí & Thu khác (Triệu đ)",
+          "Thuế Tỉnh - Lũy kế - Phí, lệ phí & Thu khác (Triệu đ)",
+          "Thuế Cơ Sở - Dự toán - Sử dụng đất (Triệu đ)",
+          "Thuế Cơ Sở - Lũy kế - Sử dụng đất (Triệu đ)",
+          "Thuế Cơ Sở - Dự toán - Thuế CTN ngoài quốc doanh (Triệu đ)",
+          "Thuế Cơ Sở - Lũy kế - Thuế CTN ngoài quốc doanh (Triệu đ)",
+          "Thuế Cơ Sở - Dự toán - Thuế TNCN (Triệu đ)",
+          "Thuế Cơ Sở - Lũy kế - Thuế TNCN (Triệu đ)",
+          "Thuế Cơ Sở - Dự toán - Lệ phí trước bạ (Triệu đ)",
+          "Thuế Cơ Sở - Lũy kế - Lệ phí trước bạ (Triệu đ)",
+          "Thuế Cơ Sở - Dự toán - Phí, lệ phí & Thu khác (Triệu đ)",
+          "Thuế Cơ Sở - Lũy kế - Phí, lệ phí & Thu khác (Triệu đ)"
+        ];
+        
+        const rows = [headers];
+        
+        currentData.communes.forEach(c => {
+          rows.push([
+            c.name,
+            (c.provinceTax.details.land.target || 0) / 1000000,
+            (c.provinceTax.details.land.ytd || 0) / 1000000,
+            (c.provinceTax.details.business.target || 0) / 1000000,
+            (c.provinceTax.details.business.ytd || 0) / 1000000,
+            (c.provinceTax.details.pit.target || 0) / 1000000,
+            (c.provinceTax.details.pit.ytd || 0) / 1000000,
+            (c.provinceTax.details.registration.target || 0) / 1000000,
+            (c.provinceTax.details.registration.ytd || 0) / 1000000,
+            (c.provinceTax.details.others.target || 0) / 1000000,
+            (c.provinceTax.details.others.ytd || 0) / 1000000,
+            (c.baseTax.details.land.target || 0) / 1000000,
+            (c.baseTax.details.land.ytd || 0) / 1000000,
+            (c.baseTax.details.business.target || 0) / 1000000,
+            (c.baseTax.details.business.ytd || 0) / 1000000,
+            (c.baseTax.details.pit.target || 0) / 1000000,
+            (c.baseTax.details.pit.ytd || 0) / 1000000,
+            (c.baseTax.details.registration.target || 0) / 1000000,
+            (c.baseTax.details.registration.ytd || 0) / 1000000,
+            (c.baseTax.details.others.target || 0) / 1000000,
+            (c.baseTax.details.others.ytd || 0) / 1000000
+          ]);
+        });
+        
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Số liệu Thu thuế");
+        
+        ws['!cols'] = headers.map(h => ({ wch: h.length + 3 }));
+        
+        const date = reportDatePickerEl.value;
+        XLSX.writeFile(wb, `thue_co_so_13_so_lieu_${date}.xlsx`);
+        showToast("Đã tải file mẫu Excel thành công!");
+      } catch (err) {
+        alert("Lỗi khi tạo file Excel: " + err.message);
+      }
+    });
+  }
 
   // Nhập file Excel định kỳ
-  btnTriggerExcelImport.addEventListener("click", () => {
-    fileImportExcel.click();
-  });
+  if (btnTriggerExcelImport) {
+    btnTriggerExcelImport.addEventListener("click", () => {
+      if (fileImportExcel) {
+        fileImportExcel.click();
+      }
+    });
+  }
 
-  fileImportExcel.addEventListener("change", (e) => {
+  if (fileImportExcel) {
+    fileImportExcel.addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -2171,8 +2192,11 @@ function initApp() {
       }
     };
     reader.readAsArrayBuffer(file);
-    fileImportExcel.value = "";
+    if (fileImportExcel) {
+      fileImportExcel.value = "";
+    }
   });
+}
 
   // Đăng ký sự kiện click nút hủy lọc bảng
   if (btnClearTableFilter) {
