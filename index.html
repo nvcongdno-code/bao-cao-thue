@@ -281,8 +281,20 @@
         <div style="border: 1px solid var(--border-color); padding: 16px; border-radius: var(--radius-md); background: var(--bg-primary);">
           <h4 style="font-size: 0.88rem; margin-bottom: 8px; color: var(--color-success); font-weight: 700;">🟢 CẬP NHẬT BẰNG FILE EXCEL MẪU</h4>
           <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">
-            Nhấp nút bên dưới để tải tệp mẫu Excel định kỳ (.xlsx) chứa cấu hình dự toán và các nguồn thu chi tiết của 7 xã, điền số liệu lũy kế YTD mới của bạn, sau đó tải lên lại.
+            Chọn loại số liệu bạn muốn cập nhật từ tệp Excel, sau đó tải tệp lên.
           </p>
+          
+          <div style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem; color: var(--text-secondary);">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="radio" name="excel-import-type" value="actual" checked style="accent-color: var(--color-success); cursor: pointer;">
+              <span>Cập nhật số liệu <strong>Thực hiện</strong> (Khóa dự toán cũ)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="radio" name="excel-import-type" value="target" style="accent-color: var(--color-success); cursor: pointer;">
+              <span>Cập nhật số liệu <strong>Dự toán</strong> (Khóa số thực hiện cũ)</span>
+            </label>
+          </div>
+
           <div style="display: flex; gap: 10px;">
             <button class="btn" id="btn-export-excel" style="flex: 1; padding: 10px; font-weight: 700; border-color: var(--color-success); color: var(--color-success)">📥 Tải Mẫu Excel</button>
             <input type="file" id="file-import-excel" accept=".xlsx, .xls" style="display: none;">

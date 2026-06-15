@@ -1792,6 +1792,7 @@ function initApp() {
         
         // Sao lưu trạng thái cũ để tính toán số thu chênh lệch trong kỳ
         const oldData = JSON.parse(JSON.stringify(currentData));
+        const importType = document.querySelector('input[name="excel-import-type"]:checked')?.value || 'actual';
         
         // Phát hiện cấu trúc tệp Excel (Chính thức vs Mẫu phẳng)
         let isOfficialWorkbook = false;
@@ -1885,48 +1886,102 @@ function initApp() {
 
               // Lấy số liệu dự toán (target) từ dữ liệu gốc ban đầu, không lấy từ file Excel
               const origCommune = window.BUDGET_DATA.communes.find(oc => oc.id === commune.id) || commune;
-              const land_prov_target = origCommune.provinceTax.details.land.target;
-              const bus_prov_target  = origCommune.provinceTax.details.business.target;
-              const pit_prov_target  = origCommune.provinceTax.details.pit.target;
-              const reg_prov_target  = origCommune.provinceTax.details.registration.target;
-              const oth_prov_target  = origCommune.provinceTax.details.others.target;
 
-              const land_base_target = origCommune.baseTax.details.land.target;
-              const bus_base_target  = origCommune.baseTax.details.business.target;
-              const pit_base_target  = origCommune.baseTax.details.pit.target;
-              const reg_base_target  = origCommune.baseTax.details.registration.target;
-              const oth_base_target  = origCommune.baseTax.details.others.target;
+              let land_prov_target, bus_prov_target, pit_prov_target, reg_prov_target, oth_prov_target;
+              let land_base_target, bus_base_target, pit_base_target, reg_base_target, oth_base_target;
+              let prov_total_ytd, prov_land_ytd, prov_bus_ytd, prov_pit_ytd, prov_reg_ytd, prov_oth_ytd;
+              let base_total_ytd, base_land_ytd, base_bus_ytd, base_pit_ytd, base_reg_ytd, base_oth_ytd;
 
-              // Thu thập thực thu lũy kế (YTD) từ file Excel vừa tải lên
-              const prov_total_ytd = getNumValue(provinceAOA, r, 3) * 1000000;
-              const prov_land_ytd = getNumValue(provinceAOA, r, 37) * 1000000;
-              
-              // Cộng dồn cả 4 khu vực doanh nghiệp (từ cột 8 đến cột 22)
-              let prov_bus_ytd = 0;
-              for (let col = 8; col <= 22; col++) {
-                prov_bus_ytd += getNumValue(provinceAOA, r, col);
+              if (importType === "target") {
+                // --- CHỈ CẬP NHẬT DỰ TOÁN, GIỮ NGUYÊN SỐ THỰC HIỆN CŨ ---
+                const land_combined_target = getNumValue(targetAOA, 7, c) * 1000000;
+                const bus_combined_target  = getNumValue(targetAOA, 9, c) * 1000000;
+                const pit_combined_target  = getNumValue(targetAOA, 22, c) * 1000000;
+                const reg_combined_target  = getNumValue(targetAOA, 24, c) * 1000000;
+                const oth_combined_target  = getNumValue(targetAOA, 25, c) * 1000000;
+
+                land_prov_target = getNumValue(targetAOA, 6, c) * 1000000;
+                land_base_target = land_combined_target - land_prov_target;
+                const prov_total_target = getNumValue(targetAOA, 4, c) * 1000000;
+                const base_total_target = getNumValue(targetAOA, 5, c) * 1000000;
+
+                // Giữ nguyên thực hiện YTD cũ
+                prov_land_ytd = commune.provinceTax.details.land.ytd;
+                prov_bus_ytd  = commune.provinceTax.details.business.ytd;
+                prov_pit_ytd  = commune.provinceTax.details.pit.ytd;
+                prov_reg_ytd  = commune.provinceTax.details.registration.ytd;
+                prov_oth_ytd  = commune.provinceTax.details.others.ytd;
+                prov_total_ytd = commune.provinceTax.ytd;
+
+                base_land_ytd = commune.baseTax.details.land.ytd;
+                base_bus_ytd  = commune.baseTax.details.business.ytd;
+                base_pit_ytd  = commune.baseTax.details.pit.ytd;
+                base_reg_ytd  = commune.baseTax.details.registration.ytd;
+                base_oth_ytd  = commune.baseTax.details.others.ytd;
+                base_total_ytd = commune.baseTax.ytd;
+
+                // Phân phối dự toán theo tỷ lệ thực thu
+                const bus_split = getSplitTarget(bus_combined_target, base_bus_ytd, prov_bus_ytd, 0.70);
+                bus_base_target = bus_split[0];
+                bus_prov_target = bus_split[1];
+
+                const pit_split = getSplitTarget(pit_combined_target, base_pit_ytd, prov_pit_ytd, 0.85);
+                pit_base_target = pit_split[0];
+                pit_prov_target = pit_split[1];
+
+                const reg_split = getSplitTarget(reg_combined_target, base_reg_ytd, prov_reg_ytd, 0.85);
+                reg_base_target = reg_split[0];
+                reg_prov_target = reg_split[1];
+
+                oth_base_target = base_total_target - (land_base_target + bus_base_target + pit_base_target + reg_base_target);
+                if (oth_base_target < 0) oth_base_target = 0;
+
+                oth_prov_target = prov_total_target - (land_prov_target + bus_prov_target + pit_prov_target + reg_prov_target);
+                if (oth_prov_target < 0) oth_prov_target = 0;
+              } else {
+                // --- CHỈ CẬP NHẬT THỰC HIỆN, KHÓA SỐ DỰ TOÁN CŨ ---
+                // Giữ nguyên dự toán hiện tại
+                land_prov_target = commune.provinceTax.details.land.target;
+                bus_prov_target  = commune.provinceTax.details.business.target;
+                pit_prov_target  = commune.provinceTax.details.pit.target;
+                reg_prov_target  = commune.provinceTax.details.registration.target;
+                oth_prov_target  = commune.provinceTax.details.others.target;
+
+                land_base_target = commune.baseTax.details.land.target;
+                bus_base_target  = commune.baseTax.details.business.target;
+                pit_base_target  = commune.baseTax.details.pit.target;
+                reg_base_target  = commune.baseTax.details.registration.target;
+                oth_base_target  = commune.baseTax.details.others.target;
+
+                // Đọc thực thu lũy kế YTD mới từ Excel
+                prov_total_ytd = getNumValue(provinceAOA, r, 3) * 1000000;
+                prov_land_ytd = getNumValue(provinceAOA, r, 37) * 1000000;
+                
+                prov_bus_ytd = 0;
+                for (let col = 8; col <= 22; col++) {
+                  prov_bus_ytd += getNumValue(provinceAOA, r, col);
+                }
+                prov_bus_ytd *= 1000000;
+                
+                prov_pit_ytd = getNumValue(provinceAOA, r, 30) * 1000000;
+                prov_reg_ytd = getNumValue(provinceAOA, r, 32) * 1000000;
+                prov_oth_ytd = prov_total_ytd - (prov_land_ytd + prov_bus_ytd + prov_pit_ytd + prov_reg_ytd);
+                if (prov_oth_ytd < 0) prov_oth_ytd = 0;
+
+                base_total_ytd = getNumValue(baseAOA, r, 3) * 1000000;
+                base_land_ytd = getNumValue(baseAOA, r, 37) * 1000000;
+                
+                base_bus_ytd = 0;
+                for (let col = 8; col <= 22; col++) {
+                  base_bus_ytd += getNumValue(baseAOA, r, col);
+                }
+                base_bus_ytd *= 1000000;
+                
+                base_pit_ytd = getNumValue(baseAOA, r, 30) * 1000000;
+                base_reg_ytd = getNumValue(baseAOA, r, 32) * 1000000;
+                base_oth_ytd = base_total_ytd - (base_land_ytd + base_bus_ytd + base_pit_ytd + base_reg_ytd);
+                if (base_oth_ytd < 0) base_oth_ytd = 0;
               }
-              prov_bus_ytd *= 1000000;
-              
-              const prov_pit_ytd = getNumValue(provinceAOA, r, 30) * 1000000;
-              const prov_reg_ytd = getNumValue(provinceAOA, r, 32) * 1000000;
-              let prov_oth_ytd = prov_total_ytd - (prov_land_ytd + prov_bus_ytd + prov_pit_ytd + prov_reg_ytd);
-              if (prov_oth_ytd < 0) prov_oth_ytd = 0;
-
-              const base_total_ytd = getNumValue(baseAOA, r, 3) * 1000000;
-              const base_land_ytd = getNumValue(baseAOA, r, 37) * 1000000;
-              
-              // Cộng dồn cả 4 khu vực doanh nghiệp (từ cột 8 đến cột 22)
-              let base_bus_ytd = 0;
-              for (let col = 8; col <= 22; col++) {
-                base_bus_ytd += getNumValue(baseAOA, r, col);
-              }
-              base_bus_ytd *= 1000000;
-              
-              const base_pit_ytd = getNumValue(baseAOA, r, 30) * 1000000;
-              const base_reg_ytd = getNumValue(baseAOA, r, 32) * 1000000;
-              let base_oth_ytd = base_total_ytd - (base_land_ytd + base_bus_ytd + base_pit_ytd + base_reg_ytd);
-              if (base_oth_ytd < 0) base_oth_ytd = 0;
 
               // Áp dụng dữ liệu vào bộ nhớ
               commune.provinceTax.details.land.target = Math.round(land_prov_target);
@@ -1985,51 +2040,101 @@ function initApp() {
               const oldCommune = oldData.communes.find(oc => oc.id === commune.id);
               const origCommune = window.BUDGET_DATA.communes.find(oc => oc.id === commune.id) || commune;
               if (row.length > 11) {
-                // Nhập định dạng mẫu mới với 21 cột (giữ nguyên dự toán từ gốc, chỉ lấy số thực hiện YTD)
-                commune.provinceTax.details.land.target = origCommune.provinceTax.details.land.target;
-                commune.provinceTax.details.land.ytd = (parseFloat(row[2]) || 0) * 1000000;
-                commune.provinceTax.details.business.target = origCommune.provinceTax.details.business.target;
-                commune.provinceTax.details.business.ytd = (parseFloat(row[4]) || 0) * 1000000;
-                commune.provinceTax.details.pit.target = origCommune.provinceTax.details.pit.target;
-                commune.provinceTax.details.pit.ytd = (parseFloat(row[6]) || 0) * 1000000;
-                commune.provinceTax.details.registration.target = origCommune.provinceTax.details.registration.target;
-                commune.provinceTax.details.registration.ytd = (parseFloat(row[8]) || 0) * 1000000;
-                commune.provinceTax.details.others.target = origCommune.provinceTax.details.others.target;
-                commune.provinceTax.details.others.ytd = (parseFloat(row[10]) || 0) * 1000000;
+                if (importType === "target") {
+                  // --- CẬP NHẬT DỰ TOÁN, GIỮ NGUYÊN THỰC HIỆN CŨ ---
+                  commune.provinceTax.details.land.target = (parseFloat(row[1]) || 0) * 1000000;
+                  commune.provinceTax.details.land.ytd = commune.provinceTax.details.land.ytd;
+                  commune.provinceTax.details.business.target = (parseFloat(row[3]) || 0) * 1000000;
+                  commune.provinceTax.details.business.ytd = commune.provinceTax.details.business.ytd;
+                  commune.provinceTax.details.pit.target = (parseFloat(row[5]) || 0) * 1000000;
+                  commune.provinceTax.details.pit.ytd = commune.provinceTax.details.pit.ytd;
+                  commune.provinceTax.details.registration.target = (parseFloat(row[7]) || 0) * 1000000;
+                  commune.provinceTax.details.registration.ytd = commune.provinceTax.details.registration.ytd;
+                  commune.provinceTax.details.others.target = (parseFloat(row[9]) || 0) * 1000000;
+                  commune.provinceTax.details.others.ytd = commune.provinceTax.details.others.ytd;
 
-                commune.baseTax.details.land.target = origCommune.baseTax.details.land.target;
-                commune.baseTax.details.land.ytd = (parseFloat(row[12]) || 0) * 1000000;
-                commune.baseTax.details.business.target = origCommune.baseTax.details.business.target;
-                commune.baseTax.details.business.ytd = (parseFloat(row[14]) || 0) * 1000000;
-                commune.baseTax.details.pit.target = origCommune.baseTax.details.pit.target;
-                commune.baseTax.details.pit.ytd = (parseFloat(row[16]) || 0) * 1000000;
-                commune.baseTax.details.registration.target = origCommune.baseTax.details.registration.target;
-                commune.baseTax.details.registration.ytd = (parseFloat(row[18]) || 0) * 1000000;
-                commune.baseTax.details.others.target = origCommune.baseTax.details.others.target;
-                commune.baseTax.details.others.ytd = (parseFloat(row[20]) || 0) * 1000000;
+                  commune.baseTax.details.land.target = (parseFloat(row[11]) || 0) * 1000000;
+                  commune.baseTax.details.land.ytd = commune.baseTax.details.land.ytd;
+                  commune.baseTax.details.business.target = (parseFloat(row[13]) || 0) * 1000000;
+                  commune.baseTax.details.business.ytd = commune.baseTax.details.business.ytd;
+                  commune.baseTax.details.pit.target = (parseFloat(row[15]) || 0) * 1000000;
+                  commune.baseTax.details.pit.ytd = commune.baseTax.details.pit.ytd;
+                  commune.baseTax.details.registration.target = (parseFloat(row[17]) || 0) * 1000000;
+                  commune.baseTax.details.registration.ytd = commune.baseTax.details.registration.ytd;
+                  commune.baseTax.details.others.target = (parseFloat(row[19]) || 0) * 1000000;
+                  commune.baseTax.details.others.ytd = commune.baseTax.details.others.ytd;
+                } else {
+                  // --- CẬP NHẬT THỰC HIỆN, GIỮ NGUYÊN DỰ TOÁN CŨ ---
+                  commune.provinceTax.details.land.target = commune.provinceTax.details.land.target;
+                  commune.provinceTax.details.land.ytd = (parseFloat(row[2]) || 0) * 1000000;
+                  commune.provinceTax.details.business.target = commune.provinceTax.details.business.target;
+                  commune.provinceTax.details.business.ytd = (parseFloat(row[4]) || 0) * 1000000;
+                  commune.provinceTax.details.pit.target = commune.provinceTax.details.pit.target;
+                  commune.provinceTax.details.pit.ytd = (parseFloat(row[6]) || 0) * 1000000;
+                  commune.provinceTax.details.registration.target = commune.provinceTax.details.registration.target;
+                  commune.provinceTax.details.registration.ytd = (parseFloat(row[8]) || 0) * 1000000;
+                  commune.provinceTax.details.others.target = commune.provinceTax.details.others.target;
+                  commune.provinceTax.details.others.ytd = (parseFloat(row[10]) || 0) * 1000000;
+
+                  commune.baseTax.details.land.target = commune.baseTax.details.land.target;
+                  commune.baseTax.details.land.ytd = (parseFloat(row[12]) || 0) * 1000000;
+                  commune.baseTax.details.business.target = commune.baseTax.details.business.target;
+                  commune.baseTax.details.business.ytd = (parseFloat(row[14]) || 0) * 1000000;
+                  commune.baseTax.details.pit.target = commune.baseTax.details.pit.target;
+                  commune.baseTax.details.pit.ytd = (parseFloat(row[16]) || 0) * 1000000;
+                  commune.baseTax.details.registration.target = commune.baseTax.details.registration.target;
+                  commune.baseTax.details.registration.ytd = (parseFloat(row[18]) || 0) * 1000000;
+                  commune.baseTax.details.others.target = commune.baseTax.details.others.target;
+                  commune.baseTax.details.others.ytd = (parseFloat(row[20]) || 0) * 1000000;
+                }
               } else {
-                // Nhập định dạng mẫu 11 cột cũ: chỉ cập nhật thực hiện YTD vào Thuế Cơ Sở, reset YTD Thuế Tỉnh về 0, giữ nguyên toàn bộ dự toán gốc
-                commune.provinceTax.details.land.target = origCommune.provinceTax.details.land.target;
-                commune.provinceTax.details.land.ytd = 0;
-                commune.provinceTax.details.business.target = origCommune.provinceTax.details.business.target;
-                commune.provinceTax.details.business.ytd = 0;
-                commune.provinceTax.details.pit.target = origCommune.provinceTax.details.pit.target;
-                commune.provinceTax.details.pit.ytd = 0;
-                commune.provinceTax.details.registration.target = origCommune.provinceTax.details.registration.target;
-                commune.provinceTax.details.registration.ytd = 0;
-                commune.provinceTax.details.others.target = origCommune.provinceTax.details.others.target;
-                commune.provinceTax.details.others.ytd = 0;
+                if (importType === "target") {
+                  // --- 11 CỘT: CẬP NHẬT DỰ TOÁN THUẾ CƠ SỞ, GIỮ NGUYÊN THỰC HIỆN CŨ ---
+                  commune.provinceTax.details.land.target = commune.provinceTax.details.land.target;
+                  commune.provinceTax.details.land.ytd = commune.provinceTax.details.land.ytd;
+                  commune.provinceTax.details.business.target = commune.provinceTax.details.business.target;
+                  commune.provinceTax.details.business.ytd = commune.provinceTax.details.business.ytd;
+                  commune.provinceTax.details.pit.target = commune.provinceTax.details.pit.target;
+                  commune.provinceTax.details.pit.ytd = commune.provinceTax.details.pit.ytd;
+                  commune.provinceTax.details.registration.target = commune.provinceTax.details.registration.target;
+                  commune.provinceTax.details.registration.ytd = commune.provinceTax.details.registration.ytd;
+                  commune.provinceTax.details.others.target = commune.provinceTax.details.others.target;
+                  commune.provinceTax.details.others.ytd = commune.provinceTax.details.others.ytd;
 
-                commune.baseTax.details.land.target = origCommune.baseTax.details.land.target;
-                commune.baseTax.details.land.ytd = (parseFloat(row[2]) || 0) * 1000000;
-                commune.baseTax.details.business.target = origCommune.baseTax.details.business.target;
-                commune.baseTax.details.business.ytd = (parseFloat(row[4]) || 0) * 1000000;
-                commune.baseTax.details.pit.target = origCommune.baseTax.details.pit.target;
-                commune.baseTax.details.pit.ytd = (parseFloat(row[6]) || 0) * 1000000;
-                commune.baseTax.details.registration.target = origCommune.baseTax.details.registration.target;
-                commune.baseTax.details.registration.ytd = (parseFloat(row[8]) || 0) * 1000000;
-                commune.baseTax.details.others.target = origCommune.baseTax.details.others.target;
-                commune.baseTax.details.others.ytd = (parseFloat(row[10]) || 0) * 1000000;
+                  commune.baseTax.details.land.target = (parseFloat(row[1]) || 0) * 1000000;
+                  commune.baseTax.details.land.ytd = commune.baseTax.details.land.ytd;
+                  commune.baseTax.details.business.target = (parseFloat(row[3]) || 0) * 1000000;
+                  commune.baseTax.details.business.ytd = commune.baseTax.details.business.ytd;
+                  commune.baseTax.details.pit.target = (parseFloat(row[5]) || 0) * 1000000;
+                  commune.baseTax.details.pit.ytd = commune.baseTax.details.pit.ytd;
+                  commune.baseTax.details.registration.target = (parseFloat(row[7]) || 0) * 1000000;
+                  commune.baseTax.details.registration.ytd = commune.baseTax.details.registration.ytd;
+                  commune.baseTax.details.others.target = (parseFloat(row[9]) || 0) * 1000000;
+                  commune.baseTax.details.others.ytd = commune.baseTax.details.others.ytd;
+                } else {
+                  // --- 11 CỘT: CẬP NHẬT THỰC HIỆN THUẾ CƠ SỞ, GIỮ NGUYÊN DỰ TOÁN CŨ ---
+                  commune.provinceTax.details.land.target = commune.provinceTax.details.land.target;
+                  commune.provinceTax.details.land.ytd = 0;
+                  commune.provinceTax.details.business.target = commune.provinceTax.details.business.target;
+                  commune.provinceTax.details.business.ytd = 0;
+                  commune.provinceTax.details.pit.target = commune.provinceTax.details.pit.target;
+                  commune.provinceTax.details.pit.ytd = 0;
+                  commune.provinceTax.details.registration.target = commune.provinceTax.details.registration.target;
+                  commune.provinceTax.details.registration.ytd = 0;
+                  commune.provinceTax.details.others.target = commune.provinceTax.details.others.target;
+                  commune.provinceTax.details.others.ytd = 0;
+
+                  commune.baseTax.details.land.target = commune.baseTax.details.land.target;
+                  commune.baseTax.details.land.ytd = (parseFloat(row[2]) || 0) * 1000000;
+                  commune.baseTax.details.business.target = commune.baseTax.details.business.target;
+                  commune.baseTax.details.business.ytd = (parseFloat(row[4]) || 0) * 1000000;
+                  commune.baseTax.details.pit.target = commune.baseTax.details.pit.target;
+                  commune.baseTax.details.pit.ytd = (parseFloat(row[6]) || 0) * 1000000;
+                  commune.baseTax.details.registration.target = commune.baseTax.details.registration.target;
+                  commune.baseTax.details.registration.ytd = (parseFloat(row[8]) || 0) * 1000000;
+                  commune.baseTax.details.others.target = commune.baseTax.details.others.target;
+                  commune.baseTax.details.others.ytd = (parseFloat(row[10]) || 0) * 1000000;
+                }
               }
 
               // Tính toán lại
