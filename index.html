@@ -315,9 +315,20 @@
   </div>
 
 
-  <!-- Scripts -->
-  <script src="data_v1_8.js"></script>
-  <script src="app_v1_8.js"></script>
+  <script>
+    (function() {
+      const ts = new Date().getTime();
+      function loadScript(src, callback) {
+        const script = document.createElement('script');
+        script.src = src + '?t=' + ts;
+        script.onload = callback;
+        document.body.appendChild(script);
+      }
+      loadScript('data_v1_8.js', function() {
+        loadScript('app_v1_8.js');
+      });
+    })();
+  </script>
 
 </body>
 </html>

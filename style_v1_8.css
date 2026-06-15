@@ -952,12 +952,27 @@ tr:hover td {
   }
   
   .date-picker-input {
-    padding: 4px 6px !important;
-    font-size: 0.75rem !important;
+    padding: 0 !important;
+    font-size: 0.8rem !important;
+    pointer-events: none !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--color-success) !important;
+    font-weight: 700 !important;
+    cursor: default !important;
+    box-shadow: none !important;
+    outline: none !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+  }
+  
+  .date-picker-input::-webkit-calendar-picker-indicator {
+    display: none !important;
+    -webkit-appearance: none !important;
   }
   
   #last-update-time {
-    font-size: 0.65rem !important;
+    display: none !important;
   }
   
   .controls-container {
