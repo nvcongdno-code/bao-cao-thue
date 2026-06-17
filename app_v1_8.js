@@ -24,7 +24,15 @@ function initApp() {
     if (stateDate && window.BUDGET_DATA.metadata.reportDate !== stateDate) {
       localStorage.removeItem("thue_co_so_13_baseline");
       localStorage.removeItem("thue_co_so_13_current_state");
-      localStorage.removeItem("thue_co_so_13_history");
+      // Tuyệt đối không xóa thue_co_so_13_history để giữ lại số liệu đầu tháng!
+    }
+  }
+
+  // Khôi phục lịch sử từ file tĩnh nếu có (để đồng bộ đa thiết bị)
+  if (window.BUDGET_HISTORY && Array.isArray(window.BUDGET_HISTORY)) {
+    const localHistory = JSON.parse(localStorage.getItem("thue_co_so_13_history") || "[]");
+    if (localHistory.length === 0 || window.BUDGET_HISTORY.length > localHistory.length) {
+      localStorage.setItem("thue_co_so_13_history", JSON.stringify(window.BUDGET_HISTORY));
     }
   }
 
@@ -96,6 +104,15 @@ function initApp() {
   }
   normalizeDataKeys(originalBaseline);
   normalizeDataKeys(currentData);
+  
+  // Áp dụng tính toán Số phát sinh trong kỳ (today) = YTD hiện tại - Số đầu kỳ cho dữ liệu đã lưu
+  if (currentData && currentData.communes) {
+    currentData.communes.forEach(c => {
+      c.provinceTax.today = Object.values(c.provinceTax.details).reduce((sum, item) => sum + ((item?.ytd || 0) - (item?.periodStartYtd || 0)), 0);
+      c.baseTax.today = Object.values(c.baseTax.details).reduce((sum, item) => sum + ((item?.ytd || 0) - (item?.periodStartYtd || 0)), 0);
+    });
+  }
+  
   let selectedCommuneId = "tong_hop"; // "tong_hop" đại diện cho Tổng hợp toàn địa bàn
   let sortField = "ytdRate";
   let sortAscending = false;
@@ -164,28 +181,101 @@ function initApp() {
     if (matchedRecord) {
       currentData = JSON.parse(JSON.stringify(matchedRecord.data));
       showToast("Đã cập nhật số liệu");
+      finalizeDateChange(newDate);
     } else if (originalBaseline && originalBaseline.metadata && originalBaseline.metadata.reportDate === newDate) {
       currentData = JSON.parse(JSON.stringify(originalBaseline));
       showToast("Đã cập nhật số liệu");
+      finalizeDateChange(newDate);
     } else {
-      const confirmNew = confirm(`Ngày ${newDate} chưa có dữ liệu. Bạn có muốn tạo dữ liệu mới cho ngày này (kế thừa từ số liệu hiện tại) không?`);
-      if (confirmNew) {
-        currentData.metadata.previousReportDate = currentData.metadata.reportDate;
-        currentData.metadata.reportDate = newDate;
-        saveSnapshot(`Tạo ngày mới ${newDate}`, "Manual");
-        showToast(`Đã chuyển sang ngày báo cáo mới: ${newDate}`);
-      } else {
-        e.target.value = currentData.metadata.reportDate; // Revert the input value
-        return; // Stop further execution
-      }
+      // Hiển thị modal tùy chỉnh thay vì confirm()
+      showDateChangeModal(newDate, e.target);
     }
-    
+  });
+
+  function finalizeDateChange(newDate) {
     const prdEl = document.getElementById("print-report-date");
     if (prdEl) prdEl.textContent = formatDate(newDate);
     updateLastUpdateTime();
     onCommuneSelected(); // Cập nhật lại giao diện
     renderSidebar(); // Vẽ lại sidebar
-  });
+  }
+
+  function showDateChangeModal(newDate, inputEl) {
+    const oldDate = currentData.metadata.reportDate;
+    
+    // Tạo modal overlay
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = "0"; overlay.style.left = "0"; overlay.style.width = "100%"; overlay.style.height = "100%";
+    overlay.style.backgroundColor = "rgba(0,0,0,0.6)";
+    overlay.style.zIndex = "9999";
+    overlay.style.display = "flex";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    
+    // Tạo modal box
+    const box = document.createElement("div");
+    box.style.background = "var(--bg-primary)";
+    box.style.padding = "20px";
+    box.style.borderRadius = "8px";
+    box.style.maxWidth = "400px";
+    box.style.textAlign = "center";
+    box.style.boxShadow = "var(--shadow-xl)";
+    box.style.color = "var(--text-primary)";
+    
+    box.innerHTML = `
+      <h3 style="margin-top: 0; color: #f59e0b;">Ngày chưa có dữ liệu</h3>
+      <p style="font-size: 0.9rem; margin-bottom: 20px;">Hệ thống không tìm thấy dữ liệu cho ngày <b>${newDate}</b>. Bạn muốn xử lý thế nào?</p>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button id="btn-modal-inherit" style="padding: 10px; border-radius: 4px; border: none; background: var(--color-primary); color: white; cursor: pointer; font-weight: bold;">
+          1. Kế thừa dữ liệu hiện tại (Khuyên dùng khi sang ngày mới)
+        </button>
+        <button id="btn-modal-blank" style="padding: 10px; border-radius: 4px; border: 1px solid #ef4444; background: transparent; color: #ef4444; cursor: pointer; font-weight: bold;">
+          2. Tạo mới hoàn toàn (Xóa trắng 0đ)
+        </button>
+        <button id="btn-modal-cancel" style="padding: 10px; border-radius: 4px; border: none; background: var(--bg-secondary); color: var(--text-muted); cursor: pointer; font-weight: bold;">
+          Hủy bỏ (Giữ nguyên ngày cũ)
+        </button>
+      </div>
+    `;
+    
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    
+    // Xử lý sự kiện
+    document.getElementById("btn-modal-inherit").onclick = () => {
+      currentData.metadata.previousReportDate = currentData.metadata.reportDate;
+      currentData.metadata.reportDate = newDate;
+      saveSnapshot(`Kế thừa dữ liệu sang ${newDate}`, "Manual");
+      showToast(`Đã chuyển sang ngày mới: ${newDate}`);
+      document.body.removeChild(overlay);
+      finalizeDateChange(newDate);
+    };
+    
+    document.getElementById("btn-modal-blank").onclick = () => {
+      // Đặt tất cả về 0
+      currentData.metadata.previousReportDate = currentData.metadata.reportDate;
+      currentData.metadata.reportDate = newDate;
+      currentData.communes.forEach(c => {
+        Object.keys(c.provinceTax.details).forEach(k => {
+          c.provinceTax.details[k] = { target: 0, ytd: 0, lastYearYtd: 0, periodStartYtd: c.provinceTax.details[k].periodStartYtd || 0 };
+        });
+        Object.keys(c.baseTax.details).forEach(k => {
+          c.baseTax.details[k] = { target: 0, ytd: 0, lastYearYtd: 0, periodStartYtd: c.baseTax.details[k].periodStartYtd || 0 };
+        });
+        updateCommuneDerivedFields(c, 10, null);
+      });
+      saveSnapshot(`Tạo dữ liệu trắng cho ${newDate}`, "Manual");
+      showToast(`Đã tạo dữ liệu trống 0đ cho ngày ${newDate}`);
+      document.body.removeChild(overlay);
+      finalizeDateChange(newDate);
+    };
+    
+    document.getElementById("btn-modal-cancel").onclick = () => {
+      inputEl.value = oldDate;
+      document.body.removeChild(overlay);
+    };
+  }
 
   // -------------------------------------------------------------------------
   // 1. Quản lý Theme (Sáng/Tối)
@@ -992,10 +1082,23 @@ function initApp() {
         localStorage.setItem("thue_co_so_13_baseline", JSON.stringify(currentData));
         localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
         originalBaseline = JSON.parse(JSON.stringify(currentData));
+        
+        // Cập nhật cả lịch sử để khi chuyển ngày qua lại không bị load lại bản ghi cũ sai lệch
+        saveSnapshot("Lưu thủ công (Dữ liệu gốc)", "Manual");
 
-        // 2. Tao noi dung tep data_v1_8.js
+        // 2. Tao noi dung tep data_v1_8.js (Bao gồm cả dữ liệu hiện tại và Lịch sử để đồng bộ đa thiết bị)
         const now = new Date().toLocaleDateString('vi-VN');
-        const fileContent = `// Budget data for 7 communes\n// Saved by admin on ${now}\n\nconst BUDGET_DATA = ${JSON.stringify(currentData, null, 2)};\n\nwindow.BUDGET_DATA = BUDGET_DATA;\n`;
+        const historyData = localStorage.getItem("thue_co_so_13_history") || "[]";
+        
+        const fileContent = `// Budget data and history for 7 communes
+// Saved by admin on ${now}
+
+const BUDGET_DATA = ${JSON.stringify(currentData, null, 2)};
+const BUDGET_HISTORY = ${historyData};
+
+window.BUDGET_DATA = BUDGET_DATA;
+window.BUDGET_HISTORY = BUDGET_HISTORY;
+`;
 
         // 3. Gui len server luu thang vao thu muc du an (khong tai ve)
         let serverSaved = false;
@@ -1032,30 +1135,23 @@ function initApp() {
     });
   }
 
-  // Nút Khôi phục số liệu gốc
+  // Nút Khôi phục về số 0 (Xóa trắng)
   if (resetBtn) {
     resetBtn.addEventListener("click", () => {
-      const hasLocalBaseline = localStorage.getItem("thue_co_so_13_baseline");
-      if (hasLocalBaseline) {
-        const option = confirm("Hệ thống phát hiện có dữ liệu tự lưu trữ bằng nút 'LƯU LẠI'.\n\n- Nhấp OK: Khôi phục về dữ liệu đã lưu gần nhất (bằng nút LƯU LẠI).\n- Nhấp CANCEL (HỦY): Khôi phục hoàn toàn về tệp gốc ban đầu (data_v1_8.js).");
-        if (option) {
-          localStorage.removeItem("thue_co_so_13_current_state");
-          localStorage.removeItem("thue_co_so_13_history");
-          location.reload();
-        } else {
-          if (confirm("Xác nhận xóa bỏ toàn bộ dữ liệu tự lưu (LƯU LẠI) và khôi phục hoàn toàn về tệp gốc data_v1_8.js ban đầu?")) {
-            localStorage.removeItem("thue_co_so_13_baseline");
-            localStorage.removeItem("thue_co_so_13_current_state");
-            localStorage.removeItem("thue_co_so_13_history");
-            location.reload();
-          }
-        }
-      } else {
-        if (confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử và khôi phục số liệu gốc ban đầu không?")) {
-          localStorage.removeItem("thue_co_so_13_current_state");
-          localStorage.removeItem("thue_co_so_13_history");
-          location.reload();
-        }
+      if (confirm(`Xác nhận XÓA TRẮNG toàn bộ số liệu của ngày ${currentData.metadata.reportDate} về 0đ?\n\nThao tác này giúp bạn làm sạch dữ liệu để nhập lại từ đầu.`)) {
+        currentData.communes.forEach(c => {
+          Object.keys(c.provinceTax.details).forEach(k => {
+            c.provinceTax.details[k] = { target: 0, ytd: 0, lastYearYtd: 0, periodStartYtd: c.provinceTax.details[k].periodStartYtd || 0 };
+          });
+          Object.keys(c.baseTax.details).forEach(k => {
+            c.baseTax.details[k] = { target: 0, ytd: 0, lastYearYtd: 0, periodStartYtd: c.baseTax.details[k].periodStartYtd || 0 };
+          });
+          updateCommuneDerivedFields(c, 10, null);
+        });
+        saveSnapshot("Xóa trắng về 0đ", "Manual");
+        onCommuneSelected();
+        renderSidebar();
+        showToast("Đã xóa trắng số liệu thành công!");
       }
     });
   }
@@ -1827,17 +1923,29 @@ function initApp() {
   }
 
   // Helper function to get clean numeric value from AOA sheet
+  function parseTriệuĐồng(rawVal) {
+    if (rawVal === undefined || rawVal === null || rawVal === "-" || String(rawVal).trim() === "") return 0.0;
+    let s = String(rawVal).trim();
+    
+    // Phát hiện và giữ lại phần thập phân nếu có đúng 1 hoặc 2 chữ số ở cuối
+    let match = s.match(/[,.](\d{1,2})$/); 
+    if (match) {
+        let decimalPart = match[1];
+        let integerPart = s.substring(0, s.length - match[0].length);
+        integerPart = integerPart.replace(/[,.]/g, ""); // Xóa hết phân cách hàng nghìn
+        return parseFloat(integerPart + "." + decimalPart);
+    } else {
+        // Không có thập phân (hoặc có 3 chữ số như .386 thì coi là hàng nghìn)
+        s = s.replace(/[,.]/g, "");
+        let num = parseFloat(s);
+        return isNaN(num) ? 0.0 : num;
+    }
+  }
+
   function getNumValue(sheetAOA, r, c) {
     const row = sheetAOA[r - 1];
     if (!row) return 0.0;
-    const val = row[c - 1];
-    if (val === undefined || val === null) return 0.0;
-    if (typeof val === "string") {
-      const cleanVal = val.replace(/\s+/g, "").replace(/,/g, "");
-      const num = parseFloat(cleanVal);
-      return isNaN(num) ? 0.0 : num;
-    }
-    return typeof val === "number" ? val : 0.0;
+    return parseTriệuĐồng(row[c - 1]);
   }
 
   // Helper to split combined target
@@ -1863,6 +1971,31 @@ function initApp() {
     // Look up baseline commune
     const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
 
+    // ----- DYNAMIC START OF MONTH LOOKUP -----
+    let startOfMonthData = null;
+    try {
+      const reportDate = currentData.metadata.reportDate; // "YYYY-MM-DD"
+      if (reportDate) {
+        const startOfMonthDate = reportDate.substring(0, 8) + '01';
+        
+        // Luôn đọc lịch sử mới nhất (bỏ cache để không bị dính dữ liệu cũ khi vừa cập nhật ngày mùng 1)
+        const history = JSON.parse(localStorage.getItem("thue_co_so_13_history") || "[]");
+        const match = history.find(item => item.data && item.data.metadata && item.data.metadata.reportDate === startOfMonthDate);
+        
+        if (match && match.data) {
+          startOfMonthData = match.data.communes.find(c => c.id === commune.id);
+        }
+      }
+    } catch (e) { console.warn("Error looking up start of month data", e); }
+
+    const getStartOfMonthYtd = (taxType, key, item) => {
+      if (startOfMonthData && startOfMonthData[taxType] && startOfMonthData[taxType].details && startOfMonthData[taxType].details[key]) {
+        return startOfMonthData[taxType].details[key].ytd || 0;
+      }
+      return item?.periodStartYtd || 0;
+    };
+    // -----------------------------------------
+
     // Update provinceTax totals (target is calculated from details)
     commune.provinceTax.target = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + (item?.target || 0), 0);
     commune.provinceTax.ytd = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + (item?.ytd || 0), 0);
@@ -1879,7 +2012,10 @@ function initApp() {
     commune.provinceTax.lastYearYtd = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + (item?.lastYearYtd || 0), 0);
     
     // Compute provinceTax today (period collection delta)
-    commune.provinceTax.today = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + Math.max(0, (item?.ytd || 0) - (item?.periodStartYtd || 0)), 0);
+    commune.provinceTax.today = Object.keys(commune.provinceTax.details).reduce((sum, key) => {
+      const item = commune.provinceTax.details[key];
+      return sum + ((item?.ytd || 0) - getStartOfMonthYtd("provinceTax", key, item));
+    }, 0);
 
     // Generate lastYearYtd for baseTax details
     Object.keys(commune.baseTax.details).forEach((key, index) => {
@@ -1889,7 +2025,14 @@ function initApp() {
     commune.baseTax.lastYearYtd = Object.values(commune.baseTax.details).reduce((sum, item) => sum + (item?.lastYearYtd || 0), 0);
     
     // Compute baseTax today (period collection delta)
-    commune.baseTax.today = Object.values(commune.baseTax.details).reduce((sum, item) => sum + Math.max(0, (item?.ytd || 0) - (item?.periodStartYtd || 0)), 0);
+    commune.baseTax.today = Object.keys(commune.baseTax.details).reduce((sum, key) => {
+      const item = commune.baseTax.details[key];
+      return sum + ((item?.ytd || 0) - getStartOfMonthYtd("baseTax", key, item));
+    }, 0);
+    
+    // Ensure today values are not negative
+    commune.provinceTax.today = Math.max(0, commune.provinceTax.today);
+    commune.baseTax.today = Math.max(0, commune.baseTax.today);
   }
 
   // Danh sách 12 sắc thuế chính (theo thứ tự chuẩn)
@@ -2058,7 +2201,7 @@ function initApp() {
           exportKeys.forEach((key, ki) => {
             const colIdx = 2 + ki; // Cột 2 = sắc thuế đầu tiên
             const rawVal = row[colIdx];
-            const val = (parseFloat(String(rawVal || 0).replace(/,/g, "")) || 0) * 1000000;
+            const val = parseTriệuĐồng(rawVal) * 1000000;
 
             if (!commune[taxField].details[key]) {
               commune[taxField].details[key] = { target: 0, ytd: 0, lastYearYtd: 0 };
@@ -2083,11 +2226,11 @@ function initApp() {
 
         if (updateCount > 0) {
           currentData.metadata.previousReportDate = oldData.metadata.reportDate;
-          saveSnapshot(`Nhập Excel – ${dataKey === "target" ? "Dự toán" : "Thực hiện"} – ${taxKey === "province" ? "Thuế Tỉnh" : "Thuế Cơ Sở"}`, "Excel");
+          // Không tự động saveSnapshot. Dữ liệu chỉ lưu tạm trên RAM cho đến khi người dùng bấm Lưu lại.
           onCommuneSelected();
           renderSidebar();
           closePeriodicPanel();
-          showToast(`Đã nhập thành công ${updateCount} xã (${dataKey === "target" ? "Dự toán" : "Thực hiện"} – ${taxKey === "province" ? "Thuế Tỉnh" : "Thuế Cơ Sở"})!`);
+          showToast(`Đã nạp tạm số liệu ${updateCount} xã (${dataKey === "target" ? "Dự toán" : "Thực hiện"} – ${taxKey === "province" ? "Thuế Tỉnh" : "Thuế Cơ Sở"}). Vui lòng kiểm tra và bấm LƯU LẠI!`);
         } else {
           alert("Không tìm thấy xã nào khớp. Vui lòng kiểm tra tên cột 'Tên Xã / Phường'!");
         }
@@ -2276,11 +2419,11 @@ function initApp() {
         const prdEl2 = document.getElementById("print-report-date");
         if (prdEl2) prdEl2.textContent = formatDate(reportDate);
         updateLastUpdateTime();
-        saveSnapshot(`Nhập Excel chính thức – ${dataKey === "target" ? "Dự toán" : "Thực hiện"} – ${taxKey === "province" ? "Thuế Tỉnh" : "Thuế Cơ Sở"}`, "Excel");
+        // Không tự động saveSnapshot
         onCommuneSelected();
         renderSidebar();
         closePeriodicPanel();
-        showToast(`Đã nạp thành công số liệu Excel cho ${updateCount} xã!`);
+        showToast(`Đã nạp tạm số liệu Excel cho ${updateCount} xã! Vui lòng kiểm tra và bấm LƯU LẠI.`);
       } else {
         alert("Không tìm thấy xã nào khớp trong file Excel!");
       }
@@ -2290,8 +2433,34 @@ function initApp() {
   }
 
   // Đăng ký 4 nút NHẬP (kích hoạt input file ẩn)
-  if (btnTriggerImportTargetProvince)  btnTriggerImportTargetProvince.addEventListener("click",  () => fileImportTargetProvince  && fileImportTargetProvince.click());
-  if (btnTriggerImportTargetBase)      btnTriggerImportTargetBase.addEventListener("click",      () => fileImportTargetBase      && fileImportTargetBase.click());
+  if (btnTriggerImportTargetProvince) {
+    btnTriggerImportTargetProvince.addEventListener("click", () => {
+      const hasProvinceTarget = currentData.communes.reduce((sum, c) => sum + (c.provinceTax.target || 0), 0) > 0;
+      if (hasProvinceTarget) {
+        const pass = prompt("Dự toán Thuế Tỉnh đã được nhập và khóa. Vui lòng nhập mật khẩu Quản trị để mở khóa:");
+        if (pass !== "admin123") {
+          if (pass !== null) alert("Mật khẩu không đúng!");
+          return;
+        }
+      }
+      if (fileImportTargetProvince) fileImportTargetProvince.click();
+    });
+  }
+
+  if (btnTriggerImportTargetBase) {
+    btnTriggerImportTargetBase.addEventListener("click", () => {
+      const hasBaseTarget = currentData.communes.reduce((sum, c) => sum + (c.baseTax.target || 0), 0) > 0;
+      if (hasBaseTarget) {
+        const pass = prompt("Dự toán Thuế Cơ Sở đã được nhập và khóa. Vui lòng nhập mật khẩu Quản trị để mở khóa:");
+        if (pass !== "admin123") {
+          if (pass !== null) alert("Mật khẩu không đúng!");
+          return;
+        }
+      }
+      if (fileImportTargetBase) fileImportTargetBase.click();
+    });
+  }
+
   if (btnTriggerImportActualProvince)  btnTriggerImportActualProvince.addEventListener("click",  () => fileImportActualProvince  && fileImportActualProvince.click());
   if (btnTriggerImportActualBase)      btnTriggerImportActualBase.addEventListener("click",      () => fileImportActualBase      && fileImportActualBase.click());
 
