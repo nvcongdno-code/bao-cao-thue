@@ -1037,16 +1037,12 @@ tr:hover td {
 
   /* Đưa bộ lọc Thuế Tỉnh / Thuế Cơ Sở lên trên cùng */
   #quick-commune-filters {
-    grid-column: 1 / 3 !important;
-    grid-row: 3 / 4 !important;
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
   }
   
   .view-mode-container {
-    grid-column: 1 / 3 !important;
-    grid-row: 4 / 5 !important;
     width: 100% !important;
     margin: 0 !important;
     padding: 4px !important;

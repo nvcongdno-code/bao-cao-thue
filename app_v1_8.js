@@ -2570,13 +2570,6 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
     const header = document.querySelector('header');
 
     if (window.innerWidth <= 768) {
-      if (quickFilters && quickFilters.parentNode !== header) {
-        header.appendChild(quickFilters);
-      }
-      if (modeSelectorContainer && modeSelectorContainer.parentNode !== header) {
-        header.appendChild(modeSelectorContainer);
-      }
-      
       const updateHeaderHeight = () => {
         if (header) {
           const height = header.offsetHeight;
@@ -2591,13 +2584,6 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
       setTimeout(updateHeaderHeight, 350);
     } else {
       document.documentElement.style.removeProperty('--mobile-header-height');
-
-      if (quickFilters && contentHeader && quickFilters.parentNode !== contentHeader) {
-        contentHeader.insertBefore(quickFilters, contentHeader.firstChild);
-      }
-      if (modeSelectorContainer && headerFlexRow && modeSelectorContainer.parentNode !== headerFlexRow) {
-        headerFlexRow.appendChild(modeSelectorContainer);
-      }
     }
   }
 
