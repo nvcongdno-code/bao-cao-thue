@@ -204,15 +204,36 @@
               <tr>
                 <th rowspan="2" class="text-center" style="vertical-align: middle;">Tên Địa bàn</th>
                 <th colspan="2" class="text-center">Tổng cộng</th>
-                <th colspan="2" class="text-center">CTN QUỐC DOANH+NQD</th>
+                <th colspan="2" class="text-center">DNNN Trung ương</th>
+                <th colspan="2" class="text-center">DNNN Địa phương</th>
+                <th colspan="2" class="text-center">DN có vốn ĐTNN</th>
+                <th colspan="2" class="text-center">Ngoài quốc doanh</th>
                 <th colspan="2" class="text-center">Thu nhập cá nhân</th>
                 <th colspan="2" class="text-center">Lệ phí trước bạ</th>
-                <th colspan="2" class="text-center">Phí, lệ phí & khác</th>
+                <th colspan="2" class="text-center">Thuế SDĐ phi NN</th>
+                <th colspan="2" class="text-center">Thu tiền cho thuê đất</th>
                 <th colspan="2" class="text-center">Tiền sử dụng đất</th>
+                <th colspan="2" class="text-center">Thu CQ KTKS</th>
+                <th colspan="2" class="text-center">Thu khác ngân sách</th>
+                <th colspan="2" class="text-center">Phí, lệ phí & Thu khác</th>
               </tr>
               <tr>
                 <th class="text-center" style="color: var(--color-primary);">Dự toán</th>
                 <th class="text-center" style="color: var(--color-success);">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
                 <th class="text-center">Dự toán</th>
                 <th class="text-center">Thực thu</th>
                 <th class="text-center">Dự toán</th>
@@ -268,7 +289,7 @@
 
 
   <!-- Panel cập nhật số liệu định kỳ (Centered Modal) -->
-  <div class="periodic-modal" id="periodic-panel">
+  <div class="periodic-modal" id="periodic-panel" style="max-width: 620px; width: 95%;">
     <div class="simulation-header">
       <h3 style="font-weight: 700; font-size: 1.15rem;">Cập nhật số liệu định kỳ</h3>
       <button class="simulation-close" id="periodic-close">&times;</button>
@@ -276,34 +297,68 @@
     
     <div style="padding: 10px 0;">
       <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 15px;">
-        Hệ thống chỉ chấp nhận cập nhật số liệu bằng cách tải tệp mẫu Excel, cập nhật thông tin thực thu rồi tải lên lại. Việc nhập liệu trực tiếp trên giao diện bị hạn chế để đảm bảo tính chuẩn xác.
+        Tải mẫu Excel về máy, điền số liệu rồi tải lên lại. Mỗi cơ quan thuế và loại số liệu có mẫu riêng để dễ kiểm soát nhập liệu.
       </p>
-      
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-        <!-- Excel Section -->
-        <div style="border: 1px solid var(--border-color); padding: 16px; border-radius: var(--radius-md); background: var(--bg-primary);">
-          <h4 style="font-size: 0.88rem; margin-bottom: 8px; color: var(--color-success); font-weight: 700;">🟢 CẬP NHẬT BẰNG FILE EXCEL MẪU</h4>
-          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">
-            Chọn loại số liệu bạn muốn cập nhật từ tệp Excel, sau đó tải tệp lên.
-          </p>
-          
-          <div style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; font-size: 0.82rem; color: var(--text-secondary);">
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-              <input type="radio" name="excel-import-type" value="actual" checked style="accent-color: var(--color-success); cursor: pointer;">
-              <span>Cập nhật số liệu <strong>Thực hiện</strong> (Khóa dự toán cũ)</span>
-            </label>
-            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-              <input type="radio" name="excel-import-type" value="target" style="accent-color: var(--color-success); cursor: pointer;">
-              <span>Cập nhật số liệu <strong>Dự toán</strong> (Khóa số thực hiện cũ)</span>
-            </label>
-          </div>
 
-          <div style="display: flex; gap: 10px;">
-            <button class="btn" id="btn-export-excel" style="flex: 1; padding: 10px; font-weight: 700; border-color: var(--color-success); color: var(--color-success)">📥 Tải Mẫu Excel</button>
-            <input type="file" id="file-import-excel" accept=".xlsx, .xls" style="display: none;">
-            <button class="btn btn-primary" id="btn-trigger-excel-import" style="flex: 1; padding: 10px; font-weight: 700; background: var(--color-success); border-color: var(--color-success)">📤 Tải lên Excel</button>
+      <!-- Khối 1: DỰ TOÁN -->
+      <div style="border: 1px solid var(--color-primary); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 12px;">
+        <div style="background: rgba(99,102,241,0.12); padding: 8px 14px; border-bottom: 1px solid var(--color-primary);">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--color-primary);">📋 DỰ TOÁN NĂM</span>
+        </div>
+        <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;">
+          <!-- Thuế tỉnh – Dự toán -->
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 120px; font-weight: 600;">🏛️ Thuế Tỉnh:</span>
+            <div style="display: flex; gap: 8px; flex: 1; min-width: 0;">
+              <button class="btn" id="btn-export-target-province" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; border-color: var(--color-primary); color: var(--color-primary); white-space: nowrap;">📥 Tải Mẫu</button>
+              <input type="file" id="file-import-target-province" accept=".xlsx, .xls" style="display: none;">
+              <button class="btn btn-primary" id="btn-trigger-import-target-province" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; background: var(--color-primary); border-color: var(--color-primary); white-space: nowrap;">📤 Nhập Mẫu</button>
+            </div>
+          </div>
+          <!-- Thuế cơ sở – Dự toán -->
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 120px; font-weight: 600;">🏢 Thuế Cơ Sở:</span>
+            <div style="display: flex; gap: 8px; flex: 1; min-width: 0;">
+              <button class="btn" id="btn-export-target-base" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; border-color: var(--color-primary); color: var(--color-primary); white-space: nowrap;">📥 Tải Mẫu</button>
+              <input type="file" id="file-import-target-base" accept=".xlsx, .xls" style="display: none;">
+              <button class="btn btn-primary" id="btn-trigger-import-target-base" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; background: var(--color-primary); border-color: var(--color-primary); white-space: nowrap;">📤 Nhập Mẫu</button>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- Khối 2: THỰC HIỆN -->
+      <div style="border: 1px solid var(--color-success); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 4px;">
+        <div style="background: rgba(16,185,129,0.10); padding: 8px 14px; border-bottom: 1px solid var(--color-success);">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--color-success);">💰 THỰC HIỆN LŨY KẾ</span>
+        </div>
+        <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;">
+          <!-- Thuế tỉnh – Thực hiện -->
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 120px; font-weight: 600;">🏛️ Thuế Tỉnh:</span>
+            <div style="display: flex; gap: 8px; flex: 1; min-width: 0;">
+              <button class="btn" id="btn-export-actual-province" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; border-color: var(--color-success); color: var(--color-success); white-space: nowrap;">📥 Tải Mẫu</button>
+              <input type="file" id="file-import-actual-province" accept=".xlsx, .xls" style="display: none;">
+              <button class="btn btn-primary" id="btn-trigger-import-actual-province" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; background: var(--color-success); border-color: var(--color-success); white-space: nowrap;">📤 Nhập Mẫu</button>
+            </div>
+          </div>
+          <!-- Thuế cơ sở – Thực hiện -->
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 120px; font-weight: 600;">🏢 Thuế Cơ Sở:</span>
+            <div style="display: flex; gap: 8px; flex: 1; min-width: 0;">
+              <button class="btn" id="btn-export-actual-base" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; border-color: var(--color-success); color: var(--color-success); white-space: nowrap;">📥 Tải Mẫu</button>
+              <input type="file" id="file-import-actual-base" accept=".xlsx, .xls" style="display: none;">
+              <button class="btn btn-primary" id="btn-trigger-import-actual-base" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; background: var(--color-success); border-color: var(--color-success); white-space: nowrap;">📤 Nhập Mẫu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ghi chú -->
+      <div style="margin-top: 10px; padding: 8px 12px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 6px;">
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+          ⚠️ <strong>Lưu ý:</strong> Nhập file Dự toán sẽ <strong>giữ nguyên số thực hiện cũ</strong>. Nhập file Thực hiện sẽ <strong>giữ nguyên dự toán cũ</strong>. Cần nhập đúng loại mẫu đã tải.
+        </p>
       </div>
     </div>
   </div>

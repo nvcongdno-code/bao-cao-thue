@@ -49,21 +49,14 @@ function initApp() {
     try {
       currentData = JSON.parse(savedState);
       
-      // Tự động kiểm tra nếu dữ liệu lưu trữ bị lỗi (như tổng dự toán bằng 0) để tự khôi phục
+      // Tự động kiểm tra nếu dữ liệu lưu trữ bị lỗi để tự khôi phục
       let isValid = false;
-      if (currentData && currentData.communes && currentData.communes.length > 0) {
-        const totalTarget = currentData.communes.reduce((sum, c) => {
-          const provTarget = c.provinceTax ? (c.provinceTax.target || 0) : 0;
-          const baseTarget = c.baseTax ? (c.baseTax.target || 0) : 0;
-          return sum + provTarget + baseTarget;
-        }, 0);
-        if (totalTarget > 0) {
-          isValid = true;
-        }
+      if (currentData && currentData.communes && currentData.communes.length === 7) {
+        isValid = true;
       }
       
       if (!isValid) {
-        throw new Error("Dữ liệu lưu trữ trong trình duyệt bị lỗi hoặc bằng 0");
+        throw new Error("Dữ liệu lưu trữ trong trình duyệt không đúng cấu trúc");
       }
 
       // Sửa lỗi chính tả từ localStorage nếu có
@@ -261,52 +254,56 @@ function initApp() {
       name: "Tổng hợp 7 Xã",
       provinceTax: {
         target: 0, today: 0, ytd: 0, lastYearYtd: 0,
-        details: {
-          land: { target: 0, ytd: 0, lastYearYtd: 0 },
-          business: { target: 0, ytd: 0, lastYearYtd: 0 },
-          pit: { target: 0, ytd: 0, lastYearYtd: 0 },
-          registration: { target: 0, ytd: 0, lastYearYtd: 0 },
-          others: { target: 0, ytd: 0, lastYearYtd: 0 }
-        }
+        details: {}
       },
       baseTax: {
         target: 0, today: 0, ytd: 0, lastYearYtd: 0,
-        details: {
-          land: { target: 0, ytd: 0, lastYearYtd: 0 },
-          business: { target: 0, ytd: 0, lastYearYtd: 0 },
-          pit: { target: 0, ytd: 0, lastYearYtd: 0 },
-          registration: { target: 0, ytd: 0, lastYearYtd: 0 },
-          others: { target: 0, ytd: 0, lastYearYtd: 0 }
-        }
+        details: {}
       }
     };
 
+    // Khởi tạo các chi tiết động từ xã đầu tiên
+    if (currentData.communes.length > 0) {
+      const firstCommune = currentData.communes[0];
+      Object.keys(firstCommune.provinceTax.details).forEach(key => {
+        agg.provinceTax.details[key] = { target: 0, ytd: 0, lastYearYtd: 0 };
+      });
+      Object.keys(firstCommune.baseTax.details).forEach(key => {
+        agg.baseTax.details[key] = { target: 0, ytd: 0, lastYearYtd: 0 };
+      });
+    }
+
     currentData.communes.forEach(c => {
       // Cộng dồn Thuế tỉnh
-      agg.provinceTax.target += c.provinceTax.target;
-      agg.provinceTax.today += c.provinceTax.today;
-      agg.provinceTax.ytd += c.provinceTax.ytd;
-      agg.provinceTax.lastYearYtd += c.provinceTax.lastYearYtd;
+      agg.provinceTax.target += c.provinceTax.target || 0;
+      agg.provinceTax.today += c.provinceTax.today || 0;
+      agg.provinceTax.ytd += c.provinceTax.ytd || 0;
+      agg.provinceTax.lastYearYtd += c.provinceTax.lastYearYtd || 0;
       Object.keys(agg.provinceTax.details).forEach(key => {
-        agg.provinceTax.details[key].target += c.provinceTax.details[key].target;
-        agg.provinceTax.details[key].ytd += c.provinceTax.details[key].ytd;
-        agg.provinceTax.details[key].lastYearYtd += c.provinceTax.details[key].lastYearYtd;
+        if (c.provinceTax.details[key]) {
+          agg.provinceTax.details[key].target += c.provinceTax.details[key].target || 0;
+          agg.provinceTax.details[key].ytd += c.provinceTax.details[key].ytd || 0;
+          agg.provinceTax.details[key].lastYearYtd += c.provinceTax.details[key].lastYearYtd || 0;
+        }
       });
 
       // Cộng dồn Thuế cơ sở
-      agg.baseTax.target += c.baseTax.target;
-      agg.baseTax.today += c.baseTax.today;
-      agg.baseTax.ytd += c.baseTax.ytd;
-      agg.baseTax.lastYearYtd += c.baseTax.lastYearYtd;
+      agg.baseTax.target += c.baseTax.target || 0;
+      agg.baseTax.today += c.baseTax.today || 0;
+      agg.baseTax.ytd += c.baseTax.ytd || 0;
+      agg.baseTax.lastYearYtd += c.baseTax.lastYearYtd || 0;
       Object.keys(agg.baseTax.details).forEach(key => {
-        agg.baseTax.details[key].target += c.baseTax.details[key].target;
-        agg.baseTax.details[key].ytd += c.baseTax.details[key].ytd;
-        agg.baseTax.details[key].lastYearYtd += c.baseTax.details[key].lastYearYtd;
+        if (c.baseTax.details[key]) {
+          agg.baseTax.details[key].target += c.baseTax.details[key].target || 0;
+          agg.baseTax.details[key].ytd += c.baseTax.details[key].ytd || 0;
+          agg.baseTax.details[key].lastYearYtd += c.baseTax.details[key].lastYearYtd || 0;
+        }
       });
     });
 
     return agg;
   }
+
 
   // Lấy dữ liệu của đối tượng đang hoạt động và làm phẳng theo currentViewMode
   function getActiveEntity() {
@@ -587,6 +584,7 @@ function initApp() {
     }
     
     // Render các hàng
+    // Render các hàng
     list.forEach(c => {
       const tr = document.createElement("tr");
       tr.className = selectedCommuneId === c.id ? "active-row" : "";
@@ -595,9 +593,16 @@ function initApp() {
       }
       
       const land = getTaxCatValues(c, "land");
-      const business = getTaxCatValues(c, "business");
+      const enterpriseStateCentral = getTaxCatValues(c, "enterpriseStateCentral");
+      const enterpriseStateLocal = getTaxCatValues(c, "enterpriseStateLocal");
+      const enterpriseForeign = getTaxCatValues(c, "enterpriseForeign");
+      const enterpriseNonState = getTaxCatValues(c, "enterpriseNonState");
       const pit = getTaxCatValues(c, "pit");
       const registration = getTaxCatValues(c, "registration");
+      const landNonAgri = getTaxCatValues(c, "landNonAgri");
+      const landRent = getTaxCatValues(c, "landRent");
+      const minerals = getTaxCatValues(c, "minerals");
+      const otherBudget = getTaxCatValues(c, "otherBudget");
       const others = getTaxCatValues(c, "others");
       
       const metrics = getCommuneMetrics(c, currentViewMode);
@@ -606,16 +611,30 @@ function initApp() {
         <td class="text-left" style="font-weight: 700; cursor: pointer;">${c.name}</td>
         <td class="text-right" style="font-weight: bold; color: var(--color-primary);">${formatMoney(metrics.target)}</td>
         <td class="text-right" style="font-weight: bold; color: var(--color-success);">${formatMoney(metrics.ytd)}</td>
-        <td class="text-right">${formatMoney(business.target)}</td>
-        <td class="text-right">${formatMoney(business.ytd)}</td>
+        <td class="text-right">${formatMoney(enterpriseStateCentral.target)}</td>
+        <td class="text-right">${formatMoney(enterpriseStateCentral.ytd)}</td>
+        <td class="text-right">${formatMoney(enterpriseStateLocal.target)}</td>
+        <td class="text-right">${formatMoney(enterpriseStateLocal.ytd)}</td>
+        <td class="text-right">${formatMoney(enterpriseForeign.target)}</td>
+        <td class="text-right">${formatMoney(enterpriseForeign.ytd)}</td>
+        <td class="text-right">${formatMoney(enterpriseNonState.target)}</td>
+        <td class="text-right">${formatMoney(enterpriseNonState.ytd)}</td>
         <td class="text-right">${formatMoney(pit.target)}</td>
         <td class="text-right">${formatMoney(pit.ytd)}</td>
         <td class="text-right">${formatMoney(registration.target)}</td>
         <td class="text-right">${formatMoney(registration.ytd)}</td>
-        <td class="text-right">${formatMoney(others.target)}</td>
-        <td class="text-right">${formatMoney(others.ytd)}</td>
+        <td class="text-right">${formatMoney(landNonAgri.target)}</td>
+        <td class="text-right">${formatMoney(landNonAgri.ytd)}</td>
+        <td class="text-right">${formatMoney(landRent.target)}</td>
+        <td class="text-right">${formatMoney(landRent.ytd)}</td>
         <td class="text-right">${formatMoney(land.target)}</td>
         <td class="text-right">${formatMoney(land.ytd)}</td>
+        <td class="text-right">${formatMoney(minerals.target)}</td>
+        <td class="text-right">${formatMoney(minerals.ytd)}</td>
+        <td class="text-right">${formatMoney(otherBudget.target)}</td>
+        <td class="text-right">${formatMoney(otherBudget.ytd)}</td>
+        <td class="text-right">${formatMoney(others.target)}</td>
+        <td class="text-right">${formatMoney(others.ytd)}</td>
       `;
       
       tr.querySelector("td").addEventListener("click", () => {
@@ -630,9 +649,16 @@ function initApp() {
     if (selectedCommuneId === "tong_hop" && list.length > 0) {
       const agg = getAggregatedData();
       const land = getTaxCatValues(agg, "land");
-      const business = getTaxCatValues(agg, "business");
+      const enterpriseStateCentral = getTaxCatValues(agg, "enterpriseStateCentral");
+      const enterpriseStateLocal = getTaxCatValues(agg, "enterpriseStateLocal");
+      const enterpriseForeign = getTaxCatValues(agg, "enterpriseForeign");
+      const enterpriseNonState = getTaxCatValues(agg, "enterpriseNonState");
       const pit = getTaxCatValues(agg, "pit");
       const registration = getTaxCatValues(agg, "registration");
+      const landNonAgri = getTaxCatValues(agg, "landNonAgri");
+      const landRent = getTaxCatValues(agg, "landRent");
+      const minerals = getTaxCatValues(agg, "minerals");
+      const otherBudget = getTaxCatValues(agg, "otherBudget");
       const others = getTaxCatValues(agg, "others");
       const metrics = getCommuneMetrics(agg, currentViewMode);
       
@@ -647,19 +673,34 @@ function initApp() {
         <td class="text-left" style="color: #dc2626 !important;">TỔNG CỘNG</td>
         <td class="text-right" style="color: #dc2626 !important;">${formatMoney(metrics.target)}</td>
         <td class="text-right" style="color: #dc2626 !important;">${formatMoney(metrics.ytd)}</td>
-        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(business.target)}</td>
-        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(business.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(enterpriseStateCentral.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(enterpriseStateCentral.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(enterpriseStateLocal.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(enterpriseStateLocal.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(enterpriseForeign.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(enterpriseForeign.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(enterpriseNonState.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(enterpriseNonState.ytd)}</td>
         <td class="text-right" style="color: #dc2626 !important;">${formatMoney(pit.target)}</td>
         <td class="text-right" style="color: #dc2626 !important;">${formatMoney(pit.ytd)}</td>
         <td class="text-right" style="color: #dc2626 !important;">${formatMoney(registration.target)}</td>
         <td class="text-right" style="color: #dc2626 !important;">${formatMoney(registration.ytd)}</td>
-        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(others.target)}</td>
-        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(others.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(landNonAgri.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(landNonAgri.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(landRent.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(landRent.ytd)}</td>
         <td class="text-right" style="color: #dc2626 !important;">${formatMoney(land.target)}</td>
         <td class="text-right" style="color: #dc2626 !important;">${formatMoney(land.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(minerals.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(minerals.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(otherBudget.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(otherBudget.ytd)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(others.target)}</td>
+        <td class="text-right" style="color: #dc2626 !important;">${formatMoney(others.ytd)}</td>
       `;
       breakdownBodyEl.appendChild(trTotal);
     }
+
     
     // Cập nhật tiêu đề bảng phân tích
     const breakdownTitleEl = document.getElementById("tax-breakdown-title");
@@ -906,32 +947,52 @@ function initApp() {
     });
   }
 
-  // Nút Lưu lại làm dữ liệu gốc
+
+  // Nut Luu lai lam du lieu goc
   const saveBaselineBtn = document.getElementById("btn-save-baseline");
   if (saveBaselineBtn) {
-    saveBaselineBtn.addEventListener("click", () => {
+    saveBaselineBtn.addEventListener("click", async () => {
       try {
-        // 1. Lưu trạng thái hiện tại làm baseline trong localStorage
+        // 1. Luu trang thai hien tai lam baseline trong localStorage
         localStorage.setItem("thue_co_so_13_baseline", JSON.stringify(currentData));
         localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
-        
-        // Cập nhật lại biến originalBaseline trong bộ nhớ
         originalBaseline = JSON.parse(JSON.stringify(currentData));
-        
-        // 2. Tạo nội dung tệp data_v1_8.js để tải về máy (giúp đồng bộ lên GitHub)
-        const fileContent = `// Budget data for 7 communes\n// Generated and saved by admin on ${new Date().toLocaleDateString('vi-VN')}\n\nconst BUDGET_DATA = ${JSON.stringify(currentData, null, 2)};\n`;
-        const blob = new Blob([fileContent], { type: "application/javascript;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "data_v1_8.js";
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        showToast("Đã lưu làm dữ liệu gốc thành công!");
-        alert("Đã lưu dữ liệu hiện tại làm dữ liệu gốc mới trên trình duyệt này thành công!\n\nĐồng thời, tệp dữ liệu 'data_v1_8.js' đã được tải về máy của bạn. Bạn có thể sử dụng tệp này để ghi đè vào thư mục dự án và đẩy lên GitHub để đồng bộ dữ liệu gốc cho tất cả các điện thoại khác.");
+
+        // 2. Tao noi dung tep data_v1_8.js
+        const now = new Date().toLocaleDateString('vi-VN');
+        const fileContent = `// Budget data for 7 communes\n// Saved by admin on ${now}\n\nconst BUDGET_DATA = ${JSON.stringify(currentData, null, 2)};\n\nwindow.BUDGET_DATA = BUDGET_DATA;\n`;
+
+        // 3. Gui len server luu thang vao thu muc du an (khong tai ve)
+        let serverSaved = false;
+        try {
+          const res = await fetch("/save-data", {
+            method: "POST",
+            headers: { "Content-Type": "text/plain; charset=utf-8" },
+            body: fileContent
+          });
+          if (res.ok) {
+            const result = await res.json();
+            serverSaved = true;
+            showToast("Da luu vao du an thanh cong!");
+            alert("Da luu du lieu thanh cong!\n\n• Tep data_v1_8.js da duoc cap nhat trong thu muc du an.\n• Ban sao luu trong: " + (result.backup || "data/"));
+          }
+        } catch (fetchErr) {
+          console.warn("POST /save-data khong kha dung:", fetchErr.message);
+        }
+
+        // 4. Fallback: neu server chua ho tro, tai ve nhu cu
+        if (!serverSaved) {
+          const blob = new Blob([fileContent], { type: "application/javascript;charset=utf-8" });
+          const url  = URL.createObjectURL(blob);
+          const a    = document.createElement("a");
+          a.href     = url;
+          a.download = "data_v1_8.js";
+          a.click();
+          URL.revokeObjectURL(url);
+          showToast("Da luu lam du lieu goc thanh cong!");
+        }
       } catch (err) {
-        alert("Lỗi khi lưu dữ liệu gốc: " + err.message);
+        alert("Loi khi luu du lieu goc: " + err.message);
       }
     });
   }
@@ -1305,12 +1366,20 @@ function initApp() {
     `;
 
     const categoriesList = [
-      { key: "business", name: "Thuế Công thương nghiệp ngoài quốc doanh" },
+      { key: "enterpriseStateCentral", name: "Thuế DNNN Trung ương" },
+      { key: "enterpriseStateLocal", name: "Thuế DNNN Địa phương" },
+      { key: "enterpriseForeign", name: "Thuế DN có vốn ĐTNN" },
+      { key: "enterpriseNonState", name: "Thuế Ngoài quốc doanh" },
       { key: "pit", name: "Thuế Thu nhập cá nhân" },
       { key: "registration", name: "Lệ phí trước bạ" },
-      { key: "others", name: "Phí, lệ phí & các khoản thu khác" },
-      { key: "land", name: "Tiền sử dụng đất" }
+      { key: "landNonAgri", name: "Thuế SDĐ phi NN" },
+      { key: "landRent", name: "Thu tiền cho thuê đất..." },
+      { key: "land", name: "Tiền sử dụng đất" },
+      { key: "minerals", name: "Thu CQ KTKS" },
+      { key: "otherBudget", name: "Thu khác ngân sách" },
+      { key: "others", name: "Phí, lệ phí & Thu khác" }
     ];
+
 
     categoriesList.forEach((cat, idx) => {
       let catTarget = 0, catYtd = 0, catLastYearYtd = 0;
@@ -1605,17 +1674,31 @@ function initApp() {
   }
 
   // -------------------------------------------------------------------------
-  // 9. CẬP NHẬT SỐ LIỆU ĐỊNH KỲ (Qua File mẫu Excel)
+  // 9. CẬP NHẬT SỐ LIỆU ĐỊNH KỲ (Qua File mẫu Excel – 4 loại riêng biệt)
   // -------------------------------------------------------------------------
   const btnPeriodic = document.getElementById("btn-periodic");
   const periodicPanel = document.getElementById("periodic-panel");
   const periodicClose = document.getElementById("periodic-close");
 
-  const btnExportExcel = document.getElementById("btn-export-excel");
-  const fileImportExcel = document.getElementById("file-import-excel");
-  const btnTriggerExcelImport = document.getElementById("btn-trigger-excel-import");
+  // Các nút xuất mẫu (4 loại)
+  const btnExportTargetProvince = document.getElementById("btn-export-target-province");
+  const btnExportTargetBase    = document.getElementById("btn-export-target-base");
+  const btnExportActualProvince = document.getElementById("btn-export-actual-province");
+  const btnExportActualBase    = document.getElementById("btn-export-actual-base");
 
-  const btnGuide = document.getElementById("btn-guide");
+  // Input file ẩn (4 loại)
+  const fileImportTargetProvince  = document.getElementById("file-import-target-province");
+  const fileImportTargetBase      = document.getElementById("file-import-target-base");
+  const fileImportActualProvince  = document.getElementById("file-import-actual-province");
+  const fileImportActualBase      = document.getElementById("file-import-actual-base");
+
+  // Nút kích hoạt chọn file (4 loại)
+  const btnTriggerImportTargetProvince  = document.getElementById("btn-trigger-import-target-province");
+  const btnTriggerImportTargetBase      = document.getElementById("btn-trigger-import-target-base");
+  const btnTriggerImportActualProvince  = document.getElementById("btn-trigger-import-actual-province");
+  const btnTriggerImportActualBase      = document.getElementById("btn-trigger-import-actual-base");
+
+  const btnGuide   = document.getElementById("btn-guide");
   const guideModal = document.getElementById("guide-modal");
   const guideClose = document.getElementById("guide-close");
   const btnGuideOk = document.getElementById("btn-guide-ok");
@@ -1752,12 +1835,12 @@ function initApp() {
     // Look up baseline commune
     const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
 
-    // Update provinceTax totals (target is locked to baseline)
-    commune.provinceTax.target = origCommune.provinceTax.target;
+    // Update provinceTax totals (target is calculated from details)
+    commune.provinceTax.target = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + (item.target || 0), 0);
     commune.provinceTax.ytd = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + item.ytd, 0);
     
-    // Update baseTax totals (target is locked to baseline)
-    commune.baseTax.target = origCommune.baseTax.target;
+    // Update baseTax totals (target is calculated from details)
+    commune.baseTax.target = Object.values(commune.baseTax.details).reduce((sum, item) => sum + (item.target || 0), 0);
     commune.baseTax.ytd = Object.values(commune.baseTax.details).reduce((sum, item) => sum + item.ytd, 0);
 
     // Generate lastYearYtd for provinceTax details
@@ -1795,483 +1878,417 @@ function initApp() {
     }
   }
 
-  // Xuất file mẫu Excel định kỳ (Hỗ trợ 21 cột chi tiết)
-  if (btnExportExcel) {
-    btnExportExcel.addEventListener("click", () => {
-      try {
-        const headers = [
-          "Tên Xã",
-          "Thuế Tỉnh - Dự toán - Sử dụng đất (Triệu đ)",
-          "Thuế Tỉnh - Lũy kế - Sử dụng đất (Triệu đ)",
-          "Thuế Tỉnh - Dự toán - Thuế CTN ngoài quốc doanh (Triệu đ)",
-          "Thuế Tỉnh - Lũy kế - Thuế CTN ngoài quốc doanh (Triệu đ)",
-          "Thuế Tỉnh - Dự toán - Thuế TNCN (Triệu đ)",
-          "Thuế Tỉnh - Lũy kế - Thuế TNCN (Triệu đ)",
-          "Thuế Tỉnh - Dự toán - Lệ phí trước bạ (Triệu đ)",
-          "Thuế Tỉnh - Lũy kế - Lệ phí trước bạ (Triệu đ)",
-          "Thuế Tỉnh - Dự toán - Phí, lệ phí & Thu khác (Triệu đ)",
-          "Thuế Tỉnh - Lũy kế - Phí, lệ phí & Thu khác (Triệu đ)",
-          "Thuế Cơ Sở - Dự toán - Sử dụng đất (Triệu đ)",
-          "Thuế Cơ Sở - Lũy kế - Sử dụng đất (Triệu đ)",
-          "Thuế Cơ Sở - Dự toán - Thuế CTN ngoài quốc doanh (Triệu đ)",
-          "Thuế Cơ Sở - Lũy kế - Thuế CTN ngoài quốc doanh (Triệu đ)",
-          "Thuế Cơ Sở - Dự toán - Thuế TNCN (Triệu đ)",
-          "Thuế Cơ Sở - Lũy kế - Thuế TNCN (Triệu đ)",
-          "Thuế Cơ Sở - Dự toán - Lệ phí trước bạ (Triệu đ)",
-          "Thuế Cơ Sở - Lũy kế - Lệ phí trước bạ (Triệu đ)",
-          "Thuế Cơ Sở - Dự toán - Phí, lệ phí & Thu khác (Triệu đ)",
-          "Thuế Cơ Sở - Lũy kế - Phí, lệ phí & Thu khác (Triệu đ)"
-        ];
-        
-        const rows = [headers];
-        
-        currentData.communes.forEach(c => {
-          rows.push([
-            c.name,
-            (c.provinceTax.details.land.target || 0) / 1000000,
-            (c.provinceTax.details.land.ytd || 0) / 1000000,
-            (c.provinceTax.details.business.target || 0) / 1000000,
-            (c.provinceTax.details.business.ytd || 0) / 1000000,
-            (c.provinceTax.details.pit.target || 0) / 1000000,
-            (c.provinceTax.details.pit.ytd || 0) / 1000000,
-            (c.provinceTax.details.registration.target || 0) / 1000000,
-            (c.provinceTax.details.registration.ytd || 0) / 1000000,
-            (c.provinceTax.details.others.target || 0) / 1000000,
-            (c.provinceTax.details.others.ytd || 0) / 1000000,
-            (c.baseTax.details.land.target || 0) / 1000000,
-            (c.baseTax.details.land.ytd || 0) / 1000000,
-            (c.baseTax.details.business.target || 0) / 1000000,
-            (c.baseTax.details.business.ytd || 0) / 1000000,
-            (c.baseTax.details.pit.target || 0) / 1000000,
-            (c.baseTax.details.pit.ytd || 0) / 1000000,
-            (c.baseTax.details.registration.target || 0) / 1000000,
-            (c.baseTax.details.registration.ytd || 0) / 1000000,
-            (c.baseTax.details.others.target || 0) / 1000000,
-            (c.baseTax.details.others.ytd || 0) / 1000000
-          ]);
+  // Danh sách 12 sắc thuế chính (theo thứ tự chuẩn)
+  const exportKeys = [
+    "land",
+    "enterpriseStateCentral",
+    "enterpriseStateLocal",
+    "enterpriseForeign",
+    "enterpriseNonState",
+    "pit",
+    "registration",
+    "landNonAgri",
+    "landRent",
+    "minerals",
+    "otherBudget",
+    "others"
+  ];
+
+  // Tên hiển thị cho từng sắc thuế
+  const keyNames = {
+    land: "Tiền sử dụng đất",
+    enterpriseStateCentral: "DNNN Trung ương",
+    enterpriseStateLocal: "DNNN Địa phương",
+    enterpriseForeign: "DN có vốn ĐTNN",
+    enterpriseNonState: "Ngoài quốc doanh",
+    pit: "Thuế TNCN",
+    registration: "Lệ phí trước bạ",
+    landNonAgri: "Thuế SDĐ phi NN",
+    landRent: "Thu tiền cho thuê đất",
+    minerals: "Thu CQ KTKS",
+    otherBudget: "Thu khác ngân sách",
+    others: "Phí, lệ phí & Thu khác"
+  };
+
+  // ============================================================
+  // HÀM XUẤT EXCEL – 4 loại mẫu riêng biệt
+  // Tham số: taxKey = "province" | "base", dataKey = "target" | "ytd"
+  // ============================================================
+  function exportFlatExcel(taxKey, dataKey) {
+    try {
+      const taxLabel = taxKey === "province" ? "Thuế Tỉnh" : "Thuế Cơ Sở";
+      const dataLabel = dataKey === "target" ? "Dự toán" : "Thực hiện lũy kế";
+      const taxField  = taxKey === "province" ? "provinceTax" : "baseTax";
+
+      // Hàng tiêu đề
+      const header1 = ["STT", "Tên Xã / Phường"];
+      const header2 = ["",   ""];
+      exportKeys.forEach(key => {
+        header1.push(keyNames[key]);
+        header2.push("(Triệu đ)");
+      });
+
+      const rows = [header1, header2];
+
+      currentData.communes.forEach((c, idx) => {
+        const rowData = [idx + 1, c.name];
+        exportKeys.forEach(key => {
+          const val = (c[taxField].details[key]?.[dataKey] || 0) / 1000000;
+          rowData.push(Math.round(val * 1000) / 1000); // Làm tròn 3 chữ số thập phân
         });
-        
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Số liệu Thu thuế");
-        
-        ws['!cols'] = headers.map(h => ({ wch: h.length + 3 }));
-        
-        const date = reportDatePickerEl.value;
-        XLSX.writeFile(wb, `thue_co_so_13_so_lieu_${date}.xlsx`);
-        showToast("Đã tải file mẫu Excel thành công!");
-      } catch (err) {
-        alert("Lỗi khi tạo file Excel: " + err.message);
-      }
-    });
+        rows.push(rowData);
+      });
+
+      // Hàng tổng cộng
+      const totalRow = ["Σ", "TỔNG CỘNG"];
+      exportKeys.forEach(key => {
+        const total = currentData.communes.reduce((sum, c) => {
+          return sum + (c[taxField].details[key]?.[dataKey] || 0);
+        }, 0) / 1000000;
+        totalRow.push(Math.round(total * 1000) / 1000);
+      });
+      rows.push(totalRow);
+
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      const sheetName = `${taxLabel} - ${dataLabel}`.substring(0, 31);
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+      // Độ rộng cột
+      ws['!cols'] = [
+        { wch: 5 },   // STT
+        { wch: 22 },  // Tên xã
+        ...exportKeys.map(() => ({ wch: 20 })) // Các cột sắc thuế
+      ];
+
+      // Metadata sheet để nhận dạng khi import
+      const metaWs = XLSX.utils.aoa_to_sheet([
+        ["taxKey",  taxKey],
+        ["dataKey", dataKey],
+        ["date",    reportDatePickerEl.value]
+      ]);
+      XLSX.utils.book_append_sheet(wb, metaWs, "_meta");
+
+      const date = reportDatePickerEl.value;
+      const prefix = dataKey === "target" ? "dutoan" : "thuchien";
+      const suffix = taxKey === "province" ? "thue_tinh" : "thue_co_so";
+      XLSX.writeFile(wb, `${prefix}_${suffix}_${date}.xlsx`);
+      showToast(`Đã tải mẫu: ${dataLabel} – ${taxLabel}!`);
+    } catch (err) {
+      alert("Lỗi khi xuất file Excel: " + err.message);
+    }
   }
 
-  // Nhập file Excel định kỳ
-  if (btnTriggerExcelImport) {
-    btnTriggerExcelImport.addEventListener("click", () => {
-      if (fileImportExcel) {
-        fileImportExcel.click();
-      }
-    });
-  }
+  // Đăng ký 4 nút xuất mẫu
+  if (btnExportTargetProvince)  btnExportTargetProvince.addEventListener("click",  () => exportFlatExcel("province", "target"));
+  if (btnExportTargetBase)      btnExportTargetBase.addEventListener("click",      () => exportFlatExcel("base",     "target"));
+  if (btnExportActualProvince)  btnExportActualProvince.addEventListener("click",  () => exportFlatExcel("province", "ytd"));
+  if (btnExportActualBase)      btnExportActualBase.addEventListener("click",      () => exportFlatExcel("base",     "ytd"));
 
-  if (fileImportExcel) {
-    fileImportExcel.addEventListener("change", (e) => {
-    const file = e.target.files[0];
+  // ============================================================
+  // HÀM NHẬP EXCEL – 4 loại mẫu riêng biệt (Flat Sheet)
+  // Tham số: taxKey = "province" | "base", dataKey = "target" | "ytd"
+  // ============================================================
+  function importFlatExcel(file, taxKey, dataKey) {
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = function(evt) {
       try {
         const data = new Uint8Array(evt.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
-        
-        // Sao lưu trạng thái cũ để tính toán số thu chênh lệch trong kỳ
-        const oldData = JSON.parse(JSON.stringify(currentData));
-        const importType = document.querySelector('input[name="excel-import-type"]:checked')?.value || 'actual';
-        
-        // Phát hiện cấu trúc tệp Excel (Chính thức vs Mẫu phẳng)
-        let isOfficialWorkbook = false;
-        let sheetSummaryIndex = -1;
-        let sheetProvinceIndex = -1;
-        let sheetBaseIndex = -1;
-        let sheetTargetIndex = -1;
 
-        workbook.SheetNames.forEach((name, idx) => {
-          const clean = cleanName(name);
-          if (clean.includes("tomtat")) {
-            sheetSummaryIndex = idx;
-          } else if (clean.includes("tinhthu")) {
-            sheetProvinceIndex = idx;
-          } else if (clean.includes("xathu")) {
-            sheetBaseIndex = idx;
-          } else if (clean.includes("dutoan")) {
-            sheetTargetIndex = idx;
-          }
-        });
+        // Phát hiện cấu trúc: nếu có nhiều sheet (file chính thức), dùng handler chính thức
+        const sheetNames = workbook.SheetNames.map(n => cleanName(n));
+        const hasTinhThu  = sheetNames.some(n => n.includes("tinhthu"));
+        const hasXaThu    = sheetNames.some(n => n.includes("xathu"));
+        const hasDuToan   = sheetNames.some(n => n.includes("dutoan"));
 
-        // Fallback sang vị trí mặc định nếu không tìm thấy bằng tên
-        if (sheetSummaryIndex === -1 && workbook.SheetNames[0]) sheetSummaryIndex = 0;
-        if (sheetProvinceIndex === -1 && workbook.SheetNames[2]) sheetProvinceIndex = 2;
-        if (sheetBaseIndex === -1 && workbook.SheetNames[3]) sheetBaseIndex = 3;
-        if (sheetTargetIndex === -1 && workbook.SheetNames[4]) sheetTargetIndex = 4;
-
-        if (sheetProvinceIndex !== -1 && sheetBaseIndex !== -1 && sheetSummaryIndex !== -1) {
-          isOfficialWorkbook = true;
+        if (hasTinhThu && hasXaThu) {
+          // File chính thức của cơ quan thuế – dùng handler cũ
+          importOfficialWorkbook(workbook, taxKey, dataKey);
+          return;
         }
 
+        // File mẫu phẳng do hệ thống tạo ra
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        // Bỏ qua 2 dòng đầu (header1 + header2)
+        if (sheetData.length < 3) {
+          alert("File Excel trống hoặc không đúng định dạng!");
+          return;
+        }
+
+        const taxField = taxKey === "province" ? "provinceTax" : "baseTax";
+        const oldData  = JSON.parse(JSON.stringify(currentData));
         let updateCount = 0;
-        let reportDate = currentData.metadata.reportDate;
 
-        if (isOfficialWorkbook) {
-          // TRÌNH XỬ LÝ NHẬP FILE CHÍNH THỨC CỦA CƠ QUAN THUẾ (MULTI-SHEET)
-          const summaryAOA = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[sheetSummaryIndex]], { header: 1 });
-          const provinceAOA = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[sheetProvinceIndex]], { header: 1 });
-          const baseAOA = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[sheetBaseIndex]], { header: 1 });
-          const targetAOA = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[sheetTargetIndex]], { header: 1 });
+        for (let i = 2; i < sheetData.length; i++) {
+          const row = sheetData[i];
+          if (!row || row.length < 3) continue;
 
-          // Trích xuất ngày báo cáo từ ô B4 (dòng 4, cột 2) trong sheet Tóm tắt
-          const cellB4 = summaryAOA[3] ? summaryAOA[3][1] : "";
-          if (cellB4) {
-            const match = String(cellB4).match(/(\d+)\/(\d+)\/(\d+)/);
-            if (match) {
-              const day = match[1].padStart(2, '0');
-              const month = match[2].padStart(2, '0');
-              const year = match[3];
-              reportDate = `${year}-${month}-${day}`;
-            }
-          }
+          // Cột 0 = STT, Cột 1 = Tên xã, Cột 2..13 = 12 sắc thuế
+          const rawName = row[1];
+          if (!rawName || String(rawName).trim().toUpperCase().includes("TỔNG CỘNG")) continue;
 
-          currentData.communes.forEach(commune => {
-            const targetCleanName = cleanName(commune.name);
-            const oldCommune = oldData.communes.find(oc => oc.id === commune.id);
-            
-            // Tìm dòng khớp tên xã trong summaryAOA / provinceAOA / baseAOA
-            let matchedRowIndex = -1; 
-            for (let i = 0; i < summaryAOA.length; i++) {
-              const row = summaryAOA[i];
-              if (row && row[1]) {
-                const cellClean = cleanName(row[1]);
-                if (cellClean.includes(targetCleanName) || targetCleanName.includes(cellClean)) {
-                  matchedRowIndex = i + 1; // Đổi sang 1-based index
-                  break;
-                }
-              }
-            }
-            
-            // Tìm cột khớp tên xã trong targetAOA (dự toán)
-            let matchedColIndex = -1;
-            if (targetAOA && targetAOA[0]) {
-              const headerRow = targetAOA[0];
-              for (let j = 0; j < headerRow.length; j++) {
-                const cellClean = cleanName(headerRow[j]);
-                if (cellClean && (cellClean.includes(targetCleanName) || targetCleanName.includes(cellClean))) {
-                  matchedColIndex = j + 1; // Đổi sang 1-based index
-                  break;
-                }
-              }
-            }
+          const nameClean = cleanName(String(rawName).trim());
+          const commune = currentData.communes.find(c => {
+            const cn = cleanName(c.name);
+            return cn.includes(nameClean) || nameClean.includes(cn);
+          });
+          if (!commune) continue;
 
-            if (matchedRowIndex !== -1) {
-              const fallbackCols = {
-                "dak_wil": 60, "nam_dong": 61, "cu_jut": 62, "nam_da": 63,
-                "krong_no": 64, "nam_nung": 65, "quang_phu": 66
-              };
-              const c = matchedColIndex !== -1 ? matchedColIndex : (fallbackCols[commune.id] || 60);
-              const r = matchedRowIndex;
+          const oldCommune  = oldData.communes.find(oc => oc.id === commune.id);
+          const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
 
-              // Lấy số liệu dự toán (target) từ dữ liệu gốc ban đầu, không lấy từ file Excel
-              const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
+          exportKeys.forEach((key, ki) => {
+            const colIdx = 2 + ki; // Cột 2 = sắc thuế đầu tiên
+            const rawVal = row[colIdx];
+            const val = (parseFloat(String(rawVal || 0).replace(/,/g, "")) || 0) * 1000000;
 
-              let land_prov_target, bus_prov_target, pit_prov_target, reg_prov_target, oth_prov_target;
-              let land_base_target, bus_base_target, pit_base_target, reg_base_target, oth_base_target;
-              let prov_total_ytd, prov_land_ytd, prov_bus_ytd, prov_pit_ytd, prov_reg_ytd, prov_oth_ytd;
-              let base_total_ytd, base_land_ytd, base_bus_ytd, base_pit_ytd, base_reg_ytd, base_oth_ytd;
-
-              if (importType === "target") {
-                // --- CHỈ CẬP NHẬT DỰ TOÁN, GIỮ NGUYÊN SỐ THỰC HIỆN CŨ ---
-                const land_combined_target = getNumValue(targetAOA, 7, c) * 1000000;
-                const bus_combined_target  = getNumValue(targetAOA, 9, c) * 1000000;
-                const pit_combined_target  = getNumValue(targetAOA, 22, c) * 1000000;
-                const reg_combined_target  = getNumValue(targetAOA, 24, c) * 1000000;
-                const oth_combined_target  = getNumValue(targetAOA, 25, c) * 1000000;
-
-                land_prov_target = getNumValue(targetAOA, 6, c) * 1000000;
-                land_base_target = land_combined_target - land_prov_target;
-                const prov_total_target = getNumValue(targetAOA, 4, c) * 1000000;
-                const base_total_target = getNumValue(targetAOA, 5, c) * 1000000;
-
-                // Giữ nguyên thực hiện YTD cũ
-                prov_land_ytd = commune.provinceTax.details.land.ytd;
-                prov_bus_ytd  = commune.provinceTax.details.business.ytd;
-                prov_pit_ytd  = commune.provinceTax.details.pit.ytd;
-                prov_reg_ytd  = commune.provinceTax.details.registration.ytd;
-                prov_oth_ytd  = commune.provinceTax.details.others.ytd;
-                prov_total_ytd = commune.provinceTax.ytd;
-
-                base_land_ytd = commune.baseTax.details.land.ytd;
-                base_bus_ytd  = commune.baseTax.details.business.ytd;
-                base_pit_ytd  = commune.baseTax.details.pit.ytd;
-                base_reg_ytd  = commune.baseTax.details.registration.ytd;
-                base_oth_ytd  = commune.baseTax.details.others.ytd;
-                base_total_ytd = commune.baseTax.ytd;
-
-                // Phân phối dự toán theo tỷ lệ thực thu
-                const bus_split = getSplitTarget(bus_combined_target, base_bus_ytd, prov_bus_ytd, 0.70);
-                bus_base_target = bus_split[0];
-                bus_prov_target = bus_split[1];
-
-                const pit_split = getSplitTarget(pit_combined_target, base_pit_ytd, prov_pit_ytd, 0.85);
-                pit_base_target = pit_split[0];
-                pit_prov_target = pit_split[1];
-
-                const reg_split = getSplitTarget(reg_combined_target, base_reg_ytd, prov_reg_ytd, 0.85);
-                reg_base_target = reg_split[0];
-                reg_prov_target = reg_split[1];
-
-                oth_base_target = base_total_target - (land_base_target + bus_base_target + pit_base_target + reg_base_target);
-                if (oth_base_target < 0) oth_base_target = 0;
-
-                oth_prov_target = prov_total_target - (land_prov_target + bus_prov_target + pit_prov_target + reg_prov_target);
-                if (oth_prov_target < 0) oth_prov_target = 0;
-              } else {
-                // --- CHỈ CẬP NHẬT THỰC HIỆN, KHÓA SỐ DỰ TOÁN CŨ ---
-                // Giữ nguyên dự toán hiện tại
-                land_prov_target = commune.provinceTax.details.land.target;
-                bus_prov_target  = commune.provinceTax.details.business.target;
-                pit_prov_target  = commune.provinceTax.details.pit.target;
-                reg_prov_target  = commune.provinceTax.details.registration.target;
-                oth_prov_target  = commune.provinceTax.details.others.target;
-
-                land_base_target = commune.baseTax.details.land.target;
-                bus_base_target  = commune.baseTax.details.business.target;
-                pit_base_target  = commune.baseTax.details.pit.target;
-                reg_base_target  = commune.baseTax.details.registration.target;
-                oth_base_target  = commune.baseTax.details.others.target;
-
-                // Đọc thực thu lũy kế YTD mới từ Excel
-                prov_total_ytd = getNumValue(provinceAOA, r, 3) * 1000000;
-                prov_land_ytd = getNumValue(provinceAOA, r, 37) * 1000000;
-                
-                prov_bus_ytd = 0;
-                for (let col = 8; col <= 22; col++) {
-                  prov_bus_ytd += getNumValue(provinceAOA, r, col);
-                }
-                prov_bus_ytd *= 1000000;
-                
-                prov_pit_ytd = getNumValue(provinceAOA, r, 30) * 1000000;
-                prov_reg_ytd = getNumValue(provinceAOA, r, 32) * 1000000;
-                prov_oth_ytd = prov_total_ytd - (prov_land_ytd + prov_bus_ytd + prov_pit_ytd + prov_reg_ytd);
-                if (prov_oth_ytd < 0) prov_oth_ytd = 0;
-
-                base_total_ytd = getNumValue(baseAOA, r, 3) * 1000000;
-                base_land_ytd = getNumValue(baseAOA, r, 37) * 1000000;
-                
-                base_bus_ytd = 0;
-                for (let col = 8; col <= 22; col++) {
-                  base_bus_ytd += getNumValue(baseAOA, r, col);
-                }
-                base_bus_ytd *= 1000000;
-                
-                base_pit_ytd = getNumValue(baseAOA, r, 30) * 1000000;
-                base_reg_ytd = getNumValue(baseAOA, r, 32) * 1000000;
-                base_oth_ytd = base_total_ytd - (base_land_ytd + base_bus_ytd + base_pit_ytd + base_reg_ytd);
-                if (base_oth_ytd < 0) base_oth_ytd = 0;
-              }
-
-              // Áp dụng dữ liệu vào bộ nhớ
-              commune.provinceTax.details.land.target = Math.round(land_prov_target);
-              commune.provinceTax.details.land.ytd = Math.round(prov_land_ytd);
-              commune.provinceTax.details.business.target = Math.round(bus_prov_target);
-              commune.provinceTax.details.business.ytd = Math.round(prov_bus_ytd);
-              commune.provinceTax.details.pit.target = Math.round(pit_prov_target);
-              commune.provinceTax.details.pit.ytd = Math.round(prov_pit_ytd);
-              commune.provinceTax.details.registration.target = Math.round(reg_prov_target);
-              commune.provinceTax.details.registration.ytd = Math.round(prov_reg_ytd);
-              commune.provinceTax.details.others.target = Math.round(oth_prov_target);
-              commune.provinceTax.details.others.ytd = Math.round(prov_oth_ytd);
-
-              commune.baseTax.details.land.target = Math.round(land_base_target);
-              commune.baseTax.details.land.ytd = Math.round(base_land_ytd);
-              commune.baseTax.details.business.target = Math.round(bus_base_target);
-              commune.baseTax.details.business.ytd = Math.round(base_bus_ytd);
-              commune.baseTax.details.pit.target = Math.round(pit_base_target);
-              commune.baseTax.details.pit.ytd = Math.round(base_pit_ytd);
-              commune.baseTax.details.registration.target = Math.round(reg_base_target);
-              commune.baseTax.details.registration.ytd = Math.round(base_reg_ytd);
-              commune.baseTax.details.others.target = Math.round(oth_base_target);
-              commune.baseTax.details.others.ytd = Math.round(base_oth_ytd);
-
-              // Cập nhật các chỉ số tổng hợp
-              updateCommuneDerivedFields(commune, r, oldCommune);
-              updateCount++;
+            if (dataKey === "target") {
+              commune[taxField].details[key].target = Math.round(val);
+              // Giữ nguyên YTD cũ
+              commune[taxField].details[key].ytd = commune[taxField].details[key].ytd || 0;
+            } else {
+              // ytd
+              commune[taxField].details[key].ytd = Math.round(val);
+              // Khóa dự toán từ baseline gốc
+              commune[taxField].details[key].target = origCommune[taxField].details[key].target || commune[taxField].details[key].target || 0;
             }
           });
-        } else {
-          // TRÌNH XỬ LÝ NHẬP FILE MẪU PHẲNG (FLAT SHEET)
-          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-          const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-          if (sheetData.length < 2) {
-            alert("Mẫu file Excel trống hoặc không đúng định dạng!");
-            return;
-          }
-
-          for (let i = 1; i < sheetData.length; i++) {
-            const row = sheetData[i];
-            if (!row || row.length === 0) continue;
-
-            const communeNameRaw = row[0];
-            if (!communeNameRaw) continue;
-
-            const communeNameStr = String(communeNameRaw).trim();
-            const targetCleanName = cleanName(communeNameStr);
-
-            const commune = currentData.communes.find(c => {
-              const cleanC = cleanName(c.name);
-              return cleanC.includes(targetCleanName) || targetCleanName.includes(cleanC);
-            });
-
-            if (commune) {
-              const oldCommune = oldData.communes.find(oc => oc.id === commune.id);
-              const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
-              if (row.length > 11) {
-                if (importType === "target") {
-                  // --- CẬP NHẬT DỰ TOÁN, GIỮ NGUYÊN THỰC HIỆN CŨ ---
-                  commune.provinceTax.details.land.target = (parseFloat(row[1]) || 0) * 1000000;
-                  commune.provinceTax.details.land.ytd = commune.provinceTax.details.land.ytd;
-                  commune.provinceTax.details.business.target = (parseFloat(row[3]) || 0) * 1000000;
-                  commune.provinceTax.details.business.ytd = commune.provinceTax.details.business.ytd;
-                  commune.provinceTax.details.pit.target = (parseFloat(row[5]) || 0) * 1000000;
-                  commune.provinceTax.details.pit.ytd = commune.provinceTax.details.pit.ytd;
-                  commune.provinceTax.details.registration.target = (parseFloat(row[7]) || 0) * 1000000;
-                  commune.provinceTax.details.registration.ytd = commune.provinceTax.details.registration.ytd;
-                  commune.provinceTax.details.others.target = (parseFloat(row[9]) || 0) * 1000000;
-                  commune.provinceTax.details.others.ytd = commune.provinceTax.details.others.ytd;
-
-                  commune.baseTax.details.land.target = (parseFloat(row[11]) || 0) * 1000000;
-                  commune.baseTax.details.land.ytd = commune.baseTax.details.land.ytd;
-                  commune.baseTax.details.business.target = (parseFloat(row[13]) || 0) * 1000000;
-                  commune.baseTax.details.business.ytd = commune.baseTax.details.business.ytd;
-                  commune.baseTax.details.pit.target = (parseFloat(row[15]) || 0) * 1000000;
-                  commune.baseTax.details.pit.ytd = commune.baseTax.details.pit.ytd;
-                  commune.baseTax.details.registration.target = (parseFloat(row[17]) || 0) * 1000000;
-                  commune.baseTax.details.registration.ytd = commune.baseTax.details.registration.ytd;
-                  commune.baseTax.details.others.target = (parseFloat(row[19]) || 0) * 1000000;
-                  commune.baseTax.details.others.ytd = commune.baseTax.details.others.ytd;
-                } else {
-                  // --- CẬP NHẬT THỰC HIỆN, GIỮ NGUYÊN DỰ TOÁN CŨ ---
-                  commune.provinceTax.details.land.target = commune.provinceTax.details.land.target;
-                  commune.provinceTax.details.land.ytd = (parseFloat(row[2]) || 0) * 1000000;
-                  commune.provinceTax.details.business.target = commune.provinceTax.details.business.target;
-                  commune.provinceTax.details.business.ytd = (parseFloat(row[4]) || 0) * 1000000;
-                  commune.provinceTax.details.pit.target = commune.provinceTax.details.pit.target;
-                  commune.provinceTax.details.pit.ytd = (parseFloat(row[6]) || 0) * 1000000;
-                  commune.provinceTax.details.registration.target = commune.provinceTax.details.registration.target;
-                  commune.provinceTax.details.registration.ytd = (parseFloat(row[8]) || 0) * 1000000;
-                  commune.provinceTax.details.others.target = commune.provinceTax.details.others.target;
-                  commune.provinceTax.details.others.ytd = (parseFloat(row[10]) || 0) * 1000000;
-
-                  commune.baseTax.details.land.target = commune.baseTax.details.land.target;
-                  commune.baseTax.details.land.ytd = (parseFloat(row[12]) || 0) * 1000000;
-                  commune.baseTax.details.business.target = commune.baseTax.details.business.target;
-                  commune.baseTax.details.business.ytd = (parseFloat(row[14]) || 0) * 1000000;
-                  commune.baseTax.details.pit.target = commune.baseTax.details.pit.target;
-                  commune.baseTax.details.pit.ytd = (parseFloat(row[16]) || 0) * 1000000;
-                  commune.baseTax.details.registration.target = commune.baseTax.details.registration.target;
-                  commune.baseTax.details.registration.ytd = (parseFloat(row[18]) || 0) * 1000000;
-                  commune.baseTax.details.others.target = commune.baseTax.details.others.target;
-                  commune.baseTax.details.others.ytd = (parseFloat(row[20]) || 0) * 1000000;
-                }
-              } else {
-                if (importType === "target") {
-                  // --- 11 CỘT: CẬP NHẬT DỰ TOÁN THUẾ CƠ SỞ, GIỮ NGUYÊN THỰC HIỆN CŨ ---
-                  commune.provinceTax.details.land.target = commune.provinceTax.details.land.target;
-                  commune.provinceTax.details.land.ytd = commune.provinceTax.details.land.ytd;
-                  commune.provinceTax.details.business.target = commune.provinceTax.details.business.target;
-                  commune.provinceTax.details.business.ytd = commune.provinceTax.details.business.ytd;
-                  commune.provinceTax.details.pit.target = commune.provinceTax.details.pit.target;
-                  commune.provinceTax.details.pit.ytd = commune.provinceTax.details.pit.ytd;
-                  commune.provinceTax.details.registration.target = commune.provinceTax.details.registration.target;
-                  commune.provinceTax.details.registration.ytd = commune.provinceTax.details.registration.ytd;
-                  commune.provinceTax.details.others.target = commune.provinceTax.details.others.target;
-                  commune.provinceTax.details.others.ytd = commune.provinceTax.details.others.ytd;
-
-                  commune.baseTax.details.land.target = (parseFloat(row[1]) || 0) * 1000000;
-                  commune.baseTax.details.land.ytd = commune.baseTax.details.land.ytd;
-                  commune.baseTax.details.business.target = (parseFloat(row[3]) || 0) * 1000000;
-                  commune.baseTax.details.business.ytd = commune.baseTax.details.business.ytd;
-                  commune.baseTax.details.pit.target = (parseFloat(row[5]) || 0) * 1000000;
-                  commune.baseTax.details.pit.ytd = commune.baseTax.details.pit.ytd;
-                  commune.baseTax.details.registration.target = (parseFloat(row[7]) || 0) * 1000000;
-                  commune.baseTax.details.registration.ytd = commune.baseTax.details.registration.ytd;
-                  commune.baseTax.details.others.target = (parseFloat(row[9]) || 0) * 1000000;
-                  commune.baseTax.details.others.ytd = commune.baseTax.details.others.ytd;
-                } else {
-                  // --- 11 CỘT: CẬP NHẬT THỰC HIỆN THUẾ CƠ SỞ, GIỮ NGUYÊN DỰ TOÁN CŨ ---
-                  commune.provinceTax.details.land.target = commune.provinceTax.details.land.target;
-                  commune.provinceTax.details.land.ytd = 0;
-                  commune.provinceTax.details.business.target = commune.provinceTax.details.business.target;
-                  commune.provinceTax.details.business.ytd = 0;
-                  commune.provinceTax.details.pit.target = commune.provinceTax.details.pit.target;
-                  commune.provinceTax.details.pit.ytd = 0;
-                  commune.provinceTax.details.registration.target = commune.provinceTax.details.registration.target;
-                  commune.provinceTax.details.registration.ytd = 0;
-                  commune.provinceTax.details.others.target = commune.provinceTax.details.others.target;
-                  commune.provinceTax.details.others.ytd = 0;
-
-                  commune.baseTax.details.land.target = commune.baseTax.details.land.target;
-                  commune.baseTax.details.land.ytd = (parseFloat(row[2]) || 0) * 1000000;
-                  commune.baseTax.details.business.target = commune.baseTax.details.business.target;
-                  commune.baseTax.details.business.ytd = (parseFloat(row[4]) || 0) * 1000000;
-                  commune.baseTax.details.pit.target = commune.baseTax.details.pit.target;
-                  commune.baseTax.details.pit.ytd = (parseFloat(row[6]) || 0) * 1000000;
-                  commune.baseTax.details.registration.target = commune.baseTax.details.registration.target;
-                  commune.baseTax.details.registration.ytd = (parseFloat(row[8]) || 0) * 1000000;
-                  commune.baseTax.details.others.target = commune.baseTax.details.others.target;
-                  commune.baseTax.details.others.ytd = (parseFloat(row[10]) || 0) * 1000000;
-                }
-              }
-
-              // Tính toán lại
-              updateCommuneDerivedFields(commune, i * 2, oldCommune);
-              updateCount++;
-            }
-          }
+          // Cập nhật tổng các chỉ số dẫn xuất
+          updateCommuneDerivedFields(commune, i, oldCommune);
+          updateCount++;
         }
 
         if (updateCount > 0) {
-          // Áp dụng ngày báo cáo cũ làm ngày báo cáo liền trước
           currentData.metadata.previousReportDate = oldData.metadata.reportDate;
-          
-          // Áp dụng ngày báo cáo mới
-          currentData.metadata.reportDate = reportDate;
-          reportDatePickerEl.value = reportDate;
-          const prdEl2 = document.getElementById("print-report-date");
-          if (prdEl2) prdEl2.textContent = formatDate(reportDate);
-          updateLastUpdateTime();
-
-          // Lưu lịch sử snapshot
-          saveSnapshot("Cập nhật Excel định kỳ", "Excel");
-          
-          // Khởi chạy đồng bộ hóa giao diện và lưu trữ localStorage
+          saveSnapshot(`Nhập Excel – ${dataKey === "target" ? "Dự toán" : "Thực hiện"} – ${taxKey === "province" ? "Thuế Tỉnh" : "Thuế Cơ Sở"}`, "Excel");
           onCommuneSelected();
           renderSidebar();
           closePeriodicPanel();
-          showToast(`Đã nạp thành công số liệu Excel cho ${updateCount} xã!`);
+          showToast(`Đã nhập thành công ${updateCount} xã (${dataKey === "target" ? "Dự toán" : "Thực hiện"} – ${taxKey === "province" ? "Thuế Tỉnh" : "Thuế Cơ Sở"})!`);
         } else {
-          alert("Không tìm thấy xã nào khớp trong file Excel. Vui lòng kiểm tra lại cột 'Tên Xã'!");
+          alert("Không tìm thấy xã nào khớp. Vui lòng kiểm tra tên cột 'Tên Xã / Phường'!");
         }
       } catch (err) {
         alert("Lỗi khi phân tích file Excel: " + err.message);
       }
     };
     reader.readAsArrayBuffer(file);
-    if (fileImportExcel) {
-      fileImportExcel.value = "";
+  }
+
+  // ============================================================
+  // HÀM NHẬP FILE CHÍNH THỨC ĐA SHEET (file của cơ quan thuế)
+  // ============================================================
+  function importOfficialWorkbook(workbook, taxKey, dataKey) {
+    try {
+      let sheetSummaryIndex  = -1;
+      let sheetProvinceIndex = -1;
+      let sheetBaseIndex     = -1;
+      let sheetTargetIndex   = -1;
+
+      workbook.SheetNames.forEach((name, idx) => {
+        const clean = cleanName(name);
+        if (clean.includes("tomtat"))      sheetSummaryIndex  = idx;
+        else if (clean.includes("tinhthu")) sheetProvinceIndex = idx;
+        else if (clean.includes("xathu"))   sheetBaseIndex     = idx;
+        else if (clean.includes("dutoan"))  sheetTargetIndex   = idx;
+      });
+
+      if (sheetSummaryIndex  === -1 && workbook.SheetNames[0]) sheetSummaryIndex  = 0;
+      if (sheetProvinceIndex === -1 && workbook.SheetNames[2]) sheetProvinceIndex = 2;
+      if (sheetBaseIndex     === -1 && workbook.SheetNames[3]) sheetBaseIndex     = 3;
+      if (sheetTargetIndex   === -1 && workbook.SheetNames[4]) sheetTargetIndex   = 4;
+
+      const summaryAOA = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[sheetSummaryIndex]],  { header: 1 });
+      const provinceAOA = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[sheetProvinceIndex]], { header: 1 });
+      const baseAOA    = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[sheetBaseIndex]],      { header: 1 });
+      const targetAOA  = sheetTargetIndex !== -1 ? XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[sheetTargetIndex]], { header: 1 }) : [];
+
+      // Trích xuất ngày báo cáo từ B4
+      let reportDate = currentData.metadata.reportDate;
+      const cellB4 = summaryAOA[3] ? summaryAOA[3][1] : "";
+      if (cellB4) {
+        const match = String(cellB4).match(/(\d+)\/(\d+)\/(\d+)/);
+        if (match) {
+          const day = match[1].padStart(2, '0');
+          const month = match[2].padStart(2, '0');
+          const year  = match[3];
+          reportDate = `${year}-${month}-${day}`;
+        }
+      }
+
+      const oldData = JSON.parse(JSON.stringify(currentData));
+      let updateCount = 0;
+
+      currentData.communes.forEach(commune => {
+        const targetCleanName = cleanName(commune.name);
+        const oldCommune  = oldData.communes.find(oc => oc.id === commune.id);
+        const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
+
+        // Tìm dòng xã trong summaryAOA
+        let matchedRowIndex = -1;
+        for (let i = 0; i < summaryAOA.length; i++) {
+          const row = summaryAOA[i];
+          if (row && row[1]) {
+            const cellClean = cleanName(row[1]);
+            if (cellClean.includes(targetCleanName) || targetCleanName.includes(cellClean)) {
+              matchedRowIndex = i + 1;
+              break;
+            }
+          }
+        }
+
+        // Tìm cột xã trong targetAOA
+        let matchedColIndex = -1;
+        if (targetAOA && targetAOA[0]) {
+          const headerRow = targetAOA[0];
+          for (let j = 0; j < headerRow.length; j++) {
+            const cellClean = cleanName(headerRow[j]);
+            if (cellClean && (cellClean.includes(targetCleanName) || targetCleanName.includes(cellClean))) {
+              matchedColIndex = j + 1;
+              break;
+            }
+          }
+        }
+
+        if (matchedRowIndex !== -1) {
+          const fallbackCols = {
+            "dak_wil": 60, "nam_dong": 61, "cu_jut": 62, "nam_da": 63,
+            "krong_no": 64, "nam_nung": 65, "quang_phu": 66
+          };
+          const c = matchedColIndex !== -1 ? matchedColIndex : (fallbackCols[commune.id] || 60);
+          const r = matchedRowIndex;
+
+          if (dataKey === "target") {
+            // Cập nhật DỰ TOÁN từ file chính thức, giữ nguyên YTD cũ
+            let rowMap = {
+              land: 39, enterpriseStateCentral: 6, enterpriseStateLocal: 12,
+              enterpriseForeign: 18, enterpriseNonState: 24, pit: 30,
+              landNonAgri: 31, registration: 33, others: 35,
+              landRent: 41, otherBudget: 43, minerals: 45
+            };
+
+            if (targetAOA && targetAOA.length > 0) {
+              targetAOA.forEach((row, idx) => {
+                if (row && row[2]) {
+                  const text = cleanName(row[2]);
+                  if (text.includes("dnnntrunguong"))           rowMap.enterpriseStateCentral = idx + 1;
+                  else if (text.includes("dnnndiaphuong"))      rowMap.enterpriseStateLocal   = idx + 1;
+                  else if (text.includes("dncovondtnn") || text.includes("dncovondautunuocngoai")) rowMap.enterpriseForeign = idx + 1;
+                  else if (text.includes("ngooiquocdoanh") || text.includes("ngoaiquocdoanh")) rowMap.enterpriseNonState = idx + 1;
+                  else if (text.includes("thunhap") && !text.includes("doanhnghiep")) rowMap.pit = idx + 1;
+                  else if ((text.includes("lephitruocba") || text.includes("truocba")) && !text.includes("nhadat")) rowMap.registration = idx + 1;
+                  else if (text.includes("sudungdatphinongnghiep") || text.includes("sudungdatphinn")) rowMap.landNonAgri = idx + 1;
+                  else if (text.includes("chothuedat") || text.includes("chothuematdat")) rowMap.landRent = idx + 1;
+                  else if (text.includes("tiensudungdat")) rowMap.land = idx + 1;
+                  else if (text.includes("capquyenkhaithackhoangsan") || text.includes("ktks")) rowMap.minerals = idx + 1;
+                  else if (text.includes("khacngansach") || text.includes("totaichinh") || text.includes("taichinh")) rowMap.otherBudget = idx + 1;
+                  else if (text.includes("philephi")) rowMap.others = idx + 1;
+                }
+              });
+            }
+
+            const getSplitT = (total, base, prov, defaultRatio) => {
+              const sum = (base || 0) + (prov || 0);
+              if (sum <= 0) { return [total * defaultRatio, total * (1 - defaultRatio)]; }
+              return [total * ((base || 0) / sum), total * ((prov || 0) / sum)];
+            };
+
+            const applyTarget = (key, rowIdx) => {
+              const combined = getNumValue(targetAOA, rowIdx, c) * 1000000;
+              const split = getSplitT(combined, commune.baseTax.details[key]?.ytd || 0, commune.provinceTax.details[key]?.ytd || 0, 0.50);
+              if (taxKey === "province") {
+                commune.provinceTax.details[key].target = Math.round(split[1]);
+                commune.provinceTax.details[key].ytd = commune.provinceTax.details[key].ytd || 0;
+              } else {
+                commune.baseTax.details[key].target = Math.round(split[0]);
+                commune.baseTax.details[key].ytd = commune.baseTax.details[key].ytd || 0;
+              }
+            };
+
+            exportKeys.forEach(key => applyTarget(key, rowMap[key] || 1));
+          } else {
+            // Cập nhật THỰC HIỆN từ file chính thức, giữ nguyên dự toán gốc
+            const sourceAOA = taxKey === "province" ? provinceAOA : baseAOA;
+            const taxField  = taxKey === "province" ? "provinceTax" : "baseTax";
+
+            // Khóa dự toán từ baseline gốc hoặc giữ nguyên số hiện tại nếu baseline bằng 0
+            exportKeys.forEach(key => {
+              commune[taxField].details[key].target = origCommune[taxField].details[key].target || commune[taxField].details[key].target || 0;
+            });
+
+            commune[taxField].details.land.ytd                = Math.round(getNumValue(sourceAOA, r, 37) * 1000000);
+            commune[taxField].details.enterpriseStateCentral.ytd = Math.round((getNumValue(sourceAOA, r, 8)  + getNumValue(sourceAOA, r, 9)  + getNumValue(sourceAOA, r, 10)) * 1000000);
+            commune[taxField].details.enterpriseStateLocal.ytd   = Math.round((getNumValue(sourceAOA, r, 11) + getNumValue(sourceAOA, r, 12) + getNumValue(sourceAOA, r, 13) + getNumValue(sourceAOA, r, 14)) * 1000000);
+            commune[taxField].details.enterpriseForeign.ytd      = Math.round((getNumValue(sourceAOA, r, 15) + getNumValue(sourceAOA, r, 16) + getNumValue(sourceAOA, r, 17) + getNumValue(sourceAOA, r, 18)) * 1000000);
+            commune[taxField].details.enterpriseNonState.ytd     = Math.round((getNumValue(sourceAOA, r, 19) + getNumValue(sourceAOA, r, 20) + getNumValue(sourceAOA, r, 21) + getNumValue(sourceAOA, r, 22)) * 1000000);
+            commune[taxField].details.pit.ytd                    = Math.round(getNumValue(sourceAOA, r, 30) * 1000000);
+            commune[taxField].details.registration.ytd           = Math.round(getNumValue(sourceAOA, r, 32) * 1000000);
+            commune[taxField].details.landNonAgri.ytd            = Math.round(getNumValue(sourceAOA, r, 35) * 1000000);
+            commune[taxField].details.landRent.ytd               = Math.round(getNumValue(sourceAOA, r, 36) * 1000000);
+            commune[taxField].details.minerals.ytd               = Math.round(getNumValue(sourceAOA, r, 40) * 1000000);
+            commune[taxField].details.otherBudget.ytd            = Math.round(getNumValue(sourceAOA, r, 43) * 1000000);
+
+            // Tính phần còn lại cho "others"
+            const totalActual  = getNumValue(sourceAOA, r, 3) * 1000000;
+            const mappedSum    = ["land","enterpriseStateCentral","enterpriseStateLocal","enterpriseForeign",
+                                  "enterpriseNonState","pit","registration","landNonAgri","landRent",
+                                  "minerals","otherBudget"].reduce((s, k) => s + (commune[taxField].details[k].ytd || 0), 0);
+            commune[taxField].details.others.ytd = Math.max(0, totalActual - mappedSum);
+          }
+
+          updateCommuneDerivedFields(commune, r, oldCommune);
+          updateCount++;
+        }
+      });
+
+      if (updateCount > 0) {
+        currentData.metadata.previousReportDate = oldData.metadata.reportDate;
+        currentData.metadata.reportDate = reportDate;
+        reportDatePickerEl.value = reportDate;
+        const prdEl2 = document.getElementById("print-report-date");
+        if (prdEl2) prdEl2.textContent = formatDate(reportDate);
+        updateLastUpdateTime();
+        saveSnapshot(`Nhập Excel chính thức – ${dataKey === "target" ? "Dự toán" : "Thực hiện"} – ${taxKey === "province" ? "Thuế Tỉnh" : "Thuế Cơ Sở"}`, "Excel");
+        onCommuneSelected();
+        renderSidebar();
+        closePeriodicPanel();
+        showToast(`Đã nạp thành công số liệu Excel cho ${updateCount} xã!`);
+      } else {
+        alert("Không tìm thấy xã nào khớp trong file Excel!");
+      }
+    } catch (err) {
+      alert("Lỗi khi phân tích file Excel chính thức: " + err.message);
     }
-  });
-}
+  }
+
+  // Đăng ký 4 nút NHẬP (kích hoạt input file ẩn)
+  if (btnTriggerImportTargetProvince)  btnTriggerImportTargetProvince.addEventListener("click",  () => fileImportTargetProvince  && fileImportTargetProvince.click());
+  if (btnTriggerImportTargetBase)      btnTriggerImportTargetBase.addEventListener("click",      () => fileImportTargetBase      && fileImportTargetBase.click());
+  if (btnTriggerImportActualProvince)  btnTriggerImportActualProvince.addEventListener("click",  () => fileImportActualProvince  && fileImportActualProvince.click());
+  if (btnTriggerImportActualBase)      btnTriggerImportActualBase.addEventListener("click",      () => fileImportActualBase      && fileImportActualBase.click());
+
+  // Xử lý file khi người dùng chọn xong (4 input file)
+  function bindFileImport(fileInput, taxKey, dataKey) {
+    if (!fileInput) return;
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) importFlatExcel(file, taxKey, dataKey);
+      fileInput.value = ""; // Reset để có thể chọn lại cùng file
+    });
+  }
+
+  bindFileImport(fileImportTargetProvince,  "province", "target");
+  bindFileImport(fileImportTargetBase,      "base",     "target");
+  bindFileImport(fileImportActualProvince,  "province", "ytd");
+  bindFileImport(fileImportActualBase,      "base",     "ytd");
+
+  // === CŨ: Giữ lại handler file chính thức (multi-sheet) khi cần nhập file chính thức qua nút Thực hiện ===
+  // Đã tích hợp vào importFlatExcel → importOfficialWorkbook phía trên
 
   // Đăng ký sự kiện click nút hủy lọc bảng
   if (btnClearTableFilter) {

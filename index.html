@@ -1,23 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Báo cáo Thu NSNN hàng ngày của TCS13 trực thuộc Thuế tỉnh Lâm Đồng</title>
+  <title>Cập nhật số liệu - Thuế cơ sở 13 Lâm Đồng</title>
   <meta name="description" content="Hệ thống báo cáo và theo dõi số liệu thu ngân sách hàng ngày tại 7 xã trực thuộc Thuế cơ sở 13 - Cục Thuế tỉnh Lâm Đồng. Tối ưu cho họp lãnh đạo.">
   <meta property="og:title" content="Báo cáo Thu NSNN hàng ngày của TCS13 trực thuộc Thuế tỉnh Lâm Đồng">
   <meta property="og:description" content="Hệ thống báo cáo và theo dõi số liệu thu ngân sách hàng ngày tại 7 xã trực thuộc Thuế cơ sở 13 - Cục Thuế tỉnh Lâm Đồng. Tối ưu cho họp lãnh đạo.">
   <meta property="og:type" content="website">
   
-  <!-- Anti-caching headers for mobile -->
+  <!-- Anti-caching headers -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="style_v1_8.css">
-  
-  <!-- Bảng số liệu chi tiết theo sắc thuế -->
   
   <!-- SheetJS (XLSX) CDN để đọc/xuất file Excel -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -37,7 +35,7 @@
       <div class="logo-text">
         <p>Thuế tỉnh Lâm Đồng</p>
         <h1 style="margin-left: -0.05cm;">THUẾ CƠ SỞ 13</h1>
-        <div style="margin-left: 0.3cm; font-size: 0.7rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; margin-top: 2px;">VER 1.0</div>
+        <div style="margin-left: 0.3cm; font-size: 0.7rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; margin-top: 2px;">VER 1.0 (Quản trị)</div>
       </div>
     </div>
     
@@ -45,16 +43,32 @@
     <div class="date-container" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 10px; margin-left: 40px;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <span style="font-size: 0.8rem; color: var(--color-success); font-weight: 700; text-transform: uppercase; white-space: nowrap;">Ngày báo cáo:</span>
-        <input type="date" id="report-date-picker" value="2026-06-14" class="date-picker-input readonly-picker" readonly>
+        <input type="date" id="report-date-picker" value="2026-06-14" class="date-picker-input">
       </div>
       <span style="font-size: 0.72rem; color: var(--color-success); font-weight: 600; white-space: nowrap;" id="last-update-time">Đã cập nhật: 23:45 13/06/2026</span>
     </div>
     
     <!-- Vùng 3: Các nút chức năng -->
     <div class="controls-container">
+      
+      <!-- Số liệu định kỳ -->
+      <button class="btn btn-simulation" id="btn-periodic" title="Cập nhật số liệu định kỳ Tuần/Tháng/Quý">
+        <span>📂</span> Cập nhật số liệu định kỳ
+      </button>
+
       <!-- Hướng dẫn sử dụng -->
       <button class="btn" id="btn-guide" title="Xem hướng dẫn sử dụng phần mềm" style="border-color: var(--color-primary); color: var(--color-primary);">
         <span>❓</span> Hướng dẫn
+      </button>
+
+      <!-- Lưu lại dữ liệu gốc -->
+      <button class="btn" id="btn-save-baseline" title="Lưu số liệu hiện tại làm dữ liệu gốc mặc định" style="border-color: var(--color-success); color: var(--color-success);">
+        <span>💾</span> Lưu lại
+      </button>
+
+      <!-- Khôi phục số liệu -->
+      <button class="btn" id="btn-reset" title="Khôi phục số liệu gốc ban đầu" style="border-color: var(--color-danger); color: var(--color-danger);">
+        <span>🔄</span> Khôi phục số liệu
       </button>
       
       <!-- Xuất PDF chuyên dụng (tải về file PDF) -->
@@ -190,15 +204,34 @@
               <tr>
                 <th rowspan="2" class="text-center" style="vertical-align: middle;">Tên Địa bàn</th>
                 <th colspan="2" class="text-center">Tổng cộng</th>
-                <th colspan="2" class="text-center">CTN QUỐC DOANH+NQD</th>
+                <th colspan="2" class="text-center">DNNN Trung ương</th>
+                <th colspan="2" class="text-center">DNNN Địa phương</th>
+                <th colspan="2" class="text-center">DN có vốn ĐTNN</th>
+                <th colspan="2" class="text-center">Ngoài quốc doanh</th>
                 <th colspan="2" class="text-center">Thu nhập cá nhân</th>
                 <th colspan="2" class="text-center">Lệ phí trước bạ</th>
-                <th colspan="2" class="text-center">Phí, lệ phí & khác</th>
+                <th colspan="2" class="text-center">Thuế SDĐ phi NN</th>
+                <th colspan="2" class="text-center">Thu tiền cho thuê đất</th>
                 <th colspan="2" class="text-center">Tiền sử dụng đất</th>
+                <th colspan="2" class="text-center">Thu CQ KTKS</th>
+                <th colspan="2" class="text-center">Thu khác ngân sách</th>
+                <th colspan="2" class="text-center">Phí, lệ phí & Thu khác</th>
               </tr>
               <tr>
                 <th class="text-center" style="color: var(--color-primary);">Dự toán</th>
                 <th class="text-center" style="color: var(--color-success);">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
+                <th class="text-center">Dự toán</th>
+                <th class="text-center">Thực thu</th>
                 <th class="text-center">Dự toán</th>
                 <th class="text-center">Thực thu</th>
                 <th class="text-center">Dự toán</th>
@@ -253,6 +286,71 @@
   <div class="overlay" id="overlay"></div>
 
 
+  <!-- Panel cap nhat so lieu dinh ky (Centered Modal) -->
+  <div class="periodic-modal" id="periodic-panel" style="max-width: 620px; width: 95%;">
+    <div class="simulation-header">
+      <h3 style="font-weight: 700; font-size: 1.15rem;">Cập nhật số liệu định kỳ</h3>
+      <button class="simulation-close" id="periodic-close">&times;</button>
+    </div>
+    <div style="padding: 10px 0;">
+      <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 15px;">
+        Tải mẫu Excel về máy, điền số liệu rồi tải lên lại. Mỗi cơ quan thuế và loại số liệu có mẫu riêng để dễ kiểm soát nhập liệu.
+      </p>
+      <div style="border: 1px solid var(--color-primary); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 12px;">
+        <div style="background: rgba(99,102,241,0.12); padding: 8px 14px; border-bottom: 1px solid var(--color-primary);">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--color-primary);">📋 DỰ TOÁN NĂM</span>
+        </div>
+        <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 120px; font-weight: 600;">🏛️ Thuế Tỉnh:</span>
+            <div style="display: flex; gap: 8px; flex: 1; min-width: 0;">
+              <button class="btn" id="btn-export-target-province" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; border-color: var(--color-primary); color: var(--color-primary); white-space: nowrap;">📥 Tải Mẫu</button>
+              <input type="file" id="file-import-target-province" accept=".xlsx, .xls" style="display: none;">
+              <button class="btn btn-primary" id="btn-trigger-import-target-province" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; background: var(--color-primary); border-color: var(--color-primary); white-space: nowrap;">📤 Nhập Mẫu</button>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 120px; font-weight: 600;">🏢 Thuế Cơ Sở:</span>
+            <div style="display: flex; gap: 8px; flex: 1; min-width: 0;">
+              <button class="btn" id="btn-export-target-base" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; border-color: var(--color-primary); color: var(--color-primary); white-space: nowrap;">📥 Tải Mẫu</button>
+              <input type="file" id="file-import-target-base" accept=".xlsx, .xls" style="display: none;">
+              <button class="btn btn-primary" id="btn-trigger-import-target-base" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; background: var(--color-primary); border-color: var(--color-primary); white-space: nowrap;">📤 Nhập Mẫu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="border: 1px solid var(--color-success); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 4px;">
+        <div style="background: rgba(16,185,129,0.10); padding: 8px 14px; border-bottom: 1px solid var(--color-success);">
+          <span style="font-size: 0.85rem; font-weight: 700; color: var(--color-success);">💰 THỰC HIỆN LŨY KẾ</span>
+        </div>
+        <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 120px; font-weight: 600;">🏛️ Thuế Tỉnh:</span>
+            <div style="display: flex; gap: 8px; flex: 1; min-width: 0;">
+              <button class="btn" id="btn-export-actual-province" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; border-color: var(--color-success); color: var(--color-success); white-space: nowrap;">📥 Tải Mẫu</button>
+              <input type="file" id="file-import-actual-province" accept=".xlsx, .xls" style="display: none;">
+              <button class="btn btn-primary" id="btn-trigger-import-actual-province" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; background: var(--color-success); border-color: var(--color-success); white-space: nowrap;">📤 Nhập Mẫu</button>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary); min-width: 120px; font-weight: 600;">🏢 Thuế Cơ Sở:</span>
+            <div style="display: flex; gap: 8px; flex: 1; min-width: 0;">
+              <button class="btn" id="btn-export-actual-base" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; border-color: var(--color-success); color: var(--color-success); white-space: nowrap;">📥 Tải Mẫu</button>
+              <input type="file" id="file-import-actual-base" accept=".xlsx, .xls" style="display: none;">
+              <button class="btn btn-primary" id="btn-trigger-import-actual-base" style="flex: 1; padding: 8px 6px; font-size: 0.78rem; font-weight: 700; background: var(--color-success); border-color: var(--color-success); white-space: nowrap;">📤 Nhập Mẫu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 10px; padding: 8px 12px; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 6px;">
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
+          ⚠️ <strong>Lưu ý:</strong> Nhập file Dự toán sẽ <strong>giữ nguyên số thực hiện cũ</strong>. Nhập file Thực hiện sẽ <strong>giữ nguyên dự toán cũ</strong>. Cần nhập đúng loại mẫu đã tải.
+        </p>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ==========================================================================
        PRINT TEMPLATE: GIAO DIỆN IN ẤN (Chỉ hiển thị khi in ra giấy/xuất PDF)
        ========================================================================== -->
@@ -263,9 +361,10 @@
     <button class="simulation-close" id="guide-close">&times;</button>
     <h3 style="margin-bottom: 20px; color: var(--color-primary); border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">❓ Hướng dẫn sử dụng phần mềm</h3>
     <div style="line-height: 1.7; font-size: 0.95rem; color: var(--text-color);">
-      <p><strong>1. Xem báo cáo:</strong> Bấm vào tên xã ở danh sách bên trái hoặc thanh lọc nhanh để xem chi tiết tình hình thu của địa bàn đó.</p>
-      <p><strong>2. Bộ lọc dữ liệu:</strong> Sử dụng các nút bấm "Thuế Tỉnh" / "Thuế Cơ Sở" ở màn hình chính để phân loại các nguồn thu chuyên biệt.</p>
-      <p><strong>3. Xuất Báo Cáo PDF:</strong> Nhấn "Xuất PDF" để tạo lập văn bản báo cáo hành chính tự động chuẩn thể thức của Nghị định 30/2020/NĐ-CP.</p>
+      <p><strong>1. Cập nhật số liệu:</strong> Nhấn nút "Cập nhật số liệu định kỳ" để mở tính năng tải lên file Excel dữ liệu thu ngân sách.</p>
+      <p><strong>2. Xem báo cáo:</strong> Bấm vào tên xã ở danh sách bên trái để xem chi tiết tình hình thu của địa bàn đó.</p>
+      <p><strong>3. Bộ lọc dữ liệu:</strong> Sử dụng các nút bấm "Thuế Tỉnh" / "Thuế Cơ Sở" ở màn hình chính để phân loại các nguồn thu chuyên biệt.</p>
+      <p><strong>4. Xuất Báo Cáo PDF:</strong> Nhấn "Xuất PDF" để tạo lập văn bản báo cáo hành chính tự động chuẩn thể thức của Nghị định 30/2020/NĐ-CP.</p>
       <div style="margin-top: 25px; text-align: center;">
         <button class="btn btn-primary" id="btn-guide-ok" style="padding: 10px 30px; border-radius: 8px;">Đã hiểu</button>
       </div>
