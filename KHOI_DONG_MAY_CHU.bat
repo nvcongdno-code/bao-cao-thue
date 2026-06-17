@@ -27,6 +27,6 @@ echo Giu cua so nay mo de may chu hoat dong.
 echo Dong cua so nay se dung may chu.
 echo.
 
-powershell -ExecutionPolicy Bypass -File "D:\Users\Administrator\.gemini\antigravity\brain\ea49473e-4496-41e3-a175-ec37e6fb2049\scratch\serve.ps1"
+powershell -ExecutionPolicy Bypass -File "%~dp0serve.ps1"
 
 pause
