@@ -6,7 +6,7 @@ const BUDGET_DATA = {
     "province": "Lâm Đồng",
     "governingUnit": "Cục Thuế tỉnh Lâm Đồng",
     "managingUnit": "Thuế cơ sở 13",
-    "reportDate": "2026-05-31",
+    "reportDate": "2026-06-01",
     "currency": "VND",
     "categories": {
       "land": "Thu tiền sử dụng đất",
@@ -22,7 +22,7 @@ const BUDGET_DATA = {
       "otherBudget": "Thu khác ngân sách",
       "others": "Phí, lệ phí & Thu khác"
     },
-    "previousReportDate": "2026-06-01"
+    "previousReportDate": "2026-05-31"
   },
   "communes": [
     {

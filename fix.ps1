@@ -1,0 +1,1 @@
+$content = [System.IO.File]::ReadAllText('D:\3Thue\data_v1_8.js', [System.Text.Encoding]::Unicode); [System.IO.File]::WriteAllText('D:\3Thue\data_v1_8.js', $content, new-object System.Text.UTF8Encoding($false))

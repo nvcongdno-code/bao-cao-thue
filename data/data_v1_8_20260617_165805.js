@@ -6,7 +6,7 @@ const BUDGET_DATA = {
     "province": "Lâm Đồng",
     "governingUnit": "Cục Thuế tỉnh Lâm Đồng",
     "managingUnit": "Thuế cơ sở 13",
-    "reportDate": "2026-05-31",
+    "reportDate": "2026-06-17",
     "currency": "VND",
     "categories": {
       "land": "Thu tiền sử dụng đất",
@@ -22,7 +22,7 @@ const BUDGET_DATA = {
       "otherBudget": "Thu khác ngân sách",
       "others": "Phí, lệ phí & Thu khác"
     },
-    "previousReportDate": "2026-06-01"
+    "previousReportDate": "2026-06-17"
   },
   "communes": [
     {
@@ -30,14 +30,14 @@ const BUDGET_DATA = {
       "name": "Xã Đắk Wil",
       "provinceTax": {
         "target": 38129000000,
-        "today": 29785960000,
-        "ytd": 29785960000,
-        "lastYearYtd": 26930520400,
+        "today": 32271567940,
+        "ytd": 32189761045,
+        "lastYearYtd": 29101631828,
         "details": {
           "land": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 3400,
+            "lastYearYtd": 3114,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
@@ -48,8 +48,8 @@ const BUDGET_DATA = {
           },
           "enterpriseStateLocal": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -6323,
+            "lastYearYtd": -5564,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
@@ -60,64 +60,64 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 34386000000,
-            "ytd": 29396940000,
-            "lastYearYtd": 26574833760,
+            "ytd": 29396939891,
+            "lastYearYtd": 26574833661,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 1945000000,
-            "ytd": 287460000,
-            "lastYearYtd": 263313360,
+            "ytd": 290636627,
+            "lastYearYtd": 266223150,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -81799972,
+            "lastYearYtd": -75910374,
             "periodStartYtd": 0
           },
           "landNonAgri": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -600,
+            "lastYearYtd": -528,
             "periodStartYtd": 0
           },
           "landRent": {
             "target": 53000000,
-            "ytd": 33320000,
-            "lastYearYtd": 29721440,
+            "ytd": 33321439,
+            "lastYearYtd": 29722724,
             "periodStartYtd": 0
           },
           "minerals": {
             "target": 1195000000,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 2482413372,
+            "lastYearYtd": 2244101688,
             "periodStartYtd": 0
           },
           "otherBudget": {
             "target": 550000000,
-            "ytd": 56240000,
-            "lastYearYtd": 51515840,
+            "ytd": 56251932,
+            "lastYearYtd": 51526770,
             "periodStartYtd": 0
           },
           "others": {
             "target": 0,
-            "ytd": 12000000,
-            "lastYearYtd": 11136000,
+            "ytd": 12001279,
+            "lastYearYtd": 11137187,
             "periodStartYtd": 0
           }
         }
       },
       "baseTax": {
         "target": 22365000000,
-        "today": 18791540000,
-        "ytd": 18791540000,
-        "lastYearYtd": 17134640240,
+        "today": 20155110000,
+        "ytd": 20155110000,
+        "lastYearYtd": 18372469920,
         "details": {
           "land": {
             "target": 5000000000,
-            "ytd": 3593080000,
-            "lastYearYtd": 3291261280,
+            "ytd": 4104140000,
+            "lastYearYtd": 3759392240,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
@@ -128,8 +128,8 @@ const BUDGET_DATA = {
           },
           "enterpriseStateLocal": {
             "target": 165000000,
-            "ytd": 568930000,
-            "lastYearYtd": 500658400,
+            "ytd": 572580000,
+            "lastYearYtd": 503870400,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
@@ -140,20 +140,20 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 6250000000,
-            "ytd": 6666880000,
-            "lastYearYtd": 6026859520,
+            "ytd": 6699800000,
+            "lastYearYtd": 6056619200,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 3300000000,
-            "ytd": 3584990000,
-            "lastYearYtd": 3283850840,
+            "ytd": 3767010000,
+            "lastYearYtd": 3450581160,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 4600000000,
-            "ytd": 2583510000,
-            "lastYearYtd": 2397497280,
+            "ytd": 2661660000,
+            "lastYearYtd": 2470020480,
             "periodStartYtd": 0
           },
           "landNonAgri": {
@@ -164,26 +164,26 @@ const BUDGET_DATA = {
           },
           "landRent": {
             "target": 1100000000,
-            "ytd": 222210000,
-            "lastYearYtd": 198211320,
+            "ytd": 728740000,
+            "lastYearYtd": 650036080,
             "periodStartYtd": 0
           },
           "minerals": {
             "target": 430000000,
-            "ytd": 870880000,
-            "lastYearYtd": 787275520,
+            "ytd": 871910000,
+            "lastYearYtd": 788206640,
             "periodStartYtd": 0
           },
           "otherBudget": {
             "target": 450000000,
-            "ytd": 126680000,
-            "lastYearYtd": 116038880,
+            "ytd": 128450000,
+            "lastYearYtd": 117660200,
             "periodStartYtd": 0
           },
           "others": {
             "target": 1070000000,
-            "ytd": 573600000,
-            "lastYearYtd": 532300800,
+            "ytd": 620040000,
+            "lastYearYtd": 575397120,
             "periodStartYtd": 0
           }
         }
@@ -194,62 +194,62 @@ const BUDGET_DATA = {
       "name": "Xã Nam Dong",
       "provinceTax": {
         "target": 233500000,
-        "today": 50890000,
-        "ytd": 50890000,
-        "lastYearYtd": 46400080,
+        "today": 47886996,
+        "ytd": -5422847,
+        "lastYearYtd": -5656363,
         "details": {
           "land": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -45603900,
+            "lastYearYtd": -42320419,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -2693,
+            "lastYearYtd": -2370,
             "periodStartYtd": 0
           },
           "enterpriseStateLocal": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -2791,
+            "lastYearYtd": -2490,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
             "target": 94500000,
-            "ytd": 34410000,
-            "lastYearYtd": 31106640,
+            "ytd": 34410005,
+            "lastYearYtd": 31106645,
             "periodStartYtd": 0
           },
           "enterpriseNonState": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 4603,
+            "lastYearYtd": 4216,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 125000000,
-            "ytd": 16470000,
-            "lastYearYtd": 15284160,
+            "ytd": 13464396,
+            "lastYearYtd": 12494959,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -4209109,
+            "lastYearYtd": -3704016,
             "periodStartYtd": 0
           },
           "landNonAgri": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -774,
+            "lastYearYtd": -690,
             "periodStartYtd": 0
           },
           "landRent": {
             "target": 14000000,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 992,
+            "lastYearYtd": 897,
             "periodStartYtd": 0
           },
           "minerals": {
@@ -260,40 +260,40 @@ const BUDGET_DATA = {
           },
           "otherBudget": {
             "target": 0,
-            "ytd": 10000,
-            "lastYearYtd": 9280,
+            "ytd": -3490576,
+            "lastYearYtd": -3239255,
             "periodStartYtd": 0
           },
           "others": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 7000,
+            "lastYearYtd": 6160,
             "periodStartYtd": 0
           }
         }
       },
       "baseTax": {
         "target": 29790000000,
-        "today": 23105520000,
-        "ytd": 23105520000,
-        "lastYearYtd": 21168633240,
+        "today": 25043020000,
+        "ytd": 25043020000,
+        "lastYearYtd": 22946114800,
         "details": {
           "land": {
             "target": 9000000000,
-            "ytd": 6811480000,
-            "lastYearYtd": 6321053440,
+            "ytd": 7637360000,
+            "lastYearYtd": 7087470080,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
             "target": 250000000,
-            "ytd": 191400000,
-            "lastYearYtd": 168432000,
+            "ytd": 234100000,
+            "lastYearYtd": 206008000,
             "periodStartYtd": 0
           },
           "enterpriseStateLocal": {
             "target": 120000000,
-            "ytd": 2780000,
-            "lastYearYtd": 2479760,
+            "ytd": 3770000,
+            "lastYearYtd": 3362840,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
@@ -304,20 +304,20 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 7570000000,
-            "ytd": 7080450000,
-            "lastYearYtd": 6485692200,
+            "ytd": 7300330000,
+            "lastYearYtd": 6687102280,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 4800000000,
-            "ytd": 5089690000,
-            "lastYearYtd": 4723232320,
+            "ytd": 5484360000,
+            "lastYearYtd": 5089486080,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 5700000000,
-            "ytd": 3497310000,
-            "lastYearYtd": 3077632800,
+            "ytd": 3676520000,
+            "lastYearYtd": 3235337600,
             "periodStartYtd": 0
           },
           "landNonAgri": {
@@ -328,8 +328,8 @@ const BUDGET_DATA = {
           },
           "landRent": {
             "target": 500000000,
-            "ytd": 9400000,
-            "lastYearYtd": 8497600,
+            "ytd": 239130000,
+            "lastYearYtd": 216173520,
             "periodStartYtd": 0
           },
           "minerals": {
@@ -340,14 +340,14 @@ const BUDGET_DATA = {
           },
           "otherBudget": {
             "target": 1400000000,
-            "ytd": 194770000,
-            "lastYearYtd": 180746560,
+            "ytd": 204230000,
+            "lastYearYtd": 189525440,
             "periodStartYtd": 0
           },
           "others": {
             "target": 450000000,
-            "ytd": 226960000,
-            "lastYearYtd": 199724800,
+            "ytd": 261940000,
+            "lastYearYtd": 230507200,
             "periodStartYtd": 0
           }
         }
@@ -358,94 +358,94 @@ const BUDGET_DATA = {
       "name": "Xã Cư Jút",
       "provinceTax": {
         "target": 159334750000,
-        "today": 76013980000,
-        "ytd": 76009980000,
-        "lastYearYtd": 68831097480,
+        "today": 77106781765,
+        "ytd": 77099964779,
+        "lastYearYtd": 69841628177,
         "details": {
           "land": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 400,
+            "lastYearYtd": 352,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
             "target": 95662000000,
-            "ytd": 43656510000,
-            "lastYearYtd": 38941606920,
+            "ytd": 43656500740,
+            "lastYearYtd": 38941598660,
             "periodStartYtd": 0
           },
           "enterpriseStateLocal": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 3831,
+            "lastYearYtd": 3463,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
             "target": 2447750000,
-            "ytd": 3871180000,
-            "lastYearYtd": 3546000880,
+            "ytd": 3871185375,
+            "lastYearYtd": 3546005804,
             "periodStartYtd": 0
           },
           "enterpriseNonState": {
             "target": 44880000000,
-            "ytd": 26179900000,
-            "lastYearYtd": 24294947200,
+            "ytd": 26185174313,
+            "lastYearYtd": 24299841762,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 3416000000,
-            "ytd": 1770850000,
-            "lastYearYtd": 1558348000,
+            "ytd": 1764454107,
+            "lastYearYtd": 1552719614,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -2818936,
+            "lastYearYtd": -2514491,
             "periodStartYtd": 0
           },
           "landNonAgri": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -2500,
+            "lastYearYtd": -2260,
             "periodStartYtd": 0
           },
           "landRent": {
             "target": 0,
-            "ytd": 4220000,
-            "lastYearYtd": 3865520,
+            "ytd": 5359326,
+            "lastYearYtd": 4909143,
             "periodStartYtd": 0
           },
           "minerals": {
             "target": 11923000000,
-            "ytd": 465320000,
-            "lastYearYtd": 431816960,
+            "ytd": 1529561026,
+            "lastYearYtd": 1419432632,
             "periodStartYtd": 0
           },
           "otherBudget": {
             "target": 1000000000,
-            "ytd": 66000000,
-            "lastYearYtd": 58080000,
+            "ytd": 94542647,
+            "lastYearYtd": 83197529,
             "periodStartYtd": 0
           },
           "others": {
             "target": 6000000,
-            "ytd": -4000000,
-            "lastYearYtd": -3568000,
+            "ytd": -3995550,
+            "lastYearYtd": -3564031,
             "periodStartYtd": 0
           }
         }
       },
       "baseTax": {
         "target": 85135000000,
-        "today": 66301570000,
-        "ytd": 66301570000,
-        "lastYearYtd": 60044108560,
+        "today": 69719000000,
+        "ytd": 69719000000,
+        "lastYearYtd": 63108043520,
         "details": {
           "land": {
             "target": 21000000000,
-            "ytd": 16627290000,
-            "lastYearYtd": 14632015200,
+            "ytd": 17871020000,
+            "lastYearYtd": 15726497600,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
@@ -456,8 +456,8 @@ const BUDGET_DATA = {
           },
           "enterpriseStateLocal": {
             "target": 155000000,
-            "ytd": 1096790000,
-            "lastYearYtd": 991498160,
+            "ytd": 1100480000,
+            "lastYearYtd": 994833920,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
@@ -468,32 +468,32 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 32200000000,
-            "ytd": 32503540000,
-            "lastYearYtd": 30163285120,
+            "ytd": 33476080000,
+            "lastYearYtd": 31065802240,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 9400000000,
-            "ytd": 7209630000,
-            "lastYearYtd": 6344474400,
+            "ytd": 7651450000,
+            "lastYearYtd": 6733276000,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 14500000000,
-            "ytd": 7378510000,
-            "lastYearYtd": 6581630920,
+            "ytd": 7968090000,
+            "lastYearYtd": 7107536280,
             "periodStartYtd": 0
           },
           "landNonAgri": {
             "target": 40000000,
-            "ytd": 40340000,
-            "lastYearYtd": 36467360,
+            "ytd": 45560000,
+            "lastYearYtd": 41186240,
             "periodStartYtd": 0
           },
           "landRent": {
             "target": 250000000,
-            "ytd": 281890000,
-            "lastYearYtd": 258211240,
+            "ytd": 348550000,
+            "lastYearYtd": 319271800,
             "periodStartYtd": 0
           },
           "minerals": {
@@ -504,14 +504,14 @@ const BUDGET_DATA = {
           },
           "otherBudget": {
             "target": 4250000000,
-            "ytd": 447790000,
-            "lastYearYtd": 394055200,
+            "ytd": 523140000,
+            "lastYearYtd": 460363200,
             "periodStartYtd": 0
           },
           "others": {
             "target": 2920000000,
-            "ytd": 338720000,
-            "lastYearYtd": 302138240,
+            "ytd": 357560000,
+            "lastYearYtd": 318943520,
             "periodStartYtd": 0
           }
         }
@@ -522,14 +522,14 @@ const BUDGET_DATA = {
       "name": "Xã Nam Đà",
       "provinceTax": {
         "target": 691000000,
-        "today": 761430000,
-        "ytd": 761430000,
-        "lastYearYtd": 671252520,
+        "today": 2399765774,
+        "ytd": 2399194328,
+        "lastYearYtd": 2112471744,
         "details": {
           "land": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -3605,
+            "lastYearYtd": -3216,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
@@ -540,8 +540,8 @@ const BUDGET_DATA = {
           },
           "enterpriseStateLocal": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -2076,
+            "lastYearYtd": -1902,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
@@ -552,64 +552,64 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 665000000,
-            "ytd": 711510000,
-            "lastYearYtd": 626128800,
+            "ytd": 969219198,
+            "lastYearYtd": 852912894,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 8000000,
-            "ytd": 330000,
-            "lastYearYtd": 294360,
+            "ytd": 335597,
+            "lastYearYtd": 299353,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -563145,
+            "lastYearYtd": -509083,
             "periodStartYtd": 0
           },
           "landNonAgri": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -2620,
+            "lastYearYtd": -2400,
             "periodStartYtd": 0
           },
           "landRent": {
             "target": 18000000,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 3094,
+            "lastYearYtd": 2871,
             "periodStartYtd": 0
           },
           "minerals": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 1380608270,
+            "lastYearYtd": 1214935278,
             "periodStartYtd": 0
           },
           "otherBudget": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 8632,
+            "lastYearYtd": 7700,
             "periodStartYtd": 0
           },
           "others": {
             "target": 0,
-            "ytd": 49590000,
-            "lastYearYtd": 44829360,
+            "ytd": 49590983,
+            "lastYearYtd": 44830249,
             "periodStartYtd": 0
           }
         }
       },
       "baseTax": {
         "target": 23045000000,
-        "today": 33652340000,
-        "ytd": 33652340000,
-        "lastYearYtd": 29879544080,
+        "today": 34804750000,
+        "ytd": 34804750000,
+        "lastYearYtd": 30905491240,
         "details": {
           "land": {
             "target": 6000000000,
-            "ytd": 10122800000,
-            "lastYearYtd": 9029537600,
+            "ytd": 10383680000,
+            "lastYearYtd": 9262242560,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
@@ -632,20 +632,20 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 4300000000,
-            "ytd": 16325670000,
-            "lastYearYtd": 14366589600,
+            "ytd": 16730260000,
+            "lastYearYtd": 14722628800,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 2800000000,
-            "ytd": 2191840000,
-            "lastYearYtd": 1955121280,
+            "ytd": 2424090000,
+            "lastYearYtd": 2162288280,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 9000000000,
-            "ytd": 4549860000,
-            "lastYearYtd": 4113073440,
+            "ytd": 4765810000,
+            "lastYearYtd": 4308292240,
             "periodStartYtd": 0
           },
           "landNonAgri": {
@@ -668,14 +668,14 @@ const BUDGET_DATA = {
           },
           "otherBudget": {
             "target": 350000000,
-            "ytd": 190000000,
-            "lastYearYtd": 169480000,
+            "ytd": 206980000,
+            "lastYearYtd": 184626160,
             "periodStartYtd": 0
           },
           "others": {
             "target": 450000000,
-            "ytd": 146020000,
-            "lastYearYtd": 132002080,
+            "ytd": 167780000,
+            "lastYearYtd": 151673120,
             "periodStartYtd": 0
           }
         }
@@ -686,26 +686,26 @@ const BUDGET_DATA = {
       "name": "Xã Krông Nô",
       "provinceTax": {
         "target": 3025000000,
-        "today": 1869000000,
-        "ytd": 1869000000,
-        "lastYearYtd": 1669853760,
+        "today": 2116973340,
+        "ytd": 2116474192,
+        "lastYearYtd": 1891723112,
         "details": {
           "land": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -167,
+            "lastYearYtd": -151,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -59,
+            "lastYearYtd": -54,
             "periodStartYtd": 0
           },
           "enterpriseStateLocal": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 1504,
+            "lastYearYtd": 1396,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
@@ -716,32 +716,32 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 2675000000,
-            "ytd": 1705450000,
-            "lastYearYtd": 1521261400,
+            "ytd": 1860736169,
+            "lastYearYtd": 1659776663,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 11142165,
+            "lastYearYtd": 10072517,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -498398,
+            "lastYearYtd": -456533,
             "periodStartYtd": 0
           },
           "landNonAgri": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -524,
+            "lastYearYtd": -486,
             "periodStartYtd": 0
           },
           "landRent": {
             "target": 67000000,
-            "ytd": 33860000,
-            "lastYearYtd": 29796800,
+            "ytd": 44953988,
+            "lastYearYtd": 39559509,
             "periodStartYtd": 0
           },
           "minerals": {
@@ -752,28 +752,28 @@ const BUDGET_DATA = {
           },
           "otherBudget": {
             "target": 0,
-            "ytd": 40000,
-            "lastYearYtd": 36160,
+            "ytd": 46461924,
+            "lastYearYtd": 42001579,
             "periodStartYtd": 0
           },
           "others": {
             "target": 0,
-            "ytd": 129650000,
-            "lastYearYtd": 118759400,
+            "ytd": 153677590,
+            "lastYearYtd": 140768672,
             "periodStartYtd": 0
           }
         }
       },
       "baseTax": {
         "target": 61110000000,
-        "today": 36093100000,
-        "ytd": 36093100000,
-        "lastYearYtd": 32542127680,
+        "today": 38570940000,
+        "ytd": 38570940000,
+        "lastYearYtd": 34781454000,
         "details": {
           "land": {
             "target": 25000000000,
-            "ytd": 7981610000,
-            "lastYearYtd": 7215375440,
+            "ytd": 8647910000,
+            "lastYearYtd": 7817710640,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
@@ -796,32 +796,32 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 8280000000,
-            "ytd": 14136810000,
-            "lastYearYtd": 12610034520,
+            "ytd": 14756470000,
+            "lastYearYtd": 13162771240,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 7100000000,
-            "ytd": 6199680000,
-            "lastYearYtd": 5604510720,
+            "ytd": 6743960000,
+            "lastYearYtd": 6096539840,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 12500000000,
-            "ytd": 6605200000,
-            "lastYearYtd": 6050363200,
+            "ytd": 7184700000,
+            "lastYearYtd": 6581185200,
             "periodStartYtd": 0
           },
           "landNonAgri": {
             "target": 40000000,
-            "ytd": 7050000,
-            "lastYearYtd": 6542400,
+            "ytd": 7160000,
+            "lastYearYtd": 6644480,
             "periodStartYtd": 0
           },
           "landRent": {
             "target": 440000000,
-            "ytd": 143820000,
-            "lastYearYtd": 126561600,
+            "ytd": 150560000,
+            "lastYearYtd": 132492800,
             "periodStartYtd": 0
           },
           "minerals": {
@@ -832,8 +832,8 @@ const BUDGET_DATA = {
           },
           "otherBudget": {
             "target": 5350000000,
-            "ytd": 458150000,
-            "lastYearYtd": 414167600,
+            "ytd": 519400000,
+            "lastYearYtd": 469537600,
             "periodStartYtd": 0
           },
           "others": {
@@ -850,14 +850,14 @@ const BUDGET_DATA = {
       "name": "Xã Nâm Nung",
       "provinceTax": {
         "target": 3323000000,
-        "today": 3849780000,
-        "ytd": 3849780000,
-        "lastYearYtd": 3480852480,
+        "today": 3851700136,
+        "ytd": 3851687006,
+        "lastYearYtd": 3482576050,
         "details": {
           "land": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 700,
+            "lastYearYtd": 641,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
@@ -868,8 +868,8 @@ const BUDGET_DATA = {
           },
           "enterpriseStateLocal": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -2130,
+            "lastYearYtd": -1874,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
@@ -880,32 +880,32 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 2735000000,
-            "ytd": 3698160000,
-            "lastYearYtd": 3343136640,
+            "ytd": 3700070166,
+            "lastYearYtd": 3344863430,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 70000000,
-            "ytd": 102950000,
-            "lastYearYtd": 94302200,
+            "ytd": 102945901,
+            "lastYearYtd": 94298445,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 833,
+            "lastYearYtd": 773,
             "periodStartYtd": 0
           },
           "landNonAgri": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 2850,
+            "lastYearYtd": 2508,
             "periodStartYtd": 0
           },
           "landRent": {
             "target": 0,
-            "ytd": 48670000,
-            "lastYearYtd": 43413640,
+            "ytd": 48677389,
+            "lastYearYtd": 43420231,
             "periodStartYtd": 0
           },
           "minerals": {
@@ -916,28 +916,28 @@ const BUDGET_DATA = {
           },
           "otherBudget": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 2297,
+            "lastYearYtd": 2104,
             "periodStartYtd": 0
           },
           "others": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -11000,
+            "lastYearYtd": -10208,
             "periodStartYtd": 0
           }
         }
       },
       "baseTax": {
         "target": 17020000000,
-        "today": 13900400000,
-        "ytd": 13900400000,
-        "lastYearYtd": 12715225400,
+        "today": 14471540000,
+        "ytd": 14471540000,
+        "lastYearYtd": 13239179000,
         "details": {
           "land": {
             "target": 2000000000,
-            "ytd": 4278060000,
-            "lastYearYtd": 3918702960,
+            "ytd": 4515250000,
+            "lastYearYtd": 4135969000,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
@@ -960,20 +960,20 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 4560000000,
-            "ytd": 4542430000,
-            "lastYearYtd": 4106356720,
+            "ytd": 4545970000,
+            "lastYearYtd": 4109556880,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 2600000000,
-            "ytd": 1782350000,
-            "lastYearYtd": 1632632600,
+            "ytd": 1927810000,
+            "lastYearYtd": 1765873960,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 7000000000,
-            "ytd": 3073820000,
-            "lastYearYtd": 2852504960,
+            "ytd": 3167420000,
+            "lastYearYtd": 2939365760,
             "periodStartYtd": 0
           },
           "landNonAgri": {
@@ -984,8 +984,8 @@ const BUDGET_DATA = {
           },
           "landRent": {
             "target": 150000000,
-            "ytd": 13110000,
-            "lastYearYtd": 11694120,
+            "ytd": 32110000,
+            "lastYearYtd": 28642120,
             "periodStartYtd": 0
           },
           "minerals": {
@@ -996,14 +996,14 @@ const BUDGET_DATA = {
           },
           "otherBudget": {
             "target": 200000000,
-            "ytd": 63110000,
-            "lastYearYtd": 57808760,
+            "ytd": 121740000,
+            "lastYearYtd": 111513840,
             "periodStartYtd": 0
           },
           "others": {
             "target": 180000000,
-            "ytd": 118910000,
-            "lastYearYtd": 110348480,
+            "ytd": 132630000,
+            "lastYearYtd": 123080640,
             "periodStartYtd": 0
           }
         }
@@ -1014,26 +1014,26 @@ const BUDGET_DATA = {
       "name": "Xã Quảng Phú",
       "provinceTax": {
         "target": 32091000000,
-        "today": 15017720000,
-        "ytd": 15017720000,
-        "lastYearYtd": 13306922240,
+        "today": 16408730574,
+        "ytd": 16406602161,
+        "lastYearYtd": 14579214589,
         "details": {
           "land": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -3600,
+            "lastYearYtd": -3341,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
             "target": 27391000000,
-            "ytd": 12482390000,
-            "lastYearYtd": 10984503200,
+            "ytd": 12482391246,
+            "lastYearYtd": 10984504296,
             "periodStartYtd": 0
           },
           "enterpriseStateLocal": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -3150,
+            "lastYearYtd": -2810,
             "periodStartYtd": 0
           },
           "enterpriseForeign": {
@@ -1044,70 +1044,70 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 4700000000,
-            "ytd": 2530600000,
-            "lastYearYtd": 2318029600,
+            "ytd": 2891042736,
+            "lastYearYtd": 2648195146,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 0,
-            "ytd": 4730000,
-            "lastYearYtd": 4389440,
+            "ytd": 4727990,
+            "lastYearYtd": 4387575,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -2120913,
+            "lastYearYtd": -1866403,
             "periodStartYtd": 0
           },
           "landNonAgri": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 1040,
+            "lastYearYtd": 928,
             "periodStartYtd": 0
           },
           "landRent": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 2930,
+            "lastYearYtd": 2649,
             "periodStartYtd": 0
           },
           "minerals": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 1030564118,
+            "lastYearYtd": 943996732,
             "periodStartYtd": 0
           },
           "otherBudget": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": 514,
+            "lastYearYtd": 477,
             "periodStartYtd": 0
           },
           "others": {
             "target": 0,
-            "ytd": 0,
-            "lastYearYtd": 0,
+            "ytd": -750,
+            "lastYearYtd": -660,
             "periodStartYtd": 0
           }
         }
       },
       "baseTax": {
         "target": 19035000000,
-        "today": 19269180000,
-        "ytd": 19269180000,
-        "lastYearYtd": 17559534960,
+        "today": 19991110000,
+        "ytd": 19991110000,
+        "lastYearYtd": 18211392640,
         "details": {
           "land": {
             "target": 2000000000,
-            "ytd": 1576020000,
-            "lastYearYtd": 1462546560,
+            "ytd": 1718220000,
+            "lastYearYtd": 1594508160,
             "periodStartYtd": 0
           },
           "enterpriseStateCentral": {
             "target": 550000000,
-            "ytd": 463420000,
-            "lastYearYtd": 407809600,
+            "ytd": 580310000,
+            "lastYearYtd": 510672800,
             "periodStartYtd": 0
           },
           "enterpriseStateLocal": {
@@ -1124,20 +1124,20 @@ const BUDGET_DATA = {
           },
           "enterpriseNonState": {
             "target": 6300000000,
-            "ytd": 11004450000,
-            "lastYearYtd": 10080076200,
+            "ytd": 11017620000,
+            "lastYearYtd": 10092139920,
             "periodStartYtd": 0
           },
           "pit": {
             "target": 2000000000,
-            "ytd": 1811820000,
-            "lastYearYtd": 1681368960,
+            "ytd": 1900740000,
+            "lastYearYtd": 1763886720,
             "periodStartYtd": 0
           },
           "registration": {
             "target": 4700000000,
-            "ytd": 2340570000,
-            "lastYearYtd": 2059701600,
+            "ytd": 2513960000,
+            "lastYearYtd": 2212284800,
             "periodStartYtd": 0
           },
           "landNonAgri": {
@@ -1148,26 +1148,26 @@ const BUDGET_DATA = {
           },
           "landRent": {
             "target": 545000000,
-            "ytd": 124220000,
-            "lastYearYtd": 112294880,
+            "ytd": 130790000,
+            "lastYearYtd": 118234160,
             "periodStartYtd": 0
           },
           "minerals": {
             "target": 1270000000,
-            "ytd": 989020000,
-            "lastYearYtd": 905942320,
+            "ytd": 1097730000,
+            "lastYearYtd": 1005520680,
             "periodStartYtd": 0
           },
           "otherBudget": {
             "target": 500000000,
-            "ytd": 109590000,
-            "lastYearYtd": 101699520,
+            "ytd": 128760000,
+            "lastYearYtd": 119489280,
             "periodStartYtd": 0
           },
           "others": {
             "target": 1060000000,
-            "ytd": 847260000,
-            "lastYearYtd": 745588800,
+            "ytd": 900170000,
+            "lastYearYtd": 792149600,
             "periodStartYtd": 0
           }
         }

@@ -22,7 +22,7 @@ const BUDGET_DATA = {
       "otherBudget": "Thu khác ngân sách",
       "others": "Phí, lệ phí & Thu khác"
     },
-    "previousReportDate": "2026-06-01"
+    "previousReportDate": "2026-05-31"
   },
   "communes": [
     {

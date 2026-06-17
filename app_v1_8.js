@@ -75,6 +75,27 @@ function initApp() {
   } else {
     currentData = JSON.parse(JSON.stringify(originalBaseline));
   }
+
+  // Khởi tạo các key còn thiếu nếu dữ liệu cũ (data_v1_8.js) chỉ có 8 keys thay vì 12 keys mới nhất
+  const allKeys = [
+    "enterpriseStateCentral", "enterpriseStateLocal", "enterpriseForeign",
+    "enterpriseNonState", "pit", "registration", "landNonAgri", "landRent",
+    "land", "minerals", "otherBudget", "others"
+  ];
+  function normalizeDataKeys(dataObj) {
+    if (!dataObj || !dataObj.communes) return;
+    dataObj.communes.forEach(c => {
+      allKeys.forEach(key => {
+        if (!c.provinceTax.details[key]) c.provinceTax.details[key] = { target: 0, ytd: 0, lastYearYtd: 0, periodStartYtd: 0 };
+        else if (c.provinceTax.details[key].periodStartYtd === undefined) c.provinceTax.details[key].periodStartYtd = 0;
+        
+        if (!c.baseTax.details[key]) c.baseTax.details[key] = { target: 0, ytd: 0, lastYearYtd: 0, periodStartYtd: 0 };
+        else if (c.baseTax.details[key].periodStartYtd === undefined) c.baseTax.details[key].periodStartYtd = 0;
+      });
+    });
+  }
+  normalizeDataKeys(originalBaseline);
+  normalizeDataKeys(currentData);
   let selectedCommuneId = "tong_hop"; // "tong_hop" đại diện cho Tổng hợp toàn địa bàn
   let sortField = "ytdRate";
   let sortAscending = false;
@@ -147,9 +168,16 @@ function initApp() {
       currentData = JSON.parse(JSON.stringify(originalBaseline));
       showToast("Đã cập nhật số liệu");
     } else {
-      showToast("Ngày đó chưa cập nhật dữ liệu");
-      e.target.value = currentData.metadata.reportDate; // Revert the input value
-      return; // Stop further execution, blocking the update
+      const confirmNew = confirm(`Ngày ${newDate} chưa có dữ liệu. Bạn có muốn tạo dữ liệu mới cho ngày này (kế thừa từ số liệu hiện tại) không?`);
+      if (confirmNew) {
+        currentData.metadata.previousReportDate = currentData.metadata.reportDate;
+        currentData.metadata.reportDate = newDate;
+        saveSnapshot(`Tạo ngày mới ${newDate}`, "Manual");
+        showToast(`Đã chuyển sang ngày báo cáo mới: ${newDate}`);
+      } else {
+        e.target.value = currentData.metadata.reportDate; // Revert the input value
+        return; // Stop further execution
+      }
     }
     
     const prdEl = document.getElementById("print-report-date");
@@ -385,11 +413,10 @@ function initApp() {
 
     const periodEl = document.getElementById("kpi-today-period");
     if (periodEl) {
-      const prevDate = currentData.metadata.previousReportDate;
       const currDate = currentData.metadata.reportDate;
-      if (prevDate && prevDate !== currDate) {
-        const days = getDaysDiff(prevDate, currDate);
-        periodEl.textContent = `Kỳ: ${formatShortDate(prevDate)} - ${formatShortDate(currDate)} (${days} ngày)`;
+      const parts = currDate.split("-");
+      if (parts.length === 3) {
+        periodEl.textContent = `Tính từ 01/${parts[1]}/${parts[0]} đến ${parts[2]}/${parts[1]}/${parts[0]}`;
       } else {
         periodEl.textContent = `Lũy kế đến ngày ${formatShortDate(currDate)}`;
       }
@@ -947,6 +974,14 @@ function initApp() {
     });
   }
 
+
+  // Nut Chot ky
+  const finalizeBtn = document.getElementById("btn-finalize");
+  if (finalizeBtn) {
+    finalizeBtn.addEventListener("click", () => {
+      window.finalizeReportingPeriod();
+    });
+  }
 
   // Nut Luu lai lam du lieu goc
   const saveBaselineBtn = document.getElementById("btn-save-baseline");
@@ -1823,59 +1858,38 @@ function initApp() {
     return Math.round(ytd * mult);
   }
 
-  // Today's collections generator
-  function getTodayVal(ytd, seedVal) {
-    if (ytd === 0) return 0;
-    const raw = ytd * 0.001 * (1 + (seedVal % 3));
-    return Math.round(raw / 100000) * 100000;
-  }
-
   // Recalculate totals and today/last year metrics
   function updateCommuneDerivedFields(commune, r = 10, oldCommune = null) {
     // Look up baseline commune
     const origCommune = originalBaseline.communes.find(oc => oc.id === commune.id) || commune;
 
     // Update provinceTax totals (target is calculated from details)
-    commune.provinceTax.target = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + (item.target || 0), 0);
-    commune.provinceTax.ytd = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + item.ytd, 0);
+    commune.provinceTax.target = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + (item?.target || 0), 0);
+    commune.provinceTax.ytd = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + (item?.ytd || 0), 0);
     
     // Update baseTax totals (target is calculated from details)
-    commune.baseTax.target = Object.values(commune.baseTax.details).reduce((sum, item) => sum + (item.target || 0), 0);
-    commune.baseTax.ytd = Object.values(commune.baseTax.details).reduce((sum, item) => sum + item.ytd, 0);
+    commune.baseTax.target = Object.values(commune.baseTax.details).reduce((sum, item) => sum + (item?.target || 0), 0);
+    commune.baseTax.ytd = Object.values(commune.baseTax.details).reduce((sum, item) => sum + (item?.ytd || 0), 0);
 
     // Generate lastYearYtd for provinceTax details
     Object.keys(commune.provinceTax.details).forEach((key, index) => {
       const detail = commune.provinceTax.details[key];
-      detail.lastYearYtd = getLastYearYtd(detail.ytd, r + index + 1);
+      if (detail) detail.lastYearYtd = getLastYearYtd(detail.ytd, r + index + 1);
     });
-    commune.provinceTax.lastYearYtd = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + (item.lastYearYtd || 0), 0);
+    commune.provinceTax.lastYearYtd = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + (item?.lastYearYtd || 0), 0);
     
     // Compute provinceTax today (period collection delta)
-    if (oldCommune && oldCommune.provinceTax) {
-      commune.provinceTax.today = Math.max(0, commune.provinceTax.ytd - oldCommune.provinceTax.ytd);
-    } else {
-      commune.provinceTax.today = Object.keys(commune.provinceTax.details).reduce((sum, key, index) => {
-        const detail = commune.provinceTax.details[key];
-        return sum + getTodayVal(detail.ytd, r + index + 11);
-      }, 0);
-    }
+    commune.provinceTax.today = Object.values(commune.provinceTax.details).reduce((sum, item) => sum + Math.max(0, (item?.ytd || 0) - (item?.periodStartYtd || 0)), 0);
 
     // Generate lastYearYtd for baseTax details
     Object.keys(commune.baseTax.details).forEach((key, index) => {
       const detail = commune.baseTax.details[key];
-      detail.lastYearYtd = getLastYearYtd(detail.ytd, r + index + 6);
+      if (detail) detail.lastYearYtd = getLastYearYtd(detail.ytd, r + index + 6);
     });
-    commune.baseTax.lastYearYtd = Object.values(commune.baseTax.details).reduce((sum, item) => sum + (item.lastYearYtd || 0), 0);
+    commune.baseTax.lastYearYtd = Object.values(commune.baseTax.details).reduce((sum, item) => sum + (item?.lastYearYtd || 0), 0);
     
     // Compute baseTax today (period collection delta)
-    if (oldCommune && oldCommune.baseTax) {
-      commune.baseTax.today = Math.max(0, commune.baseTax.ytd - oldCommune.baseTax.ytd);
-    } else {
-      commune.baseTax.today = Object.keys(commune.baseTax.details).reduce((sum, key, index) => {
-        const detail = commune.baseTax.details[key];
-        return sum + getTodayVal(detail.ytd, r + index + 16);
-      }, 0);
-    }
+    commune.baseTax.today = Object.values(commune.baseTax.details).reduce((sum, item) => sum + Math.max(0, (item?.ytd || 0) - (item?.periodStartYtd || 0)), 0);
   }
 
   // Danh sách 12 sắc thuế chính (theo thứ tự chuẩn)
@@ -2046,6 +2060,10 @@ function initApp() {
             const rawVal = row[colIdx];
             const val = (parseFloat(String(rawVal || 0).replace(/,/g, "")) || 0) * 1000000;
 
+            if (!commune[taxField].details[key]) {
+              commune[taxField].details[key] = { target: 0, ytd: 0, lastYearYtd: 0 };
+            }
+
             if (dataKey === "target") {
               commune[taxField].details[key].target = Math.round(val);
               // Giữ nguyên YTD cũ
@@ -2054,7 +2072,7 @@ function initApp() {
               // ytd
               commune[taxField].details[key].ytd = Math.round(val);
               // Khóa dự toán từ baseline gốc
-              commune[taxField].details[key].target = origCommune[taxField].details[key].target || commune[taxField].details[key].target || 0;
+              commune[taxField].details[key].target = (origCommune[taxField].details[key] && origCommune[taxField].details[key].target) || commune[taxField].details[key].target || 0;
             }
           });
 
@@ -2199,6 +2217,9 @@ function initApp() {
             };
 
             const applyTarget = (key, rowIdx) => {
+              if (!commune.provinceTax.details[key]) commune.provinceTax.details[key] = { target: 0, ytd: 0, lastYearYtd: 0 };
+              if (!commune.baseTax.details[key]) commune.baseTax.details[key] = { target: 0, ytd: 0, lastYearYtd: 0 };
+              
               const combined = getNumValue(targetAOA, rowIdx, c) * 1000000;
               const split = getSplitT(combined, commune.baseTax.details[key]?.ytd || 0, commune.provinceTax.details[key]?.ytd || 0, 0.50);
               if (taxKey === "province") {
@@ -2218,6 +2239,8 @@ function initApp() {
 
             // Khóa dự toán từ baseline gốc hoặc giữ nguyên số hiện tại nếu baseline bằng 0
             exportKeys.forEach(key => {
+              if (!commune[taxField].details[key]) commune[taxField].details[key] = { target: 0, ytd: 0, lastYearYtd: 0 };
+              if (!origCommune[taxField].details[key]) origCommune[taxField].details[key] = { target: 0, ytd: 0, lastYearYtd: 0 };
               commune[taxField].details[key].target = origCommune[taxField].details[key].target || commune[taxField].details[key].target || 0;
             });
 
@@ -2298,6 +2321,70 @@ function initApp() {
       renderSidebar();
     });
   }
+
+  window.exportToExcel = exportToExcel;
+  window.importExcel = importExcel;
+
+  // Khóa sổ báo cáo (Chốt kỳ)
+  window.finalizeReportingPeriod = function() {
+    if (!currentData || !currentData.communes) {
+      alert("Lỗi: Không tìm thấy dữ liệu.");
+      return;
+    }
+    
+    // Tính tổng số thu trong kỳ hiện tại
+    let totalToday = 0;
+    currentData.communes.forEach(c => {
+      totalToday += (c.provinceTax.today || 0) + (c.baseTax.today || 0);
+    });
+    
+    // Tính ngày tiếp theo
+    const currDateStr = currentData.metadata.reportDate;
+    let nextDateStr = currDateStr;
+    let nextDateDisplay = currDateStr;
+    if (currDateStr) {
+      const d = new Date(currDateStr);
+      d.setDate(d.getDate() + 1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const dNum = String(d.getDate()).padStart(2, '0');
+      nextDateStr = `${y}-${m}-${dNum}`;
+      nextDateDisplay = `${dNum}/${m}/${y}`;
+    }
+
+    const confirmMsg = `NỘI DUNG KHÓA SỔ:\n\n` +
+                       `- Tổng số thu trong kỳ (từ đầu tháng đến hiện tại): ${formatMoney(totalToday)} VNĐ\n` +
+                       `- Ngày báo cáo hiện tại: ${formatShortDate(currDateStr)}\n\n` +
+                       `Hệ thống sẽ khóa sổ số liệu này, chuyển "Số thu trong kỳ" về 0 và tự động chuyển sang ngày tiếp theo (${nextDateDisplay}).\n\nBạn có chắc chắn muốn thực hiện?`;
+                       
+    const confirmLock = confirm(confirmMsg);
+    if (!confirmLock) return;
+    
+    // Lưu lại cấu hình ngày
+    currentData.metadata.previousReportDate = currDateStr;
+    currentData.metadata.reportDate = nextDateStr;
+    
+    currentData.communes.forEach(c => {
+      Object.keys(c.provinceTax.details).forEach(key => {
+        c.provinceTax.details[key].periodStartYtd = c.provinceTax.details[key].ytd || 0;
+      });
+      Object.keys(c.baseTax.details).forEach(key => {
+        c.baseTax.details[key].periodStartYtd = c.baseTax.details[key].ytd || 0;
+      });
+      updateCommuneDerivedFields(c, 10, null);
+    });
+    
+    // Cập nhật giá trị hiển thị trên UI ngày báo cáo
+    const reportDatePickerEl = document.getElementById("report-date-picker");
+    if (reportDatePickerEl) {
+      reportDatePickerEl.value = nextDateStr;
+    }
+    
+    saveSnapshot("Chốt kỳ báo cáo", "Manual");
+    onCommuneSelected();
+    renderSidebar();
+    showToast(`Đã chốt sổ: ${formatMoney(totalToday)} VNĐ. Chuyển sang ngày ${nextDateDisplay}. Vui lòng bấm 'Lưu lại' để lưu vĩnh viễn.`);
+  };
 
   // Khởi chạy ban đầu
   onCommuneSelected();
