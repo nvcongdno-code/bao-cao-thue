@@ -2562,28 +2562,30 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
 
   // Điều chỉnh giao diện trên điện thoại
   function adjustMobileLayout() {
-    const appContainer = document.querySelector('.app-container');
-    const quickFilters = document.getElementById('quick-commune-filters');
-    const modeSelectorContainer = document.querySelector('.view-mode-container');
-    const contentHeader = document.querySelector('.content-header');
-    const headerFlexRow = document.querySelector('.header-flex-row');
     const header = document.querySelector('header');
+    const contentHeader = document.querySelector('.content-header');
 
     if (window.innerWidth <= 768) {
-      const updateHeaderHeight = () => {
+      const updateHeights = () => {
         if (header) {
           const height = header.offsetHeight;
           document.documentElement.style.setProperty('--mobile-header-height', height + 'px');
         }
+        if (contentHeader) {
+          const height = contentHeader.offsetHeight;
+          document.documentElement.style.setProperty('--mobile-content-header-height', height + 'px');
+        }
       };
       
-      updateHeaderHeight();
-      requestAnimationFrame(updateHeaderHeight);
-      setTimeout(updateHeaderHeight, 50);
-      setTimeout(updateHeaderHeight, 150);
-      setTimeout(updateHeaderHeight, 350);
+      updateHeights();
+      requestAnimationFrame(updateHeights);
+      setTimeout(updateHeights, 50);
+      setTimeout(updateHeights, 150);
+      setTimeout(updateHeights, 350);
+      setTimeout(updateHeights, 600);
     } else {
       document.documentElement.style.removeProperty('--mobile-header-height');
+      document.documentElement.style.removeProperty('--mobile-content-header-height');
     }
   }
 
