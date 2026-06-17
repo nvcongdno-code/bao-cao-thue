@@ -894,7 +894,7 @@ tr:hover td {
   
   .app-container {
     margin-top: var(--mobile-header-height, 270px) !important;
-    flex-direction: column;
+    flex-direction: column-reverse;
     height: auto !important;
     overflow: visible !important;
   }
@@ -910,6 +910,15 @@ tr:hover td {
     padding: 1rem;
     overflow-y: visible !important;
     height: auto !important;
+  }
+  
+  .content-header {
+    position: sticky;
+    top: var(--mobile-header-height, 270px);
+    z-index: 99;
+    background: var(--bg-primary);
+    padding-top: 10px;
+    margin-top: -10px; /* Offset padding */
   }
   
   header {
