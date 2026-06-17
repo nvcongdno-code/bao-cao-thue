@@ -1040,7 +1040,8 @@ tr:hover td {
   }
   
   /* Ẩn các nút theo yêu cầu trên mobile */
-  #btn-periodic, #btn-guide, #btn-reset {
+  #btn-periodic, #btn-guide, #btn-reset,
+  #btn-finalize, #btn-save-baseline, #btn-print {
     display: none !important;
   }
 
