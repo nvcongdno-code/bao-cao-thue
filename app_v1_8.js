@@ -2568,36 +2568,29 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
     const filterBar     = document.getElementById('mobile-filter-bar');
 
     if (window.innerWidth <= 768) {
-      // Di chuyển TOÀN BỘ .content-header vào #mobile-filter-bar
+      // Di chuyển TOÀN BỘ .content-header vào #mobile-filter-bar (sticky bar)
       if (filterBar && contentHeader && contentHeader.parentNode !== filterBar) {
         filterBar.appendChild(contentHeader);
       }
       if (filterBar) filterBar.style.display = 'flex';
 
-      const updateHeights = () => {
+      // Chỉ cần đo chiều cao header để set --mobile-header-height
+      // (sticky tự lo vị trí top, không cần JS tính toán thêm)
+      const updateHeaderHeight = () => {
         if (header) {
           const hh = header.offsetHeight;
           document.documentElement.style.setProperty('--mobile-header-height', hh + 'px');
         }
-        if (filterBar) {
-          const hh = parseFloat(getComputedStyle(document.documentElement)
-                       .getPropertyValue('--mobile-header-height')) || 90;
-          filterBar.style.top = hh + 'px';
-          const fh = filterBar.offsetHeight;
-          document.documentElement.style.setProperty('--mobile-filter-bar-height', fh + 'px');
-        }
       };
 
-      updateHeights();
-      requestAnimationFrame(updateHeights);
-      setTimeout(updateHeights, 50);
-      setTimeout(updateHeights, 150);
-      setTimeout(updateHeights, 350);
-      setTimeout(updateHeights, 600);
+      updateHeaderHeight();
+      requestAnimationFrame(updateHeaderHeight);
+      setTimeout(updateHeaderHeight, 50);
+      setTimeout(updateHeaderHeight, 200);
+      setTimeout(updateHeaderHeight, 500);
     } else {
       // Desktop: trả .content-header về đầu .main-content
       document.documentElement.style.removeProperty('--mobile-header-height');
-      document.documentElement.style.removeProperty('--mobile-filter-bar-height');
 
       if (filterBar) filterBar.style.display = 'none';
 
