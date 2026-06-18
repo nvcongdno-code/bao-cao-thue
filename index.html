@@ -98,6 +98,23 @@
   <!-- Thanh lọc cố định bên dưới header (chỉ dùng trên mobile) -->
   <div id="mobile-filter-bar"></div>
 
+  <!-- Tiêu đề vùng chọn xã đang active & Bộ lọc / Bộ chọn cơ quan thuế -->
+  <div class="content-header" style="flex-direction: column; align-items: flex-start; gap: 12px; border-bottom: 1px solid var(--border-color); padding: 15px 2rem; width: 100%; box-sizing: border-box;">
+    <!-- Thanh nút bấm chọn nhanh xã / tất cả (Sinh động bởi JS) -->
+    <div class="quick-commune-filters" id="quick-commune-filters"></div>
+
+    <div class="header-flex-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
+      <h2 class="active-commune-name" id="active-commune-name" style="font-size: 1.45rem;">Tổng hợp 7 Xã</h2>
+      
+      <!-- Bộ chọn nguồn thu (Tất cả / Thuế Tỉnh / Thuế Cơ Sở) -->
+      <div class="view-mode-container" style="display: flex; gap: 4px; background: var(--bg-secondary); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-color); width: fit-content;">
+        <button class="btn mode-btn active" data-mode="combined" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; transition: var(--transition);">📊 Tổng 2 CQT</button>
+        <button class="btn mode-btn" data-mode="province" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; transition: var(--transition);">🏛️ Thuế Tỉnh</button>
+        <button class="btn mode-btn" data-mode="base" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; transition: var(--transition);">🏢 Thuế Cơ Sở</button>
+      </div>
+    </div>
+  </div>
+
   <div class="app-container">
     <!-- Sidebar chọn đơn vị xã -->
     <aside class="sidebar">
@@ -109,23 +126,6 @@
 
     <!-- Nội dung hiển thị chính -->
     <main class="main-content">
-      <!-- Tiêu đề vùng chọn xã đang active -->
-      <div class="content-header" style="flex-direction: column; align-items: flex-start; gap: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; width: 100%;">
-        <!-- Thanh nút bấm chọn nhanh xã / tất cả (Sinh động bởi JS) -->
-        <div class="quick-commune-filters" id="quick-commune-filters"></div>
-
-        <div class="header-flex-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
-          <h2 class="active-commune-name" id="active-commune-name" style="font-size: 1.45rem;">Tổng hợp 7 Xã</h2>
-          
-          <!-- Bộ chọn nguồn thu (Tất cả / Thuế Tỉnh / Thuế Cơ Sở) -->
-          <div class="view-mode-container" style="display: flex; gap: 4px; background: var(--bg-secondary); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-color); width: fit-content;">
-            <button class="btn mode-btn active" data-mode="combined" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; transition: var(--transition);">📊 Tổng 2 CQT</button>
-            <button class="btn mode-btn" data-mode="province" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; transition: var(--transition);">🏛️ Thuế Tỉnh</button>
-            <button class="btn mode-btn" data-mode="base" style="padding: 6px 12px; font-size: 0.8rem; border: none; border-radius: 6px; cursor: pointer; transition: var(--transition);">🏢 Thuế Cơ Sở</button>
-          </div>
-        </div>
-      </div>
-
       <!-- Khối KPIs tổng quan -->
       <section class="kpi-grid">
         <!-- 1. Dự toán chỉ tiêu năm -->

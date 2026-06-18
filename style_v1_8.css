@@ -454,7 +454,7 @@ header {
 /* Main Content Area */
 .main-content {
   flex: 1;
-  padding: 2rem;
+  padding: 0 2rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -464,11 +464,19 @@ header {
   width: 100%;
 }
 
-/* Breadcrumbs & Active Title */
+/* Breadcrumbs & Active Title - Sticky Filter Section */
 .content-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 93px;
+  z-index: 98;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .active-commune-name {
@@ -904,7 +912,7 @@ tr:hover td {
   }
   
   .main-content {
-    padding: 1rem;
+    padding: 0 1rem 1rem 1rem;
     overflow-y: visible !important;
     height: auto !important;
   }
@@ -1041,16 +1049,24 @@ tr:hover td {
     display: none !important;
   }
 
-  /* .content-header khi được di chuyển vào #mobile-filter-bar trên mobile */
-  #mobile-filter-bar .content-header {
+  /* .content-header trên mobile - sticky filter section */
+  .content-header {
+    position: sticky !important;
+    top: 93px !important;
+    z-index: 98 !important;
     width: 100% !important;
-    border-bottom: none !important;
-    padding-bottom: 0 !important;
+    padding: 12px 12px !important;
     margin: 0 !important;
     gap: 8px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: flex-start !important;
+    background: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-sm) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    box-sizing: border-box !important;
   }
 
   /* Thanh chọn nhanh xã */
@@ -1061,7 +1077,7 @@ tr:hover td {
   }
 
   /* Dòng tiêu đề + tabs CQT */
-  #mobile-filter-bar .header-flex-row {
+  .header-flex-row {
     width: 100% !important;
     display: flex !important;
     flex-direction: row !important;
@@ -1437,9 +1453,15 @@ tr:hover td {
   padding: 6px 8px !important;
 }
 
-/* Ẩn vùng in trên giao diện web */
+/* Ẩn vùng in trên giao diện web nhưng cho phép render PDF */
 .print-only {
-  display: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
 }
 
 @media print {
@@ -1450,6 +1472,13 @@ tr:hover td {
   
   /* Hiện vùng báo cáo hành chính chính thức */
   .print-only {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    visibility: visible !important;
     display: block !important;
   }
 }
