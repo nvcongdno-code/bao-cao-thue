@@ -1157,9 +1157,7 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
   }
 
   // -------------------------------------------------------------------------
-  // Hàm xuất PDF - Blob URL approach (đáng tin cậy 100%)
-  // Lý do: html2canvas không capture được Vietnamese fonts + inline styles phức tạp
-  // Giải pháp: tạo HTML document hoàn chỉnh → Blob URL → mở tab mới → print-to-PDF
+  // Hàm xuất PDF bằng html2pdf.js để tải file PDF thực sự về máy
   // -------------------------------------------------------------------------
   function exportPDF() {
     const exportBtn = document.getElementById("btn-export-pdf");
@@ -1176,186 +1174,68 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
     // 2. Tạo tên file
     const rawDate = reportDatePickerEl.value || "2026-06-14";
     const [y, m, d] = rawDate.split("-");
-    const dateLabel = `${d || "14"}/${m || "06"}/${y || "2026"}`;
     const dateStr = `${d || "14"}${m || "06"}${y || "2026"}`;
     const communeRaw = selectedCommuneId === "tong_hop"
       ? "TongHop7Xa"
       : (currentData.communes.find(c => c.id === selectedCommuneId)?.name || "BaoCao")
           .replace(/Xã\s*/gi, "").replace(/\s+/g, "");
-    const filename = `BaoCao_ThuNganSach_TCS13_${communeRaw}_${dateStr}`;
+    const filename = `BaoCao_ThuNganSach_TCS13_${communeRaw}_${dateStr}.pdf`;
 
-    // 3. Lấy nội dung HTML báo cáo đã render
-    const reportBodyHTML = sourceContainer.innerHTML;
-
-    // 4. Tạo tài liệu HTML hoàn chỉnh, độc lập, có CSS in ấn chuẩn A4
-    const fullHTML = `<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${filename}</title>
-  <style>
-    /* Reset */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* Giao diện xem trước (screen) */
-    body {
-      font-family: 'Times New Roman', Times, serif;
-      font-size: 11pt;
-      color: #000;
-      background: #e8e8e8;
-      padding: 0;
+    // Thay đổi trạng thái nút
+    if (exportBtn) {
+      exportBtn.classList.add("exporting");
+      const textSpan = exportBtn.querySelector(".pdf-btn-text");
+      if (textSpan) textSpan.innerHTML = "Đang xuất...";
     }
 
-    /* Toolbar xem trước */
-    .toolbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      background: linear-gradient(135deg, #059669, #047857);
-      color: #fff;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      z-index: 9999;
-      font-family: -apple-system, 'Segoe UI', sans-serif;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.3);
-    }
-    .toolbar-title {
-      font-weight: 700;
-      font-size: 14px;
-      flex: 1;
-    }
-    .toolbar-hint {
-      font-size: 12px;
-      opacity: 0.9;
-    }
-    .btn-print-now {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 22px;
-      background: #fff;
-      color: #059669;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-    .btn-print-now:hover {
-      background: #f0fdf4;
-      transform: scale(1.04);
-    }
-    .btn-close {
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      font-family: inherit;
-    }
-
-    /* Khung giấy A4 chuẩn Nghị định 30/2020/NĐ-CP */
-    .page-wrapper {
-      margin: 70px auto 30px;
-      background: #fff;
-      width: 210mm;
-      min-height: 297mm;
-      padding: 20mm 20mm 20mm 30mm; /* trên: 20mm, phải: 20mm, dưới: 20mm, trái: 30mm */
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      position: relative;
-    }
-
-    /* Nội dung báo cáo (copy lại từ generatePrintReport) */
-    table { border-collapse: collapse; width: 100%; }
-    th, td { padding: 5px 6px; font-size: 10pt; }
-    p { line-height: 1.55; margin-bottom: 10px; }
-    h3 { text-align: center; margin-bottom: 15px; }
-    h4 { margin-bottom: 6px; }
-    ul, ol { margin-left: 20px; margin-bottom: 12px; }
-    li { margin-bottom: 5px; line-height: 1.5; }
-    strong { font-weight: bold; }
-
-    /* In ấn - CSS Paged Media chuẩn theo Nghị định 30/2020/NĐ-CP */
-    @page {
-      size: A4 portrait;
-      margin: 20mm 20mm 20mm 30mm;
-      @top-center {
-        content: counter(page); /* Đánh số trang giữa lề trên, số Ả Rập */
-      }
-    }
-    @page :first {
-      @top-center {
-        content: normal; /* Không hiển thị trang đầu */
-      }
-    }
+    // Tạo wrapper ảo để áp dụng font Times New Roman chuẩn A4 cho PDF
+    const wrapper = document.createElement('div');
+    wrapper.style.fontFamily = "'Times New Roman', Times, serif";
+    wrapper.style.color = "#000";
+    wrapper.style.background = "#fff";
+    wrapper.style.padding = "20px";
+    wrapper.style.width = "794px"; // A4 width
+    wrapper.innerHTML = sourceContainer.innerHTML;
     
-    @media print {
-      body { background: #fff; }
-      .toolbar { display: none !important; }
-      .page-wrapper {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        box-shadow: none !important;
-        min-height: unset !important;
-      }
-      table { page-break-inside: auto; }
-      tr { page-break-inside: avoid; }
-      h4 { page-break-after: avoid; }
-      p { orphans: 3; widows: 3; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Toolbar xem trước (ẩn khi in) -->
-  <div class="toolbar">
-    <div class="toolbar-title">📄 Báo cáo Thu ngân sách hàng ngày - TCS13 (${dateLabel})</div>
-    <span class="toolbar-hint">💡 Trong hộp thoại in → chọn <strong>Lưu thành PDF</strong></span>
-    <button class="btn-print-now" onclick="window.print()">🖨️&nbsp; In / Lưu PDF</button>
-    <button class="btn-close" onclick="window.close()">✕ Đóng</button>
-  </div>
-
-  <!-- Khung giấy A4 -->
-  <div class="page-wrapper">
-    ${reportBodyHTML}
-  </div>
-
-  <script>
-    // Tự động mở hộp thoại in sau khi trang tải xong
-    window.addEventListener('load', function() {
-      setTimeout(function() { window.print(); }, 900);
+    // Đảm bảo table borders được hiển thị rõ trong PDF
+    const tables = wrapper.querySelectorAll('table');
+    tables.forEach(t => {
+      t.style.borderCollapse = 'collapse';
+      t.style.width = '100%';
     });
-  </script>
-</body>
-</html>`;
+    const cells = wrapper.querySelectorAll('th, td');
+    cells.forEach(c => {
+      c.style.border = '1px solid #000';
+      c.style.padding = '6px';
+    });
 
-    // 5. Tạo Blob URL và mở tab mới
-    const blob = new Blob([fullHTML], { type: "text/html; charset=utf-8" });
-    const blobUrl = URL.createObjectURL(blob);
+    // Cấu hình html2pdf
+    const opt = {
+      margin:       [15, 15, 15, 15],
+      filename:     filename,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
 
-    const newTab = window.open(blobUrl, "_blank");
-
-    if (!newTab) {
-      // Popup bị chặn - fallback: tạo link download HTML
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = filename + ".html";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast("⚠️ Popup bị chặn. Đã tải file HTML — mở và nhấn Ctrl+P để xuất PDF.");
-    } else {
-      showToast(`✅ Đã mở báo cáo trong tab mới. Chọn "Lưu thành PDF" để lưu file.`);
-      // Giải phóng bộ nhớ sau 60 giây
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-    }
+    // Thực hiện xuất
+    html2pdf().set(opt).from(wrapper).save().then(() => {
+      // Phục hồi nút sau khi xuất xong
+      if (exportBtn) {
+        exportBtn.classList.remove("exporting");
+        const textSpan = exportBtn.querySelector(".pdf-btn-text");
+        if (textSpan) textSpan.innerHTML = "Xuất PDF";
+      }
+      showToast("Xuất PDF thành công!");
+    }).catch(err => {
+      console.error("Lỗi xuất PDF:", err);
+      alert("Có lỗi xảy ra khi xuất PDF. Vui lòng thử lại!");
+      if (exportBtn) {
+        exportBtn.classList.remove("exporting");
+        const textSpan = exportBtn.querySelector(".pdf-btn-text");
+        if (textSpan) textSpan.innerHTML = "Xuất PDF";
+      }
+    });
   }
 
 
