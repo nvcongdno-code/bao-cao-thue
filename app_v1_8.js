@@ -1188,37 +1188,49 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
       if (textSpan) textSpan.innerHTML = "Đang xuất...";
     }
 
-    // Tạo wrapper ảo để áp dụng font Times New Roman chuẩn A4 cho PDF
+    // 3. Tạo wrapper ảo để áp dụng CSS in ấn và chống tràn trang
     const wrapper = document.createElement('div');
+    // Gắn vào DOM để html2canvas render chính xác
+    wrapper.style.position = 'absolute';
+    wrapper.style.left = '-9999px';
+    wrapper.style.top = '0';
     wrapper.style.fontFamily = "'Times New Roman', Times, serif";
     wrapper.style.color = "#000";
     wrapper.style.background = "#fff";
-    wrapper.style.padding = "20px";
-    wrapper.style.width = "794px"; // A4 width
+    wrapper.style.padding = "40px"; // Padding để an toàn
+    
+    // Đặt chiều rộng cố định khá lớn (1100px) để bảng không bị ép hẹp tràn dòng,
+    // html2pdf sẽ tự động scale (thu nhỏ) hình ảnh này để vừa khít khổ giấy A4
+    wrapper.style.width = "1100px"; 
+    
     wrapper.innerHTML = sourceContainer.innerHTML;
+    document.body.appendChild(wrapper);
     
     // Đảm bảo table borders được hiển thị rõ trong PDF
     const tables = wrapper.querySelectorAll('table');
     tables.forEach(t => {
       t.style.borderCollapse = 'collapse';
       t.style.width = '100%';
+      t.style.marginBottom = '20px';
     });
     const cells = wrapper.querySelectorAll('th, td');
     cells.forEach(c => {
       c.style.border = '1px solid #000';
-      c.style.padding = '6px';
+      c.style.padding = '8px 6px'; // Tăng padding nhẹ cho dễ nhìn
     });
 
-    // Cấu hình html2pdf
+    // 4. Cấu hình html2pdf
+    // Margin [trên, phải, dưới, trái] (mm)
     const opt = {
-      margin:       [15, 15, 15, 15],
+      margin:       [15, 10, 15, 15], 
       filename:     filename,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      // windowWidth giúp html2canvas biết width thực tế
+      html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: 1100 },
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // Thực hiện xuất
+    // 5. Thực hiện xuất
     html2pdf().set(opt).from(wrapper).save().then(() => {
       // Phục hồi nút sau khi xuất xong
       if (exportBtn) {
@@ -1226,6 +1238,7 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
         const textSpan = exportBtn.querySelector(".pdf-btn-text");
         if (textSpan) textSpan.innerHTML = "Xuất PDF";
       }
+      document.body.removeChild(wrapper); // Dọn dẹp DOM
       showToast("Xuất PDF thành công!");
     }).catch(err => {
       console.error("Lỗi xuất PDF:", err);
@@ -1235,6 +1248,7 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
         const textSpan = exportBtn.querySelector(".pdf-btn-text");
         if (textSpan) textSpan.innerHTML = "Xuất PDF";
       }
+      document.body.removeChild(wrapper); // Dọn dẹp DOM
     });
   }
 
