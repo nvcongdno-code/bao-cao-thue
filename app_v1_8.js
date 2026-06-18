@@ -2562,25 +2562,17 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
 
   // Điều chỉnh giao diện trên điện thoại
   function adjustMobileLayout() {
-    const quickFilters = document.getElementById('quick-commune-filters');
-    const modeSelectorContainer = document.querySelector('.view-mode-container');
     const contentHeader = document.querySelector('.content-header');
-    const headerFlexRow = document.querySelector('.header-flex-row');
-    const header = document.querySelector('header');
-    const filterBar = document.getElementById('mobile-filter-bar');
+    const mainContent   = document.querySelector('.main-content');
+    const header        = document.querySelector('header');
+    const filterBar     = document.getElementById('mobile-filter-bar');
 
     if (window.innerWidth <= 768) {
-      if (filterBar) {
-        // Di chuyển cả 2 thanh lọc vào #mobile-filter-bar
-        if (quickFilters && quickFilters.parentNode !== filterBar) {
-          filterBar.appendChild(quickFilters);
-        }
-        if (modeSelectorContainer && modeSelectorContainer.parentNode !== filterBar) {
-          filterBar.appendChild(modeSelectorContainer);
-        }
-        // Hiển thị filter bar
-        filterBar.style.display = 'flex';
+      // Di chuyển TOÀN BỘ .content-header vào #mobile-filter-bar
+      if (filterBar && contentHeader && contentHeader.parentNode !== filterBar) {
+        filterBar.appendChild(contentHeader);
       }
+      if (filterBar) filterBar.style.display = 'flex';
 
       const updateHeights = () => {
         if (header) {
@@ -2588,11 +2580,11 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
           document.documentElement.style.setProperty('--mobile-header-height', hh + 'px');
         }
         if (filterBar) {
+          const hh = parseFloat(getComputedStyle(document.documentElement)
+                       .getPropertyValue('--mobile-header-height')) || 90;
+          filterBar.style.top = hh + 'px';
           const fh = filterBar.offsetHeight;
           document.documentElement.style.setProperty('--mobile-filter-bar-height', fh + 'px');
-          // Đặt vị trí filter bar ngay sát dưới header
-          const hh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--mobile-header-height')) || 90;
-          filterBar.style.top = hh + 'px';
         }
       };
 
@@ -2603,18 +2595,14 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
       setTimeout(updateHeights, 350);
       setTimeout(updateHeights, 600);
     } else {
-      // Desktop: trả lại vị trí gốc
+      // Desktop: trả .content-header về đầu .main-content
       document.documentElement.style.removeProperty('--mobile-header-height');
       document.documentElement.style.removeProperty('--mobile-filter-bar-height');
 
-      if (filterBar) {
-        filterBar.style.display = 'none';
-      }
-      if (quickFilters && contentHeader && quickFilters.parentNode !== contentHeader) {
-        contentHeader.insertBefore(quickFilters, contentHeader.firstChild);
-      }
-      if (modeSelectorContainer && headerFlexRow && modeSelectorContainer.parentNode !== headerFlexRow) {
-        headerFlexRow.appendChild(modeSelectorContainer);
+      if (filterBar) filterBar.style.display = 'none';
+
+      if (contentHeader && mainContent && contentHeader.parentNode !== mainContent) {
+        mainContent.insertBefore(contentHeader, mainContent.firstChild);
       }
     }
   }
