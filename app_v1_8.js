@@ -1344,25 +1344,30 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
 </body>
 </html>`;
 
-    // 5. Tạo Blob URL và mở tab mới
-    const blob = new Blob([fullHTML], { type: "text/html; charset=utf-8" });
-    const blobUrl = URL.createObjectURL(blob);
+    // 5. Mở tab mới ghi nội dung trực tiếp (Tránh chặn Blob URL trên iOS Safari)
+    let newTab = null;
+    try {
+      newTab = window.open("", "_blank");
+    } catch (e) {
+      console.error("Không thể mở cửa sổ mới:", e);
+    }
 
-    const newTab = window.open(blobUrl, "_blank");
-
-    if (!newTab) {
-      // Popup bị chặn - fallback: tạo link download HTML
+    if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+      // Fallback: download as HTML file
+      const blob = new Blob([fullHTML], { type: "text/html; charset=utf-8" });
+      const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = blobUrl;
       a.download = filename + ".html";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      showToast("⚠️ Popup bị chặn. Đã tải file HTML — mở và nhấn Ctrl+P để xuất PDF.");
-    } else {
-      showToast(`✅ Đã mở báo cáo trong tab mới. Chọn "Lưu thành PDF" để lưu file.`);
-      // Giải phóng bộ nhớ sau 60 giây
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      showToast("⚠️ Trình duyệt chặn Popup. Đã tải file HTML — hãy mở file và chọn In/Lưu PDF.");
+    } else {
+      newTab.document.write(fullHTML);
+      newTab.document.close();
+      showToast(`✅ Đã xuất báo cáo. Hãy chọn "Lưu thành PDF" hoặc "In" ở cửa sổ mới.`);
     }
   }
 
@@ -2577,23 +2582,10 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
   // Điều chỉnh giao diện trên điện thoại
   function adjustMobileLayout() {
     const header        = document.querySelector('header');
-    const filterBar     = document.getElementById('mobile-filter-bar');
     const viewModeContainer = document.querySelector('.view-mode-container');
     const contentHeader = document.querySelector('.content-header');
 
     if (window.innerWidth <= 768) {
-      // Trên mobile: hiện filter bar cố định
-      if (filterBar) {
-        filterBar.style.display = 'flex';
-        filterBar.style.flexWrap = 'wrap';
-        filterBar.style.gap = '4px';
-        filterBar.style.padding = '8px 1rem';
-        filterBar.style.background = 'var(--bg-secondary)';
-        filterBar.style.borderBottom = '1px solid var(--border-color)';
-        filterBar.style.overflowX = 'auto';
-        filterBar.style.overflowY = 'hidden';
-      }
-
       // Điều chỉnh view-mode-container cho mobile: hiển thị 100% width hoặc wrap
       if (viewModeContainer) {
         viewModeContainer.style.width = '100%';
@@ -2609,15 +2601,10 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
       }
 
       // Đo chiều cao header để set --mobile-header-height cho sticky positioning
-      // (.content-header đã sticky ở CSS, chỉ cần height để tính top value)
       const updateHeaderHeight = () => {
         if (header) {
           const hh = header.offsetHeight;
           document.documentElement.style.setProperty('--mobile-header-height', hh + 'px');
-        }
-        if (contentHeader) {
-          const ch = contentHeader.offsetHeight;
-          document.documentElement.style.setProperty('--mobile-content-header-height', ch + 'px');
         }
       };
 
@@ -2627,10 +2614,8 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
       setTimeout(updateHeaderHeight, 200);
       setTimeout(updateHeaderHeight, 500);
     } else {
-      // Desktop: ẩn filter bar, xóa CSS variable
+      // Desktop: xóa CSS variable
       document.documentElement.style.removeProperty('--mobile-header-height');
-      document.documentElement.style.removeProperty('--mobile-content-header-height');
-      if (filterBar) filterBar.style.display = 'none';
       
       // Reset view-mode-container về layout mặc định
       if (viewModeContainer) {

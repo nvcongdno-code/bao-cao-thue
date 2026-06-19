@@ -64,6 +64,11 @@
   padding: 0;
 }
 
+html, body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
 body {
   font-family: var(--font-family);
   background-color: var(--bg-primary);
@@ -71,7 +76,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
   transition: var(--transition);
 }
 
@@ -936,23 +940,6 @@ tr:hover td {
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
   }
-
-  /* Thanh lọc xã + cơ quan thuế: sticky ngay sát dưới header khi cuộn */
-  #mobile-filter-bar {
-    position: sticky !important;
-    top: var(--mobile-header-height, 60px) !important;
-    z-index: 99 !important;
-    background-color: #0b1a3a;
-    background: var(--bg-secondary) !important;
-    border-bottom: 1px solid var(--border-color) !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.18) !important;
-    padding: 8px 12px !important;
-    display: none; /* Ẩn mặc định, JS sẽ bật lên khi có nội dung */
-    flex-direction: column !important;
-    gap: 6px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
   
   .logo-container {
     grid-column: 1 / 2 !important;
@@ -1051,9 +1038,10 @@ tr:hover td {
 
   /* .content-header trên mobile - sticky filter section */
   .content-header {
+    position: -webkit-sticky !important;
     position: sticky !important;
-    top: 93px !important;
-    z-index: 98 !important;
+    top: var(--mobile-header-height, 60px) !important;
+    z-index: 99 !important;
     width: 100% !important;
     padding: 12px 12px !important;
     margin: 0 !important;
