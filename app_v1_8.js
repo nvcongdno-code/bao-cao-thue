@@ -1209,57 +1209,101 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
       exportBtn.disabled = true;
     }
 
-    // 4. Sử dụng html2pdf với onclone để hiển thị element bị ẩn trên clone document
-    const opt = {
-      margin:       15,
-      filename:     filename + '.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { 
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        onclone: function(clonedDoc) {
-          const el = clonedDoc.getElementById("print-report-container");
-          if (el) {
-            el.style.position = "static";
-            el.style.visibility = "visible";
-            el.style.width = "100%";
-            el.style.height = "auto";
-            el.style.overflow = "visible";
-            el.style.left = "auto";
-            el.style.top = "auto";
-            
-            // Xóa background/màu đen do dark mode (nếu có)
-            el.style.backgroundColor = "#fff";
-            el.style.color = "#000";
-            
-            // Ép bảng không bị tràn
-            const tables = el.querySelectorAll("table");
-            tables.forEach(t => {
-              t.style.width = "100%";
-              t.style.maxWidth = "100%";
-              t.style.pageBreakInside = "auto";
-            });
-          }
-        }
-      },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    // 4. Lấy nội dung báo cáo và tạo HTML hoàn chỉnh
+    const reportBodyHTML = sourceContainer.innerHTML;
+    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+      .map(el => el.outerHTML)
+      .join('\n');
 
-    html2pdf().set(opt).from(sourceContainer).save().then(() => {
-      showToast("✅ Đã xuất báo cáo PDF thành công!");
-      if (exportBtn) {
-        exportBtn.innerHTML = `<span class="pdf-btn-icon">📄</span> <span class="pdf-btn-text">Xuất PDF</span> <span class="pdf-btn-badge">↓</span>`;
-        exportBtn.disabled = false;
-      }
-    }).catch(err => {
-      console.error("Lỗi xuất PDF:", err);
-      showToast("❌ Lỗi khi xuất PDF. Vui lòng thử lại!");
-      if (exportBtn) {
-        exportBtn.innerHTML = `<span class="pdf-btn-icon">📄</span> <span class="pdf-btn-text">Xuất PDF</span> <span class="pdf-btn-badge">↓</span>`;
-        exportBtn.disabled = false;
-      }
+    const fullHTML = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>${filename}</title>
+  ${styles}
+  <style>
+    /* Reset & force print mode styles */
+    body { background: #fff !important; color: #000 !important; margin: 0; padding: 0; }
+    .print-only { position: static !important; visibility: visible !important; width: 100% !important; height: auto !important; }
+    .app-container, .controls-container, header, .sidebar { display: none !important; }
+    
+    /* Toolbar on top of new window */
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #f8f9fa; border-bottom: 2px solid #0056b3; padding: 10px 20px;
+      position: sticky; top: 0; z-index: 9999; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .toolbar-title { font-weight: bold; font-size: 1.1rem; color: #0056b3; }
+    .toolbar-hint { font-size: 0.9rem; color: #d32f2f; font-weight: bold; }
+    .btn-print-now {
+      background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px;
+      font-weight: bold; cursor: pointer; transition: 0.2s;
+    }
+    .btn-print-now:hover { background: #218838; }
+    .btn-close {
+      background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px;
+      font-weight: bold; cursor: pointer; transition: 0.2s;
+    }
+    .btn-close:hover { background: #5a6268; }
+    
+    @media print {
+      .toolbar { display: none !important; }
+      @page { size: A4 portrait; margin: 15mm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="toolbar-title">📄 Báo cáo Thu ngân sách hàng ngày - TCS13 (${dateLabel})</div>
+    <span class="toolbar-hint">💡 Trong hộp thoại in → chọn <strong>Lưu thành PDF</strong></span>
+    <button class="btn-print-now" onclick="window.print()">🖨️&nbsp; LƯU THÀNH PDF (Print)</button>
+    <button class="btn-close" onclick="window.close()">✕ Đóng</button>
+  </div>
+
+  <!-- Khung giấy A4 -->
+  <div class="page-wrapper">
+    ${reportBodyHTML}
+  </div>
+
+  <script>
+    // Tự động mở hộp thoại in sau khi trang tải xong
+    window.addEventListener('load', function() {
+      setTimeout(function() { window.print(); }, 900);
     });
+  </script>
+</body>
+</html>`;
+
+    // 5. Mở tab mới ghi nội dung trực tiếp (Tránh chặn Blob URL trên iOS Safari)
+    let newTab = null;
+    try {
+      newTab = window.open("", "_blank");
+    } catch (e) {
+      console.error("Không thể mở cửa sổ mới:", e);
+    }
+
+    if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+      // Fallback: download as HTML file
+      const blob = new Blob([fullHTML], { type: "text/html; charset=utf-8" });
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename + ".html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+      showToast("⚠️ Trình duyệt chặn Popup. Đã tải file HTML — hãy mở file và chọn In/Lưu PDF.");
+    } else {
+      newTab.document.write(fullHTML);
+      newTab.document.close();
+      showToast(`✅ Đã xuất báo cáo. Hãy chọn "Lưu thành PDF" hoặc "In" ở cửa sổ mới.`);
+    }
+
+    if (exportBtn) {
+      exportBtn.innerHTML = `<span class="pdf-btn-icon">📄</span> <span class="pdf-btn-text">Xuất PDF</span> <span class="pdf-btn-badge">↓</span>`;
+      exportBtn.disabled = false;
+    }
   }
 
 
