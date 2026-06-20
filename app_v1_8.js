@@ -1131,7 +1131,8 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
             serverSaved = true;
             showToast("Da luu vao du an thanh cong!");
             alert("Da luu du lieu thanh cong!\n\n• Tep data_v1_8.js da duoc cap nhat trong thu muc du an.\n• Ban sao luu trong: " + (result.backup || "data/"));
-} catch (fetchErr) {
+          }
+        } catch (fetchErr) {
           console.warn("POST /save-data khong kha dung:", fetchErr.message);
         }
 
