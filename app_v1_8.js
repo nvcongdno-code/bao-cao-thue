@@ -164,7 +164,7 @@ function initApp() {
 
   // Lấy các phần tử DOM
   const communesListEl = document.getElementById("communes-list");
-  const activeCommuneTitleEl = document.getElementById("active-commune-name");
+  // Lược bỏ activeCommuneTitleEl theo yêu cầu
   
   // KPI Elements
   const kpiTargetValEl = document.getElementById("kpi-target-value");
@@ -180,7 +180,7 @@ function initApp() {
   // Table Elements
   const tableBodyEl = document.getElementById("table-body");
   const searchInputEl = document.getElementById("search-input");
-  const quickFiltersEl = document.getElementById("quick-commune-filters");
+  // Lược bỏ quickFiltersEl theo yêu cầu
   const btnClearTableFilter = document.getElementById("btn-clear-table-filter");
   const tableTitleEl = document.getElementById("table-title");
   
@@ -635,34 +635,7 @@ function initApp() {
     });
   }
 
-  function renderQuickFilters() {
-    if (!quickFiltersEl) return;
-    quickFiltersEl.innerHTML = "";
-    
-    // Nút "Tất cả"
-    const totalBtn = document.createElement("button");
-    totalBtn.className = `filter-commune-btn ${selectedCommuneId === "tong_hop" ? "active" : ""}`;
-    totalBtn.setAttribute("data-commune-id", "tong_hop");
-    totalBtn.innerHTML = `🌟 Tất cả (7 Xã)`;
-    totalBtn.addEventListener("click", () => {
-      selectedCommuneId = "tong_hop";
-      onCommuneSelected();
-    });
-    quickFiltersEl.appendChild(totalBtn);
-    
-    // Nút cho từng xã
-    currentData.communes.forEach(c => {
-      const btn = document.createElement("button");
-      btn.className = `filter-commune-btn ${selectedCommuneId === c.id ? "active" : ""}`;
-      btn.setAttribute("data-commune-id", c.id);
-      btn.innerHTML = `📍 ${c.name.replace("Xã ", "")}`;
-      btn.addEventListener("click", () => {
-        selectedCommuneId = c.id;
-        onCommuneSelected();
-      });
-      quickFiltersEl.appendChild(btn);
-    });
-  }
+  // Lược bỏ renderQuickFilters theo yêu cầu
 
   function getRateBadgeClass(rate) {
     if (rate >= 85) return "badge-success";
@@ -676,10 +649,7 @@ function initApp() {
     // Đổi định dạng hiển thị chỉ còn Tên xã
     const rawDate = reportDatePickerEl.value; // YYYY-MM-DD
     const formattedDate = rawDate.split('-').reverse().join('/'); // DD/MM/YYYY (vẫn giữ lại biến này phòng khi cần dùng ở đâu đó)
-    const fullTitle = active.name;
     
-    activeCommuneTitleEl.textContent = fullTitle;
-
     // Cập nhật giao diện Sidebar active class
     const buttons = communesListEl.querySelectorAll(".commune-item");
     buttons.forEach((btn, index) => {
@@ -692,7 +662,7 @@ function initApp() {
     });
 
     // Cập nhật giao diện Quick Commune Filters active class
-    renderQuickFilters();
+    // Lược bỏ renderQuickFilters();
 
     updateKPIs();
     renderTaxBreakdownTable();
@@ -1232,184 +1202,63 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
           .replace(/Xã\s*/gi, "").replace(/\s+/g, "");
     const filename = `BaoCao_ThuNganSach_TCS13_${communeRaw}_${dateStr}`;
 
-    // 3. Lấy nội dung HTML báo cáo đã render
-    const reportBodyHTML = sourceContainer.innerHTML;
-
-    // 4. Tạo tài liệu HTML hoàn chỉnh, độc lập, có CSS in ấn chuẩn A4
-    const fullHTML = `<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${filename}</title>
-  <style>
-    /* Reset */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    /* Giao diện xem trước (screen) */
-    body {
-      font-family: 'Times New Roman', Times, serif;
-      font-size: 11pt;
-      color: #000;
-      background: #e8e8e8;
-      padding: 0;
+    // 3. Đổi trạng thái UI
+    if (exportBtn) {
+      exportBtn.innerHTML = "Đang xuất PDF...";
+      exportBtn.disabled = true;
     }
 
-    /* Toolbar xem trước */
-    .toolbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      background: linear-gradient(135deg, #059669, #047857);
-      color: #fff;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      z-index: 9999;
-      font-family: -apple-system, 'Segoe UI', sans-serif;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.3);
-    }
-    .toolbar-title {
-      font-weight: 700;
-      font-size: 14px;
-      flex: 1;
-    }
-    .toolbar-hint {
-      font-size: 12px;
-      opacity: 0.9;
-    }
-    .btn-print-now {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 22px;
-      background: #fff;
-      color: #059669;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-    }
-    .btn-print-now:hover {
-      background: #f0fdf4;
-      transform: scale(1.04);
-    }
-    .btn-close {
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      font-family: inherit;
-    }
+    // 4. Sử dụng html2pdf với onclone để hiển thị element bị ẩn trên clone document
+    const opt = {
+      margin:       15,
+      filename:     filename + '.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { 
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        onclone: function(clonedDoc) {
+          const el = clonedDoc.getElementById("print-report-container");
+          if (el) {
+            el.style.position = "static";
+            el.style.visibility = "visible";
+            el.style.width = "100%";
+            el.style.height = "auto";
+            el.style.overflow = "visible";
+            el.style.left = "auto";
+            el.style.top = "auto";
+            
+            // Xóa background/màu đen do dark mode (nếu có)
+            el.style.backgroundColor = "#fff";
+            el.style.color = "#000";
+            
+            // Ép bảng không bị tràn
+            const tables = el.querySelectorAll("table");
+            tables.forEach(t => {
+              t.style.width = "100%";
+              t.style.maxWidth = "100%";
+              t.style.pageBreakInside = "auto";
+            });
+          }
+        }
+      },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
 
-    /* Khung giấy A4 chuẩn Nghị định 30/2020/NĐ-CP */
-    .page-wrapper {
-      margin: 70px auto 30px;
-      background: #fff;
-      width: 210mm;
-      min-height: 297mm;
-      padding: 20mm 20mm 20mm 30mm; /* trên: 20mm, phải: 20mm, dưới: 20mm, trái: 30mm */
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      position: relative;
-    }
-
-    /* Nội dung báo cáo */
-    table { border-collapse: collapse; width: 100%; }
-    th, td { padding: 5px 6px; font-size: 10pt; border: 1px solid #000; }
-    p { line-height: 1.55; margin-bottom: 10px; }
-    h3 { text-align: center; margin-bottom: 15px; }
-    h4 { margin-bottom: 6px; }
-    ul, ol { margin-left: 20px; margin-bottom: 12px; }
-    li { margin-bottom: 5px; line-height: 1.5; }
-    strong { font-weight: bold; }
-
-    /* In ấn - CSS Paged Media chuẩn theo Nghị định 30/2020/NĐ-CP */
-    @page {
-      size: A4 portrait;
-      margin: 15mm 15mm 15mm 15mm;
-      @top-center {
-        content: counter(page); /* Đánh số trang giữa lề trên, số Ả Rập */
+    html2pdf().set(opt).from(sourceContainer).save().then(() => {
+      showToast("✅ Đã xuất báo cáo PDF thành công!");
+      if (exportBtn) {
+        exportBtn.innerHTML = `<span class="pdf-btn-icon">📄</span> <span class="pdf-btn-text">Xuất PDF</span> <span class="pdf-btn-badge">↓</span>`;
+        exportBtn.disabled = false;
       }
-    }
-    @page :first {
-      @top-center {
-        content: normal; /* Không hiển thị trang đầu */
+    }).catch(err => {
+      console.error("Lỗi xuất PDF:", err);
+      showToast("❌ Lỗi khi xuất PDF. Vui lòng thử lại!");
+      if (exportBtn) {
+        exportBtn.innerHTML = `<span class="pdf-btn-icon">📄</span> <span class="pdf-btn-text">Xuất PDF</span> <span class="pdf-btn-badge">↓</span>`;
+        exportBtn.disabled = false;
       }
-    }
-    
-    @media print {
-      body { background: #fff; }
-      .toolbar { display: none !important; }
-      .page-wrapper {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        box-shadow: none !important;
-        min-height: unset !important;
-      }
-      table { page-break-inside: auto; width: 100% !important; max-width: 100% !important; }
-      tr { page-break-inside: avoid; }
-      td, th { padding: 4px; font-size: 9pt; } /* Thu nhỏ font in xíu để chống tràn */
-      h4 { page-break-after: avoid; }
-      p { orphans: 3; widows: 3; }
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Toolbar xem trước (ẩn khi in) -->
-  <div class="toolbar">
-    <div class="toolbar-title">📄 Báo cáo Thu ngân sách hàng ngày - TCS13 (${dateLabel})</div>
-    <span class="toolbar-hint">💡 Trong hộp thoại in → chọn <strong>Lưu thành PDF</strong></span>
-    <button class="btn-print-now" onclick="window.print()">🖨️&nbsp; LƯU THÀNH PDF (Print)</button>
-    <button class="btn-close" onclick="window.close()">✕ Đóng</button>
-  </div>
-
-  <!-- Khung giấy A4 -->
-  <div class="page-wrapper">
-    ${reportBodyHTML}
-  </div>
-
-  <script>
-    // Tự động mở hộp thoại in sau khi trang tải xong
-    window.addEventListener('load', function() {
-      setTimeout(function() { window.print(); }, 900);
     });
-  </script>
-</body>
-</html>`;
-
-    // 5. Mở tab mới ghi nội dung trực tiếp (Tránh chặn Blob URL trên iOS Safari)
-    let newTab = null;
-    try {
-      newTab = window.open("", "_blank");
-    } catch (e) {
-      console.error("Không thể mở cửa sổ mới:", e);
-    }
-
-    if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
-      // Fallback: download as HTML file
-      const blob = new Blob([fullHTML], { type: "text/html; charset=utf-8" });
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = filename + ".html";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-      showToast("⚠️ Trình duyệt chặn Popup. Đã tải file HTML — hãy mở file và chọn In/Lưu PDF.");
-    } else {
-      newTab.document.write(fullHTML);
-      newTab.document.close();
-      showToast(`✅ Đã xuất báo cáo. Hãy chọn "Lưu thành PDF" hoặc "In" ở cửa sổ mới.`);
-    }
   }
 
 
@@ -2618,7 +2467,7 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
   // Khởi chạy ban đầu
   onCommuneSelected();
   renderSidebar();
-  renderQuickFilters();
+  // Lược bỏ renderQuickFilters();
 
   // Điều chỉnh giao diện trên điện thoại
   function adjustMobileLayout() {

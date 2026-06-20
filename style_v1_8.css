@@ -64,9 +64,8 @@
   padding: 0;
 }
 
-html, body {
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -901,7 +900,7 @@ tr:hover td {
 /* Responsive Styles */
 @media (max-width: 768px) {
   body {
-    overflow-x: hidden;
+    /* overflow-x: hidden; removed to prevent Safari freeze */
   }
   
   .app-container {
