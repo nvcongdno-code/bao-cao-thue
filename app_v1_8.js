@@ -635,7 +635,26 @@ function initApp() {
     });
   }
 
-  // Lược bỏ renderQuickFilters theo yêu cầu
+  function renderQuickFilters() {
+    const container = document.getElementById("quick-commune-filters");
+    if (!container) return;
+    
+    let html = `<button class="filter-commune-btn ${selectedCommuneId === 'tong_hop' ? 'active' : ''}" data-id="tong_hop">Tổng hợp</button>`;
+    
+    currentData.communes.forEach(c => {
+      html += `<button class="filter-commune-btn ${selectedCommuneId === c.id ? 'active' : ''}" data-id="${c.id}">${c.name.replace("Xã ", "")}</button>`;
+    });
+    
+    container.innerHTML = html;
+    
+    container.querySelectorAll('.filter-commune-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        selectedCommuneId = e.target.getAttribute('data-id');
+        onCommuneSelected();
+        renderSidebar();
+      });
+    });
+  }
 
   function getRateBadgeClass(rate) {
     if (rate >= 85) return "badge-success";
@@ -662,7 +681,17 @@ function initApp() {
     });
 
     // Cập nhật giao diện Quick Commune Filters active class
-    // Lược bỏ renderQuickFilters();
+    renderQuickFilters();
+
+    const activeNameEl = document.getElementById("active-commune-name");
+    if (activeNameEl) {
+      if (selectedCommuneId === "tong_hop") {
+        activeNameEl.textContent = `Tổng hợp Toàn địa bàn (7 Xã) - ${formattedDate}`;
+      } else {
+        const c = currentData.communes.find(x => x.id === selectedCommuneId);
+        activeNameEl.textContent = `${c ? c.name : ""} - ${formattedDate}`;
+      }
+    }
 
     updateKPIs();
     renderTaxBreakdownTable();
@@ -2512,7 +2541,7 @@ window.BUDGET_HISTORY = BUDGET_HISTORY;
   // Khởi chạy ban đầu
   onCommuneSelected();
   renderSidebar();
-  // Lược bỏ renderQuickFilters();
+  renderQuickFilters();
 
   // Điều chỉnh giao diện trên điện thoại
   function adjustMobileLayout() {
