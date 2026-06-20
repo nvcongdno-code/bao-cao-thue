@@ -904,7 +904,7 @@ tr:hover td {
   }
   
   .app-container {
-    margin-top: var(--mobile-header-height, 60px) !important;
+    margin-top: 0 !important;
     flex-direction: column;
     height: auto !important;
     overflow: visible !important;
@@ -1043,7 +1043,10 @@ tr:hover td {
     z-index: 99 !important;
     width: 100% !important;
     padding: 12px 12px !important;
-    margin: 0 !important;
+    margin-top: calc(var(--mobile-header-height, 60px) + 5px) !important;
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     gap: 8px !important;
     display: flex !important;
     flex-direction: column !important;
