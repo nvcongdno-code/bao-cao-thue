@@ -4,12 +4,16 @@
 // -------------------------------------------------------------------------
 
 function initApp() {
-  // Cưỡng bức xóa cache localStorage của phiên làm việc cũ để đồng bộ số liệu sạch v1_8
-  if (localStorage.getItem("thue_co_so_13_force_restore_v1_8") !== "true") {
-    localStorage.removeItem("thue_co_so_13_baseline");
-    localStorage.removeItem("thue_co_so_13_current_state");
-    localStorage.removeItem("thue_co_so_13_history");
-    localStorage.setItem("thue_co_so_13_force_restore_v1_8", "true");
+  // Khôi phục cưỡng bức về bản v1_8 sạch từ file data_v1_8.js để tránh cache lộn số liệu V1_9
+  try {
+    if (localStorage && localStorage.getItem("thue_co_so_13_force_restore_v1_8") !== "true") {
+      localStorage.removeItem("thue_co_so_13_baseline");
+      localStorage.removeItem("thue_co_so_13_current_state");
+      localStorage.removeItem("thue_co_so_13_history");
+      localStorage.setItem("thue_co_so_13_force_restore_v1_8", "true");
+    }
+  } catch (e) {
+    console.warn("Không thể xóa cache localStorage:", e.message);
   }
 
   // Trạng thái ứng dụng
@@ -17,10 +21,23 @@ function initApp() {
   const isAdminPage = document.getElementById("btn-save-baseline") !== null;
   const isMobileDevice = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+  // Kiểm tra nếu thiếu BUDGET_DATA gốc từ file data_v1_8.js
+  if (!window.BUDGET_DATA) {
+    alert("CẢNH BÁO: Không tìm thấy dữ liệu BUDGET_DATA từ file data_v1_8.js! Vui lòng tải lại trang (F5) hoặc kiểm tra tệp tin.");
+    window.BUDGET_DATA = {
+      metadata: { province: "Lâm Đồng", reportDate: "2026-06-18", currency: "VND", categories: {} },
+      communes: []
+    };
+  }
+
   // Nếu là trang quản trị và ngày báo cáo trong file data_v1_8.js khác với ngày trong localStorage,
   // nghĩa là có cập nhật dữ liệu mới chính thức từ Git, ta tự động xóa cache lưu trữ cũ để nạp mới.
   if (isAdminPage && window.BUDGET_DATA && window.BUDGET_DATA.metadata) {
-    const savedStateRaw = localStorage.getItem("thue_co_so_13_current_state");
+    let savedStateRaw = null;
+    try {
+      savedStateRaw = localStorage.getItem("thue_co_so_13_current_state");
+    } catch(e) {}
+    
     let stateDate = null;
     if (savedStateRaw) {
       try {
@@ -30,24 +47,30 @@ function initApp() {
     }
     
     if (stateDate && window.BUDGET_DATA.metadata.reportDate !== stateDate) {
-      localStorage.removeItem("thue_co_so_13_baseline");
-      localStorage.removeItem("thue_co_so_13_current_state");
-      // Tuyệt đối không xóa thue_co_so_13_history để giữ lại số liệu đầu tháng!
+      try {
+        localStorage.removeItem("thue_co_so_13_baseline");
+        localStorage.removeItem("thue_co_so_13_current_state");
+      } catch(e) {}
     }
   }
 
   // Khôi phục lịch sử từ file tĩnh nếu có (để đồng bộ đa thiết bị)
   if (window.BUDGET_HISTORY && Array.isArray(window.BUDGET_HISTORY)) {
-    const localHistory = JSON.parse(localStorage.getItem("thue_co_so_13_history") || "[]");
-    if (localHistory.length === 0 || window.BUDGET_HISTORY.length > localHistory.length) {
-      localStorage.setItem("thue_co_so_13_history", JSON.stringify(window.BUDGET_HISTORY));
-    }
+    try {
+      const localHistory = JSON.parse(localStorage.getItem("thue_co_so_13_history") || "[]");
+      if (localHistory.length === 0 || window.BUDGET_HISTORY.length > localHistory.length) {
+        localStorage.setItem("thue_co_so_13_history", JSON.stringify(window.BUDGET_HISTORY));
+      }
+    } catch(e) {}
   }
 
   // Nạp dữ liệu gốc (Baseline)
   let originalBaseline = window.BUDGET_DATA;
   if (isAdminPage) {
-    const savedBaseline = localStorage.getItem("thue_co_so_13_baseline");
+    let savedBaseline = null;
+    try {
+      savedBaseline = localStorage.getItem("thue_co_so_13_baseline");
+    } catch(e) {}
     if (savedBaseline) {
       try {
         originalBaseline = JSON.parse(savedBaseline);
@@ -59,8 +82,12 @@ function initApp() {
 
   // Trạng thái hoạt động hiện tại (Current state)
   // Trên trang xem chung (index.html), ta luôn nạp dữ liệu gốc mới nhất từ Server để tránh lãnh đạo xem số cũ bị cache
-  let currentData;
-  const savedState = isAdminPage ? localStorage.getItem("thue_co_so_13_current_state") : null;
+  let currentData = null;
+  let savedState = null;
+  try {
+    savedState = isAdminPage ? localStorage.getItem("thue_co_so_13_current_state") : null;
+  } catch(e) {}
+  
   if (savedState) {
     try {
       currentData = JSON.parse(savedState);
@@ -85,11 +112,17 @@ function initApp() {
       }
     } catch (e) {
       console.warn("Lỗi dữ liệu lưu trữ, khôi phục mặc định:", e.message);
-      currentData = JSON.parse(JSON.stringify(originalBaseline));
-      localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
+      currentData = null;
     }
-  } else {
-    currentData = JSON.parse(JSON.stringify(originalBaseline));
+  }
+  
+  if (!currentData) {
+    currentData = JSON.parse(JSON.stringify(originalBaseline || window.BUDGET_DATA));
+    try {
+      if (isAdminPage) {
+        localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
+      }
+    } catch(e) {}
   }
 
   // Khởi tạo các key còn thiếu nếu dữ liệu cũ (data_v1_8.js) chỉ có 8 keys thay vì 12 keys mới nhất
