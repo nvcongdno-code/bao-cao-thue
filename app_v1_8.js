@@ -4,6 +4,14 @@
 // -------------------------------------------------------------------------
 
 function initApp() {
+  // Cưỡng bức xóa cache localStorage của phiên làm việc cũ để đồng bộ số liệu sạch v1_8
+  if (localStorage.getItem("thue_co_so_13_force_restore_v1_8") !== "true") {
+    localStorage.removeItem("thue_co_so_13_baseline");
+    localStorage.removeItem("thue_co_so_13_current_state");
+    localStorage.removeItem("thue_co_so_13_history");
+    localStorage.setItem("thue_co_so_13_force_restore_v1_8", "true");
+  }
+
   // Trạng thái ứng dụng
   // Phát hiện nếu đây là trang quản trị (admin.html) hoặc trang xem chung (index.html)
   const isAdminPage = document.getElementById("btn-save-baseline") !== null;
