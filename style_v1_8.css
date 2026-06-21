@@ -930,11 +930,11 @@ tr:hover td {
     box-sizing: border-box !important;
     background: var(--bg-secondary) !important;
     border-bottom: 1px solid var(--border-color) !important;
-    padding: 8px 12px !important;
+    padding: 4px 8px !important;
     display: grid !important;
     grid-template-columns: 1fr auto !important;
     grid-template-rows: auto auto !important;
-    gap: 8px !important;
+    gap: 4px !important;
     box-shadow: var(--shadow-md) !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
@@ -948,8 +948,8 @@ tr:hover td {
   }
   
   .logo-image {
-    width: 36px !important;
-    height: 36px !important;
+    width: 28px !important;
+    height: 28px !important;
   }
   
   .logo-text p {
@@ -1011,11 +1011,11 @@ tr:hover td {
     justify-content: space-between !important;
     margin-top: 0 !important;
     flex-wrap: nowrap !important;
-    gap: 4px !important;
+    gap: 2px !important;
   }
   
   .controls-container .btn {
-    padding: 0.4rem 0.2rem !important;
+    padding: 0.3rem 0.1rem !important;
     font-size: 0.65rem !important;
     flex: 1 1 0 !important;
     justify-content: center;
@@ -1033,6 +1033,16 @@ tr:hover td {
   #btn-periodic, #btn-guide, #btn-reset,
   #btn-finalize, #btn-save-baseline, #btn-print {
     display: none !important;
+  }
+
+  .view-mode-container {
+    padding: 2px !important;
+    gap: 2px !important;
+  }
+  
+  .mode-btn {
+    padding: 4px 6px !important;
+    font-size: 0.75rem !important;
   }
 
   /* .content-header trên mobile - sticky filter section */
