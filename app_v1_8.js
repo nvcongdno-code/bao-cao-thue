@@ -1125,6 +1125,11 @@ function initApp() {
   if (saveBaselineBtn) {
     saveBaselineBtn.addEventListener("click", async () => {
       try {
+        if (window.location.hostname.includes("github.io")) {
+          alert("❌ LỖI ĐỒNG BỘ: Bạn đang ở trang web Online (github.io)!\n\nTrang online KHÔNG THỂ tự động lưu và đồng bộ dữ liệu vào máy tính của bạn.\n\nCách khắc phục:\n1. Mở thư mục gốc chứa phần mềm.\n2. Nháy đúp chạy file 'KHOI_DONG_MAY_CHU.bat'.\n3. Mở trình duyệt web và truy cập địa chỉ: http://localhost:8080/admin.html\n4. Thực hiện nhập lại số liệu trên link localhost này và bấm 'Lưu lại'.\n\n(Chỉ khi làm trên localhost thì file DONG_BO_GITHUB.bat mới hoạt động!)");
+          return;
+        }
+
         // 1. Luu trang thai hien tai lam baseline trong localStorage
         localStorage.setItem("thue_co_so_13_baseline", JSON.stringify(currentData));
         localStorage.setItem("thue_co_so_13_current_state", JSON.stringify(currentData));
