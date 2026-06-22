@@ -23,7 +23,27 @@
   <!-- html2pdf.js - Xuất báo cáo PDF chất lượng cao -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
-<body>
+<body class="locked">
+
+  <!-- Màn hình khóa bảo vệ (Login Overlay) -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-header-banner">
+      <img src="logo.png" alt="Logo">
+      <div class="login-header-text">
+        <p>THUẾ TỈNH LÂM ĐỒNG</p>
+        <h1>THUẾ CƠ SỞ 13</h1>
+        <div class="ver-text">VER 1.0 (Quản trị)</div>
+      </div>
+    </div>
+    <div class="login-body">
+      <h2 class="login-app-title">ỨNG DỤNG BÁO CÁO<br>TÌNH HÌNH ĐÁNH GIÁ THỰC HIỆN DỰ TOÁN THU<br>NGÂN SÁCH NHÀ NƯỚC</h2>
+      <div class="login-form">
+        <input type="password" id="login-password" placeholder="Nhập mật khẩu..." autofocus />
+        <button id="btn-login" class="btn btn-primary">Đăng nhập</button>
+      </div>
+      <p id="login-error" style="color: #e11d48; display: none; margin-top: 15px; font-weight: bold; font-size: 1rem;">Sai mật khẩu, vui lòng thử lại!</p>
+    </div>
+  </div>
 
   <!-- ==========================================================================
        WEB VIEW: GIAO DIỆN HIỂN THỊ TRÊN WEB (MOBILE / TABLET / LAPTOP)

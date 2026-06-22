@@ -4,6 +4,39 @@
 // -------------------------------------------------------------------------
 
 function initApp() {
+  // -------------------------------------------------------------------------
+  // MÀN HÌNH KHÓA BẢO VỆ (LOGIN OVERLAY)
+  // -------------------------------------------------------------------------
+  const loginOverlay = document.getElementById("login-overlay");
+  const btnLogin = document.getElementById("btn-login");
+  const loginPassword = document.getElementById("login-password");
+  const loginError = document.getElementById("login-error");
+
+  if (loginOverlay && btnLogin && loginPassword) {
+    if (sessionStorage.getItem("isLoggedIn") === "true") {
+      document.body.classList.remove("locked");
+      loginOverlay.style.display = "none";
+    } else {
+      const handleLogin = () => {
+        if (loginPassword.value === "Thue13") {
+          sessionStorage.setItem("isLoggedIn", "true");
+          document.body.classList.remove("locked");
+          loginOverlay.style.display = "none";
+        } else {
+          loginError.style.display = "block";
+          loginPassword.value = "";
+          loginPassword.focus();
+        }
+      };
+      btnLogin.addEventListener("click", handleLogin);
+      loginPassword.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleLogin();
+      });
+      // Nếu chưa đăng nhập, ta vẫn cho phép app khởi tạo ngầm phía sau
+      // Giao diện thực tế đã bị ẩn bởi thẻ body.locked
+    }
+  }
+
   // Khôi phục cưỡng bức về bản v1_8 sạch từ file data_v1_8.js để tránh cache lộn số liệu V1_9
   try {
     if (localStorage && localStorage.getItem("thue_co_so_13_force_restore_v1_8") !== "true") {
