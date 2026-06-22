@@ -13,7 +13,10 @@ function initApp() {
   const loginError = document.getElementById("login-error");
 
   if (loginOverlay && btnLogin && loginPassword) {
-    if (sessionStorage.getItem("isLoggedIn") === "true") {
+    const isOnlineVersion = window.location.hostname.includes("github.io");
+    
+    // Nếu không phải là bản online (ví dụ chạy trên localhost), không cần khóa
+    if (!isOnlineVersion || sessionStorage.getItem("isLoggedIn") === "true") {
       document.body.classList.remove("locked");
       loginOverlay.style.display = "none";
     } else {
