@@ -1,6 +1,6 @@
 @echo off
 echo ============================================
-echo    Khoi dong may chu web - TCS13
+echo    Khoi dong may chu web (CHEO CHE GIAU - BAO MAT)
 echo ============================================
 echo.
 
@@ -12,21 +12,16 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8080" ^| findstr "LISTENING
 echo Da tat may chu cu (neu co).
 echo Dang khoi dong may chu moi tai cong 8080...
 echo.
-echo Tinh nang:
-echo  - Phuc vu trang web tinh (HTML/CSS/JS)
-echo  - POST /save-data: luu thang vao data_v1_8.js va backup vao thu muc data/
+echo *** LUY Y BAO MAT ***
+echo May chu nay chi chay NOI BO tren may tinh cua ban.
+echo KHONG cho phep bat ky thiet bi nao khac truy cap vao!
 echo.
-echo Dia chi truy cap (Cung Mang LAN/Wi-Fi):
-echo  - Truc tiep tren may nay : http://localhost:8080/
-echo  - Cac may tinh/dien thoai khac CUNG MANG Wi-Fi co the thu truy cap qua IP cua may nay, vi du nhu: http://[IP_CUA_MAY_NAY]:8080/
+echo Dia chi truy cap an toan (Copy va dan vao trinh duyet):
+echo  =^> http://localhost:8080/ hoac http://127.0.0.1:8080/
 echo.
-echo *** NEU MUON TRUY CAP KHI KHAC MANG (3G/4G, Wi-Fi khac) ***
-echo   =^> Hay mo file TRUY_CAP_TU_XA.bat de tao duong link Internet!
-echo.
-echo Giu cua so nay mo de may chu hoat dong.
+echo Giu cua so nay mo de may chu hoat dong, hoac ban co the thu nho no xuong.
 echo Dong cua so nay se dung may chu.
 echo.
 
 powershell -ExecutionPolicy Bypass -File "%~dp0serve.ps1"
-
 pause

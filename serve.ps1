@@ -2,7 +2,7 @@
 $port = 8080
 $projectRoot = "d:\3Thue"
 $listener = New-Object System.Net.HttpListener
-$listener.Prefixes.Add("http://+:$port/")
+$listener.Prefixes.Add("http://localhost:$port/")
 
 function Write-Response {
     param($response, $bytes, $contentType, $statusCode = 200)
